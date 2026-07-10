@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CACampus — India's premier platform connecting businesses with verified Chartered Accountants. Find, verify, and engage top CA professionals." />
+    <title>@ViewData["Title"] - CACampus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecDqYW1uqWOV/firPRuAzG4Bg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════ -->
+<nav class="ca-navbar" id="mainNav" aria-label="Main navigation">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between w-100">
+
+            <a class="navbar-brand" href="/" aria-label="CACampus home">
+                <div class="brand-icon" aria-hidden="true">CA</div>
+                <span class="brand-name"><span>CA</span>Campus</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <ul class="navbar-nav flex-row gap-1 d-none d-lg-flex mb-0" role="list">
+                <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                <li class="nav-item"><a class="nav-link" href="#professionals">Find CAs</a></li>
+                <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            </ul>
+
+            <div class="d-none d-lg-flex align-items-center gap-2">
+                <a href="#" class="nav-link btn-nav-login">Log In</a>
+                <a href="#" class="nav-link btn-nav-cta">Get Started Free</a>
+            </div>
+
+            <!-- Mobile toggler -->
+            <button class="navbar-toggler border-0 d-lg-none" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#mobileNav"
+                    aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation"
+                    style="color:white;font-size:1.4rem;">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="collapse" id="mobileNav">
+            <div style="background:rgba(13,31,51,0.97);border-radius:12px;margin-top:0.75rem;padding:1rem;backdrop-filter:blur(12px);">
+                <ul class="navbar-nav gap-1 mb-3">
+                    <li><a class="nav-link" href="#features">Features</a></li>
+                    <li><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                    <li><a class="nav-link" href="#professionals">Find CAs</a></li>
+                    <li><a class="nav-link" href="#pricing">Pricing</a></li>
+                    <li><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <a href="#" class="btn btn-outline-light btn-sm flex-fill text-center">Log In</a>
+                    <a href="#" class="btn-nav-cta btn btn-sm flex-fill text-center">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@RenderBody()
+
+@await RenderSectionAsync("Footer", required: false)
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/landing.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

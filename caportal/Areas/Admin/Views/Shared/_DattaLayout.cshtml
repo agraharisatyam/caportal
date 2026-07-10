@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-direction="ltr" dir="ltr" data-pc-theme="light">
+<head>
+  <title>@ViewData["Title"] - CACampus Admin</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="icon" href="~/datta/images/favicon.svg" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="~/datta/fonts/tabler-icons.min.css" />
+  <link rel="stylesheet" href="~/datta/fonts/feather.css" />
+  <link rel="stylesheet" href="~/datta/fonts/fontawesome.css" />
+  <link rel="stylesheet" href="~/datta/fonts/material.css" />
+  <link rel="stylesheet" href="~/datta/css/style.css" />
+  @await RenderSectionAsync("HeadStyles", required: false)
+</head>
+<body>
+
+  <!-- [ Pre-loader ] -->
+  <div class="loader-bg fixed inset-0 bg-white dark:bg-themedark-cardbg z-[1034]">
+    <div class="loader-track h-[5px] w-full inline-block absolute overflow-hidden top-0">
+      <div class="loader-fill w-[300px] h-[5px] bg-primary-500 absolute top-0 left-0 animate-[hitZak_0.6s_ease-in-out_infinite_alternate]"></div>
+    </div>
+  </div>
+
+  <!-- [ Sidebar ] -->
+  <nav class="pc-sidebar">
+    <div class="navbar-wrapper">
+      <div class="m-header flex items-center py-4 px-6 h-header-height">
+        <a href="/ajs" class="b-brand flex items-center gap-3">
+          <img src="~/datta/images/logo-white.svg" class="img-fluid logo logo-lg" alt="CACampus" />
+          <img src="~/datta/images/favicon.svg" class="img-fluid logo logo-sm" alt="CA" />
+        </a>
+      </div>
+      <div class="navbar-content h-[calc(100vh_-_74px)] py-2.5">
+        <ul class="pc-navbar">
+          <li class="pc-item pc-caption"><label>Navigation</label></li>
+          <li class="pc-item">
+            <a href="/ajs" class="pc-link">
+              <span class="pc-micon"><i data-feather="home"></i></span>
+              <span class="pc-mtext">Dashboard</span>
+            </a>
+          </li>
+
+          <li class="pc-item pc-caption"><label>CACampus</label></li>
+          <li class="pc-item">
+            <a href="/Admin/Dashboard/CaList" class="pc-link">
+              <span class="pc-micon"><i data-feather="users"></i></span>
+              <span class="pc-mtext">CA Professionals</span>
+            </a>
+          </li>
+          <li class="pc-item">
+            <a href="/Admin/Dashboard/Clients" class="pc-link">
+              <span class="pc-micon"><i data-feather="briefcase"></i></span>
+              <span class="pc-mtext">Clients</span>
+            </a>
+          </li>
+
+          <li class="pc-item pc-caption"><label>Account</label></li>
+          <li class="pc-item">
+            <form method="post" action="/Admin/Auth/Logout" id="logoutForm">
+              @Html.AntiForgeryToken()
+            </form>
+            <a href="#" class="pc-link" onclick="document.getElementById('logoutForm').submit(); return false;">
+              <span class="pc-micon"><i data-feather="log-out"></i></span>
+              <span class="pc-mtext">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- [ Header ] -->
+  <header class="pc-header">
+    <div class="header-wrapper flex max-sm:px-[15px] px-[25px] grow">
+      <div class="me-auto pc-mob-drp">
+        <ul class="inline-flex *:min-h-header-height *:inline-flex *:items-center">
+          <li class="pc-h-item pc-sidebar-collapse max-lg:hidden lg:inline-flex">
+            <a href="#" class="pc-head-link ltr:!ml-0 rtl:!mr-0" id="sidebar-hide">
+              <i data-feather="menu"></i>
+            </a>
+          </li>
+          <li class="pc-h-item pc-sidebar-popup lg:hidden">
+            <a href="#" class="pc-head-link ltr:!ml-0 rtl:!mr-0" id="mobile-collapse">
+              <i data-feather="menu"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="ms-auto">
+        <ul class="inline-flex *:min-h-header-height *:inline-flex *:items-center">
+          <!-- Theme toggle -->
+          <li class="dropdown pc-h-item">
+            <a class="pc-head-link dropdown-toggle me-0" data-pc-toggle="dropdown" href="#" role="button">
+              <i data-feather="sun"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end pc-h-dropdown">
+              <a href="#!" class="dropdown-item" onclick="layout_change('dark')"><i data-feather="moon"></i><span>Dark</span></a>
+              <a href="#!" class="dropdown-item" onclick="layout_change('light')"><i data-feather="sun"></i><span>Light</span></a>
+            </div>
+          </li>
+          <!-- User dropdown -->
+          <li class="dropdown pc-h-item header-user-profile">
+            <a class="pc-head-link dropdown-toggle arrow-none me-0" data-pc-toggle="dropdown" href="#" role="button" data-pc-auto-close="outside">
+              <i data-feather="user"></i>
+            </a>
+            <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown p-2 overflow-hidden">
+              <div class="dropdown-header flex items-center py-4 px-5 bg-primary-500">
+                <div class="flex mb-1 items-center">
+                  <div class="grow ms-3">
+                    <h6 class="mb-1 text-white">@(ViewBag.Username ?? "ajs")</h6>
+                    <span class="text-white text-sm">Administrator</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dropdown-body py-3 px-5">
+                <form method="post" action="/Admin/Auth/Logout">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="btn btn-primary w-full mt-2">
+                    <i data-feather="log-out" class="inline w-4 h-4 me-1"></i> Logout
+                  </button>
+                </form>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- [ Main Content ] -->
+  <div class="pc-container">
+    <div class="pc-content">
+      @RenderBody()
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="~/datta/js/plugins/simplebar.min.js"></script>
+  <script src="~/datta/js/plugins/popper.min.js"></script>
+  <script src="~/datta/js/plugins/feather.min.js"></script>
+  <script src="~/datta/js/component.js"></script>
+  <script src="~/datta/js/theme.js"></script>
+  <script src="~/datta/js/script.js"></script>
+  @await RenderSectionAsync("Scripts", required: false)
+
+  <script>
+    // init feather icons after page load
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof feather !== 'undefined') feather.replace();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Breadcrumb -->
+<div class="page-header">
+  <div class="page-block">
+    <div class="page-header-title">
+      <h5 class="mb-0 font-medium">Welcome back, @ViewBag.Username 👋</h5>
+    </div>
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
+      <li class="breadcrumb-item" aria-current="page">Dashboard</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── KPI Cards ───────────────────────────── -->
+<div class="grid grid-cols-12 gap-x-6">
+
+  <div class="col-span-12 xl:col-span-3 md:col-span-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-muted text-sm mb-1">Total CAs</p>
+            <h3 class="font-semibold mb-0">12,481</h3>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center text-white text-xl">
+            <i data-feather="users"></i>
+          </div>
+        </div>
+        <p class="text-success-500 text-sm mb-0">
+          <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
+          +8.2% <span class="text-muted">this month</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-12 xl:col-span-3 md:col-span-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-muted text-sm mb-1">Active Clients</p>
+            <h3 class="font-semibold mb-0">48,260</h3>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-success-500 flex items-center justify-center text-white text-xl">
+            <i data-feather="briefcase"></i>
+          </div>
+        </div>
+        <p class="text-success-500 text-sm mb-0">
+          <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
+          +12.5% <span class="text-muted">this month</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-12 xl:col-span-3 md:col-span-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-muted text-sm mb-1">Cases Resolved</p>
+            <h3 class="font-semibold mb-0">3,940</h3>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-warning-500 flex items-center justify-center text-white text-xl">
+            <i data-feather="check-circle"></i>
+          </div>
+        </div>
+        <p class="text-danger-500 text-sm mb-0">
+          <i data-feather="trending-down" class="inline w-4 h-4 me-1"></i>
+          -2.1% <span class="text-muted">this month</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-12 xl:col-span-3 md:col-span-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-muted text-sm mb-1">Revenue (₹)</p>
+            <h3 class="font-semibold mb-0">₹18.4L</h3>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-danger-500 flex items-center justify-center text-white text-xl">
+            <i data-feather="dollar-sign"></i>
+          </div>
+        </div>
+        <p class="text-success-500 text-sm mb-0">
+          <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
+          +21.3% <span class="text-muted">this month</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Progress Cards ─────────────────────── -->
+<div class="grid grid-cols-12 gap-x-6 mt-2">
+
+  <div class="col-span-12 xl:col-span-4 md:col-span-6">
+    <div class="card">
+      <div class="card-header !pb-0 !border-b-0"><h5>Daily Engagements</h5></div>
+      <div class="card-body">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <h3 class="font-light flex items-center mb-0">
+            <i class="feather icon-arrow-up text-success-500 text-[28px] mr-1"></i> 249
+          </h3>
+          <p class="mb-0 text-muted">67%</p>
+        </div>
+        <div class="w-full bg-theme-bodybg rounded-lg h-1.5 mt-5">
+          <div class="bg-theme-bg-1 h-full rounded-lg" role="progressbar" style="width:67%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-12 xl:col-span-4 md:col-span-6">
+    <div class="card">
+      <div class="card-header !pb-0 !border-b-0"><h5>Monthly New CAs</h5></div>
+      <div class="card-body">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <h3 class="font-light flex items-center mb-0">
+            <i class="feather icon-arrow-down text-danger-500 text-[28px] mr-1"></i> 842
+          </h3>
+          <p class="mb-0 text-muted">36%</p>
+        </div>
+        <div class="w-full bg-theme-bodybg rounded-lg h-1.5 mt-5">
+          <div class="bg-theme-bg-2 h-full rounded-lg" role="progressbar" style="width:36%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-12 xl:col-span-4">
+    <div class="card">
+      <div class="card-header !pb-0 !border-b-0"><h5>Yearly Registrations</h5></div>
+      <div class="card-body">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <h3 class="font-light flex items-center mb-0">
+            <i class="feather icon-arrow-up text-success-500 text-[28px] mr-1"></i> 8,638
+          </h3>
+          <p class="mb-0 text-muted">80%</p>
+        </div>
+        <div class="w-full bg-theme-bodybg rounded-lg h-1.5 mt-5">
+          <div class="bg-theme-bg-1 h-full rounded-lg" role="progressbar" style="width:80%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Recent CA Registrations DataTable ─── -->
+<div class="grid grid-cols-12 gap-x-6 mt-2">
+  <div class="col-span-12">
+    <div class="card">
+      <div class="card-header flex items-center justify-between">
+        <h5 class="mb-0">Recent CA Registrations</h5>
+        <a href="/Admin/Dashboard/CaList" class="btn btn-sm btn-primary">View All</a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="dashRecentTable" class="table table-hover" style="width:100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>CA Name</th>
+                <th>Membership No.</th>
+                <th>Specialisation</th>
+                <th>City</th>
+                <th>Rating</th>
+                <th>Joined</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>CA Priya Mehta</td><td>ICAI/2012/PM001</td><td>GST &amp; Income Tax</td><td>Mumbai</td><td>⭐ 4.9</td><td>01 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+              <tr><td>2</td><td>CA Rajesh Sharma</td><td>ICAI/2016/RS002</td><td>Transfer Pricing</td><td>Delhi</td><td>⭐ 4.8</td><td>05 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+              <tr><td>3</td><td>CA Anita Krishnan</td><td>ICAI/2009/AK003</td><td>Forensic Audit</td><td>Bangalore</td><td>⭐ 5.0</td><td>10 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+              <tr><td>4</td><td>CA Vikram Joshi</td><td>ICAI/2018/VJ004</td><td>Startup Finance</td><td>Pune</td><td>⭐ 4.7</td><td>12 Jun 2026</td><td><span class="badge bg-warning-500 text-white">Pending</span></td></tr>
+              <tr><td>5</td><td>CA Sunita Patel</td><td>ICAI/2014/SP005</td><td>ROC / MCA</td><td>Ahmedabad</td><td>⭐ 4.6</td><td>15 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+              <tr><td>6</td><td>CA Mohit Agarwal</td><td>ICAI/2011/MA006</td><td>Corporate Tax</td><td>Kolkata</td><td>⭐ 4.8</td><td>18 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+              <tr><td>7</td><td>CA Deepa Nair</td><td>ICAI/2020/DN007</td><td>FEMA &amp; RBI</td><td>Chennai</td><td>⭐ 4.5</td><td>20 Jun 2026</td><td><span class="badge bg-danger-500 text-white">Suspended</span></td></tr>
+              <tr><td>8</td><td>CA Arjun Singh</td><td>ICAI/2017/AS008</td><td>GST &amp; Audit</td><td>Hyderabad</td><td>⭐ 4.7</td><td>25 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+              <tr><td>9</td><td>CA Kavita Rao</td><td>ICAI/2015/KR009</td><td>Tax Litigation</td><td>Jaipur</td><td>⭐ 4.9</td><td>28 Jun 2026</td><td><span class="badge bg-warning-500 text-white">Pending</span></td></tr>
+              <tr><td>10</td><td>CA Nitin Gupta</td><td>ICAI/2013/NG010</td><td>Internal Audit</td><td>Lucknow</td><td>⭐ 4.6</td><td>30 Jun 2026</td><td><span class="badge bg-success-500 text-white">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+  <!-- jQuery + DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+  <script>
+    $(function () {
+      $('#dashRecentTable').DataTable({
+        pageLength: 5,
+        lengthMenu: [5, 10, 25],
+        order: [[0, 'asc']],
+        responsive: true
+      });
+    });
+  </script>
+}

@@ -1,0 +1,129 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Admin Login";
+}
+<!doctype html>
+<html lang="en" data-pc-preset="preset-1" data-pc-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+  <title>Login - CACampus Admin</title>
+  <link rel="icon" href="~/datta/images/favicon.svg" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="~/datta/fonts/tabler-icons.min.css" />
+  <link rel="stylesheet" href="~/datta/fonts/feather.css" />
+  <link rel="stylesheet" href="~/datta/fonts/fontawesome.css" />
+  <link rel="stylesheet" href="~/datta/fonts/material.css" />
+  <link rel="stylesheet" href="~/datta/css/style.css" />
+  <style>
+    .ca-login-brand { text-align:center; margin-bottom:1.5rem; }
+    .ca-login-brand .brand-title { font-size:1.6rem; font-weight:700; color:#1a3c5e; margin-top:.5rem; }
+    .ca-login-brand .brand-title span { color:#d4a017; }
+    .ca-login-brand .brand-sub { font-size:.8rem; color:#6b7280; margin-top:2px; }
+    .error-msg { color:#ef4444; font-size:.85rem; margin-bottom:1rem;
+                  background:#fef2f2; border:1px solid #fecaca;
+                  padding:.6rem 1rem; border-radius:8px; }
+    .input-eye { position:relative; }
+    .input-eye .eye-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%);
+                           background:none; border:none; cursor:pointer; color:#9ca3af; }
+  </style>
+</head>
+<body>
+  <!-- Pre-loader -->
+  <div class="loader-bg fixed inset-0 bg-white dark:bg-themedark-cardbg z-[1034]">
+    <div class="loader-track h-[5px] w-full inline-block absolute overflow-hidden top-0">
+      <div class="loader-fill w-[300px] h-[5px] bg-primary-500 absolute top-0 left-0 animate-[hitZak_0.6s_ease-in-out_infinite_alternate]"></div>
+    </div>
+  </div>
+
+  <div class="auth-main relative">
+    <div class="auth-wrapper v1 flex items-center w-full h-full min-h-screen">
+      <div class="auth-form flex items-center justify-center grow flex-col min-h-screen relative p-6">
+        <div class="w-full max-w-[380px] relative">
+          <!-- Animated blobs -->
+          <div class="auth-bg">
+            <span class="absolute top-[-100px] right-[-100px] w-[300px] h-[300px] block rounded-full bg-theme-bg-1 animate-[floating_7s_infinite]"></span>
+            <span class="absolute top-[150px] right-[-150px] w-5 h-5 block rounded-full bg-primary-500 animate-[floating_9s_infinite]"></span>
+            <span class="absolute left-[-150px] bottom-[150px] w-5 h-5 block rounded-full bg-theme-bg-1 animate-[floating_7s_infinite]"></span>
+            <span class="absolute left-[-100px] bottom-[-100px] w-[300px] h-[300px] block rounded-full bg-theme-bg-2 animate-[floating_9s_infinite]"></span>
+          </div>
+
+          <div class="card sm:my-12 w-full shadow-none">
+            <div class="card-body !p-10">
+
+              <!-- Brand -->
+              <div class="ca-login-brand">
+                <div class="brand-title"><span>CA</span>Campus</div>
+                <div class="brand-sub">Admin Portal · Secure Access</div>
+              </div>
+
+              <h4 class="text-center font-medium mb-6">Sign In</h4>
+
+              @if (!string.IsNullOrEmpty(ViewBag.Error as string))
+              {
+                <div class="error-msg">
+                  <i class="ti ti-alert-circle me-1"></i> @ViewBag.Error
+                </div>
+              }
+
+              <form method="post" asp-area="Admin" asp-controller="Auth" asp-action="Login">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                <div class="mb-4">
+                  <label class="form-label font-medium" for="username">Username</label>
+                  <input type="text" class="form-control" id="username" name="username"
+                         placeholder="Enter username" autocomplete="username" required autofocus />
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label font-medium" for="password">Password</label>
+                  <div class="input-eye">
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Enter password" autocomplete="current-password" required />
+                    <button type="button" class="eye-btn" onclick="togglePwd()" tabindex="-1" aria-label="Toggle password">
+                      <i class="ti ti-eye" id="eyeIcon"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt-6">
+                  <button type="submit" class="btn btn-primary w-full">
+                    <i class="ti ti-login me-1"></i> Login
+                  </button>
+                </div>
+              </form>
+
+              <p class="text-center text-muted text-sm mt-5 mb-0">
+                CACampus &copy; 2026 &mdash; All rights reserved
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="~/datta/js/plugins/simplebar.min.js"></script>
+  <script src="~/datta/js/plugins/popper.min.js"></script>
+  <script src="~/datta/js/plugins/feather.min.js"></script>
+  <script src="~/datta/js/component.js"></script>
+  <script src="~/datta/js/theme.js"></script>
+  <script src="~/datta/js/script.js"></script>
+  <script>
+    function togglePwd() {
+      var p = document.getElementById('password');
+      var i = document.getElementById('eyeIcon');
+      if (p.type === 'password') {
+        p.type = 'text';
+        i.className = 'ti ti-eye-off';
+      } else {
+        p.type = 'password';
+        i.className = 'ti ti-eye';
+      }
+    }
+    layout_change('false');
+    preset_change('preset-1');
+  </script>
+</body>
+</html>
