@@ -285,6 +285,12 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# DattaAble theme source kit (dist assets are served from wwwroot/datta)
+DattaAble-1.0.0/
+
+# Empty VS-generated subfolder (csproj lives at root)
+caportal/
+
 # Visual Studio 6 build log
 *.plg
 
