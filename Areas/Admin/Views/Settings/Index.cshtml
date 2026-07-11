@@ -1,0 +1,542 @@
+@model caportal.Models.SiteSettings
+@{
+    ViewData["Title"] = "Website Settings";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-block">
+        <div class="page-header-title">
+            <h5 class="mb-0 font-medium">Website Settings</h5>
+        </div>
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
+            <li class="breadcrumb-item" aria-current="page">Settings</li>
+        </ul>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="check-circle" class="inline w-4 h-4 me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form method="post" asp-area="Admin" asp-controller="Settings" asp-action="Index" id="settingsForm">
+    @Html.AntiForgeryToken()
+
+    <div class="grid grid-cols-12 gap-x-6">
+
+        <!-- ── LEFT SIDEBAR TABS ── -->
+        <div class="col-span-12 lg:col-span-3">
+            <div class="card sticky top-24">
+                <div class="card-body p-0">
+                    <div class="settings-tab-nav" id="settingsTabs">
+                        <a class="settings-tab active" data-tab="identity" href="#"><i data-feather="globe" class="w-4 h-4"></i> Site Identity</a>
+                        <a class="settings-tab" data-tab="header"   href="#"><i data-feather="layout" class="w-4 h-4"></i> Header</a>
+                        <a class="settings-tab" data-tab="hero"     href="#"><i data-feather="image" class="w-4 h-4"></i> Hero Section</a>
+                        <a class="settings-tab" data-tab="body"     href="#"><i data-feather="type" class="w-4 h-4"></i> Body & Typography</a>
+                        <a class="settings-tab" data-tab="colors"   href="#"><i data-feather="droplet" class="w-4 h-4"></i> Brand Colors</a>
+                        <a class="settings-tab" data-tab="footer"   href="#"><i data-feather="minus-square" class="w-4 h-4"></i> Footer</a>
+                        <a class="settings-tab" data-tab="buttons"  href="#"><i data-feather="square" class="w-4 h-4"></i> Buttons</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── RIGHT CONTENT PANELS ── -->
+        <div class="col-span-12 lg:col-span-9">
+
+            <!-- Live Preview Bar -->
+            <div class="card mb-4" style="border-left: 4px solid #d4a017;">
+                <div class="card-body py-3 flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                        <h6 class="mb-0 font-semibold">Live Preview</h6>
+                        <p class="text-muted text-sm mb-0">Changes apply to the website instantly after saving.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="/" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i data-feather="external-link" class="w-3 h-3 me-1"></i> View Site
+                        </a>
+                        <button type="submit" class="btn btn-sm btn-primary" form="settingsForm">
+                            <i data-feather="save" class="w-3 h-3 me-1"></i> Save All
+                        </button>
+                        <button type="submit" form="resetForm" class="btn btn-sm btn-outline-danger">
+                            <i data-feather="refresh-cw" class="w-3 h-3 me-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Site Identity ══ -->
+            <div class="settings-panel active" id="panel-identity">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="globe" class="inline w-4 h-4 me-2"></i>Site Identity</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Site Name</label>
+                                <input asp-for="SiteName" class="form-control" placeholder="CACampus" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Tagline</label>
+                                <input asp-for="SiteTagline" class="form-control" placeholder="Verified CA Network" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Contact Email</label>
+                                <input asp-for="SiteEmail" type="email" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Contact Phone</label>
+                                <input asp-for="SitePhone" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Header ══ -->
+            <div class="settings-panel" id="panel-header">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="layout" class="inline w-4 h-4 me-2"></i>Header Settings</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Header Background</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeaderBgColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeaderBgColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Header Font Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeaderFontColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeaderFontColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Font Size (px)</label>
+                                <input asp-for="HeaderFontSize" type="number" class="form-control" min="10" max="24" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Font Family</label>
+                                <select asp-for="HeaderFontFamily" class="form-select">
+                                    <option value="Inter">Inter</option>
+                                    <option value="Open Sans">Open Sans</option>
+                                    <option value="Roboto">Roboto</option>
+                                    <option value="Poppins">Poppins</option>
+                                    <option value="Lato">Lato</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Top Bar Background</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="TopBarBgColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="TopBarBgColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Top Bar Font Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="TopBarFontColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="TopBarFontColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input asp-for="HeaderSticky" class="form-check-input" type="checkbox" role="switch" />
+                                    <label class="form-check-label fw-semibold" asp-for="HeaderSticky">Sticky Header</label>
+                                </div>
+                                <div class="form-check form-switch mt-2">
+                                    <input asp-for="ShowTopBar" class="form-check-input" type="checkbox" role="switch" />
+                                    <label class="form-check-label fw-semibold" asp-for="ShowTopBar">Show Top Bar</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Hero ══ -->
+            <div class="settings-panel" id="panel-hero">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="image" class="inline w-4 h-4 me-2"></i>Hero Section</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Hero Title</label>
+                                <input asp-for="HeroTitle" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Hero Subtitle</label>
+                                <textarea asp-for="HeroSubtitle" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">BG Gradient From</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeroBgFrom" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeroBgFrom" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">BG Gradient To</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeroBgTo" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeroBgTo" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Accent Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeroAccentColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeroAccentColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Title Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeroTitleColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeroTitleColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Hero Preview -->
+                        <div class="hero-preview mt-4" id="heroPreview">
+                            <div class="hero-preview-inner">
+                                <div class="hero-preview-title" id="prevHeroTitle">@Model.HeroTitle</div>
+                                <div class="hero-preview-sub" id="prevHeroSub">@Model.HeroSubtitle</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Body & Typography ══ -->
+            <div class="settings-panel" id="panel-body">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="type" class="inline w-4 h-4 me-2"></i>Body & Typography</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Body Background</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="BodyBgColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="BodyBgColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Body Font Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="BodyFontColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="BodyFontColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Body Font Size (px)</label>
+                                <input asp-for="BodyFontSize" type="number" class="form-control" min="12" max="22" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Body Font Family</label>
+                                <select asp-for="BodyFontFamily" class="form-select">
+                                    <option value="Inter">Inter</option>
+                                    <option value="Open Sans">Open Sans</option>
+                                    <option value="Roboto">Roboto</option>
+                                    <option value="Poppins">Poppins</option>
+                                    <option value="Lato">Lato</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Heading Font Family</label>
+                                <select asp-for="HeadingFont" class="form-select">
+                                    <option value="Playfair Display">Playfair Display</option>
+                                    <option value="Merriweather">Merriweather</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Inter">Inter</option>
+                                    <option value="Poppins">Poppins</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Heading Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="HeadingColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="HeadingColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">H1 Size (px)</label>
+                                <input asp-for="H1Size" type="number" class="form-control" min="24" max="96" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">H2 Size (px)</label>
+                                <input asp-for="H2Size" type="number" class="form-control" min="18" max="72" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Brand Colors ══ -->
+            <div class="settings-panel" id="panel-colors">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="droplet" class="inline w-4 h-4 me-2"></i>Brand Colors</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Primary Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="PrimaryColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="PrimaryColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Primary Light</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="PrimaryLight" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="PrimaryLight" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Accent Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="AccentColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="AccentColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Accent Light</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="AccentColorLight" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="AccentColorLight" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Color palette preview -->
+                        <div class="color-palette-preview mt-4">
+                            <div class="palette-swatch" id="swPrimary" title="Primary"></div>
+                            <div class="palette-swatch" id="swPrimaryLight" title="Primary Light"></div>
+                            <div class="palette-swatch" id="swAccent" title="Accent"></div>
+                            <div class="palette-swatch" id="swAccentLight" title="Accent Light"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Footer ══ -->
+            <div class="settings-panel" id="panel-footer">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="minus-square" class="inline w-4 h-4 me-2"></i>Footer Settings</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Footer Background</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="FooterBgColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="FooterBgColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Footer Font Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="FooterFontColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="FooterFontColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Footer About Text</label>
+                                <textarea asp-for="FooterText" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: Buttons ══ -->
+            <div class="settings-panel" id="panel-buttons">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="square" class="inline w-4 h-4 me-2"></i>Button Settings</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Button Background</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="BtnPrimaryBg" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="BtnPrimaryBg" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Button Text Color</label>
+                                <div class="color-input-wrap">
+                                    <input asp-for="BtnPrimaryColor" type="color" class="form-control form-control-color color-picker" />
+                                    <input asp-for="BtnPrimaryColor" type="text" class="form-control color-hex" maxlength="9" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Border Radius (px)</label>
+                                <input asp-for="BtnBorderRadius" type="number" class="form-control" min="0" max="50" />
+                            </div>
+                            <!-- Button live preview -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Preview</label>
+                                <div class="mt-2">
+                                    <button type="button" class="btn-preview" id="btnPreview">Consult Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Save -->
+            <div class="flex justify-end gap-3 mt-4">
+                <button type="submit" form="settingsForm" class="btn btn-primary px-6">
+                    <i data-feather="save" class="inline w-4 h-4 me-2"></i> Save All Settings
+                </button>
+            </div>
+
+        </div><!-- end right col -->
+    </div><!-- end grid -->
+</form>
+
+<!-- Reset form -->
+<form method="post" asp-area="Admin" asp-controller="Settings" asp-action="Reset" id="resetForm">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+<style>
+/* ── Settings Page Styles ── */
+.settings-tab-nav { display:flex; flex-direction:column; }
+.settings-tab {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 20px; font-size:.875rem; font-weight:600;
+    color:#4b5563; text-decoration:none; border-left:3px solid transparent;
+    transition:all .2s;
+}
+.settings-tab:hover { background:#f8fafc; color:#1a3c5e; }
+.settings-tab.active { background:#fffbf0; color:#d4a017; border-left-color:#d4a017; }
+.settings-panel { display:none; }
+.settings-panel.active { display:block; }
+.color-input-wrap { display:flex; align-items:center; gap:8px; }
+.color-input-wrap .form-control-color { width:48px; height:38px; padding:2px; cursor:pointer; border-radius:8px; flex-shrink:0; }
+.color-input-wrap .color-hex { flex:1; font-family:monospace; font-size:.85rem; }
+.color-palette-preview { display:flex; gap:12px; flex-wrap:wrap; }
+.palette-swatch { width:60px; height:60px; border-radius:12px; border:2px solid rgba(0,0,0,.1); box-shadow:0 2px 8px rgba(0,0,0,.1); transition:transform .2s; cursor:pointer; }
+.palette-swatch:hover { transform:scale(1.1); }
+.hero-preview {
+    border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;
+    background:linear-gradient(135deg,#0a1628,#1a2a4a); min-height:120px;
+    display:flex; align-items:center; justify-content:center;
+}
+.hero-preview-inner { text-align:center; padding:24px; }
+.hero-preview-title { font-size:1.4rem; font-weight:800; color:#fff; margin-bottom:8px; }
+.hero-preview-sub   { font-size:.85rem; color:rgba(255,255,255,.7); }
+.btn-preview {
+    padding:10px 28px; border:none; border-radius:8px; font-weight:700;
+    font-size:.9rem; cursor:pointer; background:#d4a017; color:#0d1f33;
+    transition:all .2s;
+}
+</style>
+<script>
+(function(){
+    // ── Tab switching ──────────────────────────
+    document.querySelectorAll('.settings-tab').forEach(function(tab){
+        tab.addEventListener('click', function(e){
+            e.preventDefault();
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            var panel = document.getElementById('panel-' + tab.dataset.tab);
+            if(panel) panel.classList.add('active');
+        });
+    });
+
+    // ── Color picker <-> hex input sync ───────
+    document.querySelectorAll('.color-picker').forEach(function(picker){
+        var wrap = picker.closest('.color-input-wrap');
+        var hex  = wrap ? wrap.querySelector('.color-hex') : null;
+        if(!hex) return;
+        // picker → hex
+        picker.addEventListener('input', function(){
+            hex.value = picker.value;
+            updatePreview();
+        });
+        // hex → picker
+        hex.addEventListener('input', function(){
+            var v = hex.value.trim();
+            if(/^#[0-9a-fA-F]{6}$/.test(v)) picker.value = v;
+            updatePreview();
+        });
+    });
+
+    // ── Live preview updater ───────────────────
+    function val(id){ var el = document.getElementById(id); return el ? el.value : ''; }
+    function inputVal(name){
+        var el = document.querySelector('input[name="'+name+'"][type="color"]')
+               || document.querySelector('input[name="'+name+'"][type="text"]')
+               || document.querySelector('select[name="'+name+'"]')
+               || document.querySelector('input[name="'+name+'"]');
+        return el ? el.value : '';
+    }
+
+    function updatePreview(){
+        // Hero preview
+        var heroFrom  = inputVal('HeroBgFrom') || '#0a1628';
+        var heroTo    = inputVal('HeroBgTo')   || '#1a2a4a';
+        var heroTitle = inputVal('HeroTitleColor') || '#fff';
+        var heroSub   = inputVal('HeroSubColor')   || 'rgba(255,255,255,0.7)';
+        var heroTitleText = document.querySelector('input[name="HeroTitle"]');
+        var heroSubText   = document.querySelector('textarea[name="HeroSubtitle"]');
+
+        var prev = document.querySelector('.hero-preview');
+        if(prev){
+            prev.style.background = 'linear-gradient(135deg,'+heroFrom+','+heroTo+')';
+        }
+        var pt = document.getElementById('prevHeroTitle');
+        var ps = document.getElementById('prevHeroSub');
+        if(pt){ pt.style.color = heroTitle; if(heroTitleText) pt.textContent = heroTitleText.value; }
+        if(ps){ ps.style.color = heroSub;   if(heroSubText)   ps.textContent = heroSubText.value; }
+
+        // Palette swatches
+        var swatches = {
+            swPrimary:      inputVal('PrimaryColor'),
+            swPrimaryLight: inputVal('PrimaryLight'),
+            swAccent:       inputVal('AccentColor'),
+            swAccentLight:  inputVal('AccentColorLight'),
+        };
+        Object.keys(swatches).forEach(function(id){
+            var el = document.getElementById(id);
+            if(el && swatches[id]) el.style.background = swatches[id];
+        });
+
+        // Button preview
+        var btnBg  = inputVal('BtnPrimaryBg')    || '#d4a017';
+        var btnClr = inputVal('BtnPrimaryColor') || '#0d1f33';
+        var btnRad = inputVal('BtnBorderRadius') || '8';
+        var btn    = document.getElementById('btnPreview');
+        if(btn){
+            btn.style.background    = btnBg;
+            btn.style.color         = btnClr;
+            btn.style.borderRadius  = btnRad + 'px';
+        }
+    }
+
+    // Attach to all form inputs
+    document.querySelectorAll('#settingsForm input, #settingsForm select, #settingsForm textarea')
+        .forEach(function(el){ el.addEventListener('input', updatePreview); });
+
+    // Run once on load
+    updatePreview();
+
+    // Init swatch backgrounds from current values
+    document.addEventListener('DOMContentLoaded', updatePreview);
+})();
+</script>
+}

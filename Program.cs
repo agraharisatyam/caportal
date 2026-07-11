@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using caportal.Data;
+using caportal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ if (builder.Environment.IsDevelopment())
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+// ── Site Settings (singleton in-memory) ──────────────────────────────────
+builder.Services.AddSingleton<SiteSettingsService>();
 
 // ── Session (for simple admin auth) ──────────────────────────────────────
 builder.Services.AddDistributedMemoryCache();
@@ -48,6 +52,11 @@ app.MapControllerRoute(
     defaults: new { area = "Admin", controller = "Dashboard", action = "Index" });
 
 // ── Area routes ───────────────────────────────────────────────────────────
+app.MapControllerRoute(
+    name: "admin_settings",
+    pattern: "Admin/Settings",
+    defaults: new { area = "Admin", controller = "Settings", action = "Index" });
+
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");

@@ -1,639 +1,395 @@
-﻿@{
+﻿@model caportal.Models.HomeViewModel
+@{
     ViewData["Title"] = "Find Verified Chartered Accountants";
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
+    var featured = Model.FeaturedProfessionals.Where(p => p.IsFeatured).ToList();
 }
 
-<!-- ═══════════════════════════════════════════
-     HERO SECTION
-════════════════════════════════════════════ -->
-<section class="hero-section" aria-labelledby="hero-heading">
-    <div class="hero-bg-pattern" aria-hidden="true"></div>
-    <div class="hero-grid-lines" aria-hidden="true"></div>
-    <div class="container">
-        <div class="row align-items-center">
+<!-- ═══════════════════════════════════════
+     HERO V2 — Dark gold, full-width
+════════════════════════════════════════ -->
+<section class="hero-v2" aria-labelledby="hero-heading">
+    <div class="hero-v2-overlay" aria-hidden="true"></div>
+    <div class="container position-relative" style="z-index:2;">
 
-            <!-- Left: Copy -->
-            <div class="col-lg-6 hero-content">
-                <div class="hero-badge" role="note">
-                    <span class="badge-dot" aria-hidden="true"></span>
-                    India's #1 CA Network Platform
+        <div class="hero-v2-label">
+            <i class="fas fa-star me-1" style="color:#d4a017;font-size:.7rem;"></i>
+            India's #1 CA &amp; Legal Compliance Platform
+        </div>
+
+        <h1 class="hero-v2-title" id="hero-heading">
+            CA &amp; Legal Compliance<br>
+            <span class="hero-v2-gold">Platform</span>
+        </h1>
+
+        <p class="hero-v2-sub">
+            Connecting businesses with <strong>ICAI-verified Chartered Accountants</strong> across India.<br>
+            GST &middot; Income Tax &middot; Audit &middot; Corporate Law &middot; FEMA &middot; Startup Finance
+        </p>
+
+        <!-- Search -->
+        <form class="hero-v2-search" role="search" aria-label="Find a CA">
+            <div class="hero-v2-search-inner">
+                <div class="hero-v2-field">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" placeholder="Search by specialisation (e.g. GST, Audit)" aria-label="Specialisation" />
                 </div>
-                <h1 class="hero-title" id="hero-heading">
-                    Connect with Top <span class="highlight">Chartered Accountants</span> Instantly
-                </h1>
-                <p class="hero-subtitle">
-                    CACampus bridges businesses with verified, experienced CA professionals.
-                    Audit, tax advisory, GST, compliance — find the right expert in minutes.
-                </p>
-                <div class="hero-actions">
-                    <a href="#professionals" class="btn-hero-primary">
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        Find a CA Now
-                    </a>
-                    <a href="#how-it-works" class="btn-hero-secondary">
-                        <i class="fas fa-play-circle" aria-hidden="true"></i>
-                        See How It Works
-                    </a>
+                <div class="hero-v2-field hero-v2-field-border">
+                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                    <input type="text" placeholder="City or State" aria-label="Location" />
                 </div>
-                <div class="hero-stats" role="list" aria-label="Platform statistics">
-                    <div class="hero-stat-item" role="listitem">
-                        <div class="hero-stat-number">12K+</div>
-                        <div class="hero-stat-label">Verified CAs</div>
-                    </div>
-                    <div class="hero-stat-item" role="listitem">
-                        <div class="hero-stat-number">98%</div>
-                        <div class="hero-stat-label">Client Satisfaction</div>
-                    </div>
-                    <div class="hero-stat-item" role="listitem">
-                        <div class="hero-stat-number">50K+</div>
-                        <div class="hero-stat-label">Cases Handled</div>
-                    </div>
-                </div>
+                <button type="submit" class="hero-v2-search-btn">
+                    <i class="fas fa-search me-2" aria-hidden="true"></i>Find Expert
+                </button>
             </div>
+        </form>
 
-            <!-- Right: Visual Card -->
-            <div class="col-lg-6 hero-visual">
-                <div class="hero-card-stack" aria-hidden="true">
+        <!-- Quick tags -->
+        <div class="hero-v2-tags" aria-label="Popular searches">
+            <span class="hero-v2-tag-label">Popular:</span>
+            @foreach (var tag in new[]{"GST Filing","Income Tax","Startup Compliance","Transfer Pricing","ROC / MCA","Tax Litigation","Forensic Audit"})
+            {
+                <a href="#professionals" class="hero-v2-tag">@tag</a>
+            }
+        </div>
 
-                    <!-- Floating badge top-right -->
-                    <div class="float-card float-card-1">
-                        <div class="float-icon float-icon-gold">
-                            <i class="fas fa-shield-check" style="color:#d4a017;"></i>
-                        </div>
-                        <div>
-                            <div class="float-text-main">ICAI Verified</div>
-                            <div class="float-text-sub">All members certified</div>
-                        </div>
-                    </div>
-
-                    <!-- Main dashboard card -->
-                    <div class="hero-main-card">
-                        <div class="hcard-header">
-                            <div class="hcard-avatar-group" aria-label="CA professionals">
-                                <div class="hcard-avatar">RS</div>
-                                <div class="hcard-avatar">PM</div>
-                                <div class="hcard-avatar" style="background:var(--gradient-accent);color:var(--dark);">AK</div>
-                            </div>
-                            <span class="hcard-status">● Active Now</span>
-                        </div>
-                        <div class="hcard-title">Your CA Dashboard</div>
-                        <div class="hcard-sub">3 professionals available for your query</div>
-                        <div class="hcard-metrics">
-                            <div class="hmetric">
-                                <div class="hmetric-val">4.9★</div>
-                                <div class="hmetric-label">Avg Rating</div>
-                            </div>
-                            <div class="hmetric">
-                                <div class="hmetric-val">2h</div>
-                                <div class="hmetric-label">Avg Response</div>
-                            </div>
-                            <div class="hmetric">
-                                <div class="hmetric-val">15+</div>
-                                <div class="hmetric-label">Specialisations</div>
-                            </div>
-                            <div class="hmetric">
-                                <div class="hmetric-val">₹0</div>
-                                <div class="hmetric-label">Sign Up Cost</div>
-                            </div>
-                        </div>
-                        <div class="hcard-bar-label">
-                            <span>Profile Match Strength</span>
-                            <span>72%</span>
-                        </div>
-                        <div class="hcard-bar-track">
-                            <div class="hcard-bar-fill" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-
-                    <!-- Floating badge bottom-left -->
-                    <div class="float-card float-card-2">
-                        <div class="float-icon float-icon-blue">
-                            <i class="fas fa-file-invoice" style="color:#2557a7;"></i>
-                        </div>
-                        <div>
-                            <div class="float-text-main">New ITR Filed</div>
-                            <div class="float-text-sub">Just now • Rajesh S.</div>
-                        </div>
-                    </div>
-
-                </div>
+        <!-- Stats -->
+        <div class="hero-v2-stats" role="list" aria-label="Platform statistics">
+            <div class="hero-v2-stat" role="listitem">
+                <span class="hero-v2-stat-num">@Model.Stats.TotalCAs</span>
+                <span class="hero-v2-stat-lbl">Verified CAs</span>
+            </div>
+            <div class="hero-v2-stat-divider" aria-hidden="true"></div>
+            <div class="hero-v2-stat" role="listitem">
+                <span class="hero-v2-stat-num">@Model.Stats.CasesHandled</span>
+                <span class="hero-v2-stat-lbl">Cases Resolved</span>
+            </div>
+            <div class="hero-v2-stat-divider" aria-hidden="true"></div>
+            <div class="hero-v2-stat" role="listitem">
+                <span class="hero-v2-stat-num">@Model.Stats.Cities</span>
+                <span class="hero-v2-stat-lbl">Cities Covered</span>
+            </div>
+            <div class="hero-v2-stat-divider" aria-hidden="true"></div>
+            <div class="hero-v2-stat" role="listitem">
+                <span class="hero-v2-stat-num">@Model.Stats.ClientSatisfaction</span>
+                <span class="hero-v2-stat-lbl">Client Satisfaction</span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     TRUST STRIP
-════════════════════════════════════════════ -->
-<div class="trust-strip" role="complementary" aria-label="Trusted by leading firms">
+<!-- ═══════════════════════════════════════
+     SERVICES GRID
+════════════════════════════════════════ -->
+<section class="services-grid-section" aria-labelledby="services-heading">
     <div class="container">
-        <div class="trust-strip-inner">
-            <span class="trust-label">Trusted by</span>
-            <span class="trust-logo">Deloitte</span>
-            <span class="trust-logo">KPMG</span>
-            <span class="trust-logo">PWC India</span>
-            <span class="trust-logo">Grant Thornton</span>
-            <span class="trust-logo">BDO</span>
-            <span class="trust-logo">EY India</span>
+        <div class="text-center mb-4">
+            <span class="section-badge">What We Cover</span>
+            <h2 class="section-title" id="services-heading">Comprehensive Solutions <span>for Your Business</span></h2>
+        </div>
+        <div class="row g-3">
+            @{
+                var services = new (string Icon, string Title, string Desc)[]
+                {
+                    ("fas fa-file-invoice-dollar","GST & Indirect Tax","Registration, returns, audits & litigation"),
+                    ("fas fa-landmark","Income Tax","ITR filing, assessments & appeals"),
+                    ("fas fa-building","Corporate Compliance","ROC filings, MCA & company law"),
+                    ("fas fa-balance-scale","Tax Litigation","ITAT, HC & SC representations"),
+                    ("fas fa-chart-line","Audit & Assurance","Statutory, internal & forensic audit"),
+                    ("fas fa-rocket","Startup Finance","Fundraising, ESOP & equity structuring"),
+                    ("fas fa-globe","FEMA & RBI","Cross-border transactions & NRI taxation"),
+                    ("fas fa-handshake","Transfer Pricing","International transactions & documentation"),
+                };
+            }
+            @foreach (var svc in services)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="service-card reveal">
+                        <div class="service-icon"><i class="@svc.Icon" aria-hidden="true"></i></div>
+                        <div class="service-title">@svc.Title</div>
+                        <div class="service-desc">@svc.Desc</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     EXPERT CONNECT BAND
+════════════════════════════════════════ -->
+<div class="expert-band">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h3 class="expert-band-title">Need a CA Right Now?</h3>
+                <p class="expert-band-sub">Post your requirement — get matched with 3 verified experts within 2 hours. Free to start.</p>
+            </div>
+            <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                <a href="#professionals" class="btn-hero-primary me-2">
+                    <i class="fas fa-user-tie me-1"></i> Find a CA
+                </a>
+                <a href="#how-it-works" class="btn-hero-secondary">
+                    <i class="fas fa-info-circle me-1"></i> Learn More
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
+<!-- ═══════════════════════════════════════
      HOW IT WORKS
-════════════════════════════════════════════ -->
+════════════════════════════════════════ -->
 <section class="how-section" id="how-it-works" aria-labelledby="how-heading">
     <div class="container">
         <div class="text-center mb-5">
             <span class="section-badge">Simple Process</span>
-            <h2 class="section-title" id="how-heading">
-                Find Your CA in <span>3 Easy Steps</span>
-            </h2>
-            <p class="section-desc mx-auto">
-                No long paperwork. No middlemen. Connect directly with the right chartered accountant in minutes.
-            </p>
+            <h2 class="section-title" id="how-heading">Find Your CA in <span>3 Easy Steps</span></h2>
+            <p class="section-desc mx-auto">No long paperwork. No middlemen. Connect directly with the right expert in minutes.</p>
         </div>
         <div class="steps-wrapper">
             <div class="step-connector" aria-hidden="true"></div>
             <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="step-card reveal">
-                        <div class="step-number" aria-label="Step 1">1</div>
-                        <h5>Post Your Requirement</h5>
-                        <p>Describe what you need — tax filing, GST, audit, or compliance advisory. Takes under 2 minutes.</p>
+                @{
+                    var steps = new (string Title, string Desc)[]
+                    {
+                        ("Post Your Requirement",  "Describe what you need — tax filing, GST, audit, or compliance advisory. Takes under 2 minutes."),
+                        ("Browse Matched CAs",     "Our smart algorithm surfaces ICAI-verified professionals matched to your exact need and location."),
+                        ("Engage & Get It Done",   "Chat, schedule a call, or hire directly. Secure payments and milestone tracking built in.")
+                    };
+                }
+                @for (int i = 0; i < steps.Length; i++)
+                {
+                    <div class="col-md-4">
+                        <div class="step-card reveal @(i > 0 ? $"reveal-delay-{i*2}" : "")">
+                            <div class="step-number" aria-label="Step @(i+1)">@(i+1)</div>
+                            <h5>@steps[i].Title</h5>
+                            <p>@steps[i].Desc</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="step-card reveal reveal-delay-2">
-                        <div class="step-number" aria-label="Step 2">2</div>
-                        <h5>Browse Matched CAs</h5>
-                        <p>Our smart algorithm surfaces ICAI-verified CA professionals matched to your exact need and location.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="step-card reveal reveal-delay-4">
-                        <div class="step-number" aria-label="Step 3">3</div>
-                        <h5>Engage & Get It Done</h5>
-                        <p>Chat, schedule a call, or hire directly. Secure payments and milestone tracking built in.</p>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     FEATURES
-════════════════════════════════════════════ -->
-<section class="features-section" id="features" aria-labelledby="features-heading">
-    <div class="container">
-        <div class="row align-items-center mb-5">
-            <div class="col-lg-5">
-                <span class="section-badge">Platform Features</span>
-                <h2 class="section-title" id="features-heading">
-                    Everything You Need to <span>Work Smarter</span>
-                </h2>
-                <p class="section-desc">
-                    CACampus gives you powerful tools for discovery, verification, collaboration, and compliance — all in one place.
-                </p>
-            </div>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card reveal">
-                    <div class="feature-icon feature-icon-blue" aria-hidden="true">
-                        <i class="fas fa-user-check" style="color:#2557a7;"></i>
-                    </div>
-                    <h5>ICAI-Verified Profiles</h5>
-                    <p>Every CA on our platform is cross-verified against the ICAI register. You only see genuine, practising members.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card reveal reveal-delay-1">
-                    <div class="feature-icon feature-icon-gold" aria-hidden="true">
-                        <i class="fas fa-search-dollar" style="color:#d4a017;"></i>
-                    </div>
-                    <h5>Smart Skill Matching</h5>
-                    <p>Filter by specialisation — GST, corporate tax, FEMA, forensic audit, transfer pricing, and more.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card reveal reveal-delay-2">
-                    <div class="feature-icon feature-icon-green" aria-hidden="true">
-                        <i class="fas fa-lock" style="color:#22c55e;"></i>
-                    </div>
-                    <h5>Secure Payments</h5>
-                    <p>Milestone-based escrow payments ensure your money is safe. Pay only when deliverables are met.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card reveal reveal-delay-3">
-                    <div class="feature-icon feature-icon-purple" aria-hidden="true">
-                        <i class="fas fa-comments" style="color:#8b5cf6;"></i>
-                    </div>
-                    <h5>Real-time Collaboration</h5>
-                    <p>Encrypted chat, document sharing, e-signatures, and video calls — all inside one secure workspace.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card reveal reveal-delay-4">
-                    <div class="feature-icon feature-icon-red" aria-hidden="true">
-                        <i class="fas fa-bell" style="color:#ef4444;"></i>
-                    </div>
-                    <h5>Compliance Alerts</h5>
-                    <p>Never miss a deadline. Get automated reminders for ITR, GST filings, ROC, and regulatory due dates.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card reveal reveal-delay-5">
-                    <div class="feature-icon feature-icon-teal" aria-hidden="true">
-                        <i class="fas fa-chart-bar" style="color:#14b8a6;"></i>
-                    </div>
-                    <h5>Analytics Dashboard</h5>
-                    <p>Track engagement, invoice status, case progress, and satisfaction scores in a single, clean dashboard.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     FEATURED PROFESSIONALS
-════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════
+     FEATURED CA PROFESSIONALS
+════════════════════════════════════════ -->
 <section class="professionals-section" id="professionals" aria-labelledby="prof-heading">
     <div class="container">
         <div class="text-center mb-5">
             <span class="section-badge">Top Talent</span>
-            <h2 class="section-title" id="prof-heading">
-                Meet Our Featured <span>CA Professionals</span>
-            </h2>
-            <p class="section-desc mx-auto">
-                Handpicked CAs with proven track records, top ratings, and deep domain expertise.
-            </p>
+            <h2 class="section-title" id="prof-heading">Trusted Chartered Accountants <span>Across India</span></h2>
+            <p class="section-desc mx-auto">Handpicked CAs with proven track records, top ratings, and deep domain expertise.</p>
         </div>
         <div class="row g-4">
-            <!-- Card 1 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="prof-card reveal">
-                    <div class="prof-card-header">
-                        <span class="prof-verified">
-                            <i class="fas fa-check-circle" aria-hidden="true"></i> Verified
-                        </span>
-                        <div class="prof-avatar" aria-label="Priya Mehta">PM</div>
-                        <div class="prof-name">CA Priya Mehta</div>
-                        <div class="prof-designation">FCA · 12 yrs exp · Mumbai</div>
-                    </div>
-                    <div class="prof-card-body">
-                        <div class="mb-2">
-                            <span class="prof-tag">GST</span>
-                            <span class="prof-tag">Income Tax</span>
-                            <span class="prof-tag">Audit</span>
+            @{ int delay = 0; }
+            @foreach (var ca in featured)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <div class="prof-card reveal @(delay > 0 ? $"reveal-delay-{delay}" : "")">
+                        <div class="prof-card-header">
+                            @if (ca.IsVerified)
+                            {
+                                <span class="prof-verified"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified</span>
+                            }
+                            <div class="prof-avatar" aria-label="@ca.Name">@ca.Initials</div>
+                            <div class="prof-name">@ca.Name</div>
+                            <div class="prof-designation">@ca.Designation &middot; @ca.YearsExp yrs &middot; @ca.City</div>
                         </div>
-                        <div class="prof-rating" aria-label="Rating 4.9 out of 5">★★★★★</div>
-                        <div class="prof-meta">
-                            <i class="fas fa-briefcase" aria-hidden="true"></i> 340+ cases &nbsp;|&nbsp;
-                            <i class="fas fa-clock" aria-hidden="true"></i> Responds in 1h
+                        <div class="prof-card-body">
+                            <div class="mb-2">
+                                @foreach (var tag in ca.Specialisations.Take(2))
+                                {
+                                    <span class="prof-tag">@tag</span>
+                                }
+                            </div>
+                            <div class="prof-rating" aria-label="Rating @ca.Rating out of 5">
+                                @for (int s = 1; s <= 5; s++)
+                                {
+                                    <span>@(s <= (int)ca.Rating ? "★" : "☆")</span>
+                                }
+                                <span class="ms-1 text-muted small">@ca.Rating</span>
+                            </div>
+                            <div class="prof-meta">
+                                <i class="fas fa-briefcase" aria-hidden="true"></i> @ca.CasesHandled+ cases &nbsp;|&nbsp;
+                                <i class="fas fa-clock" aria-hidden="true"></i> ~@ca.ResponseTime
+                            </div>
+                            <button class="btn btn-connect" aria-label="Connect with @ca.Name">
+                                <i class="fas fa-user-plus" aria-hidden="true"></i> Connect
+                            </button>
                         </div>
-                        <button class="btn btn-connect" aria-label="Connect with CA Priya Mehta">
-                            <i class="fas fa-user-plus" aria-hidden="true"></i> Connect
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Card 2 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="prof-card reveal reveal-delay-1">
-                    <div class="prof-card-header">
-                        <span class="prof-verified">
-                            <i class="fas fa-check-circle" aria-hidden="true"></i> Verified
-                        </span>
-                        <div class="prof-avatar" aria-label="Rajesh Sharma">RS</div>
-                        <div class="prof-name">CA Rajesh Sharma</div>
-                        <div class="prof-designation">ACA · 8 yrs exp · Delhi</div>
-                    </div>
-                    <div class="prof-card-body">
-                        <div class="mb-2">
-                            <span class="prof-tag">Transfer Pricing</span>
-                            <span class="prof-tag">FEMA</span>
-                        </div>
-                        <div class="prof-rating" aria-label="Rating 4.8 out of 5">★★★★★</div>
-                        <div class="prof-meta">
-                            <i class="fas fa-briefcase" aria-hidden="true"></i> 210+ cases &nbsp;|&nbsp;
-                            <i class="fas fa-clock" aria-hidden="true"></i> Responds in 2h
-                        </div>
-                        <button class="btn btn-connect" aria-label="Connect with CA Rajesh Sharma">
-                            <i class="fas fa-user-plus" aria-hidden="true"></i> Connect
-                        </button>
                     </div>
                 </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="prof-card reveal reveal-delay-2">
-                    <div class="prof-card-header">
-                        <span class="prof-verified">
-                            <i class="fas fa-check-circle" aria-hidden="true"></i> Verified
-                        </span>
-                        <div class="prof-avatar" aria-label="Anita Krishnan">AK</div>
-                        <div class="prof-name">CA Anita Krishnan</div>
-                        <div class="prof-designation">FCA · 15 yrs exp · Bangalore</div>
-                    </div>
-                    <div class="prof-card-body">
-                        <div class="mb-2">
-                            <span class="prof-tag">Forensic Audit</span>
-                            <span class="prof-tag">ROC</span>
-                        </div>
-                        <div class="prof-rating" aria-label="Rating 5 out of 5">★★★★★</div>
-                        <div class="prof-meta">
-                            <i class="fas fa-briefcase" aria-hidden="true"></i> 500+ cases &nbsp;|&nbsp;
-                            <i class="fas fa-clock" aria-hidden="true"></i> Responds in 30m
-                        </div>
-                        <button class="btn btn-connect" aria-label="Connect with CA Anita Krishnan">
-                            <i class="fas fa-user-plus" aria-hidden="true"></i> Connect
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Card 4 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="prof-card reveal reveal-delay-3">
-                    <div class="prof-card-header">
-                        <span class="prof-verified">
-                            <i class="fas fa-check-circle" aria-hidden="true"></i> Verified
-                        </span>
-                        <div class="prof-avatar" aria-label="Vikram Joshi">VJ</div>
-                        <div class="prof-name">CA Vikram Joshi</div>
-                        <div class="prof-designation">ACA · 6 yrs exp · Pune</div>
-                    </div>
-                    <div class="prof-card-body">
-                        <div class="mb-2">
-                            <span class="prof-tag">Startup Finance</span>
-                            <span class="prof-tag">MCA</span>
-                        </div>
-                        <div class="prof-rating" aria-label="Rating 4.7 out of 5">★★★★☆</div>
-                        <div class="prof-meta">
-                            <i class="fas fa-briefcase" aria-hidden="true"></i> 180+ cases &nbsp;|&nbsp;
-                            <i class="fas fa-clock" aria-hidden="true"></i> Responds in 3h
-                        </div>
-                        <button class="btn btn-connect" aria-label="Connect with CA Vikram Joshi">
-                            <i class="fas fa-user-plus" aria-hidden="true"></i> Connect
-                        </button>
-                    </div>
-                </div>
-            </div>
+                delay++;
+            }
         </div>
         <div class="text-center mt-4">
             <a href="#" class="btn-hero-secondary d-inline-flex" style="color:#1a3c5e;border-color:#1a3c5e;">
-                <i class="fas fa-th-large" aria-hidden="true"></i> Browse All Professionals
+                <i class="fas fa-th-large" aria-hidden="true"></i>&nbsp; Browse All @Model.FeaturedProfessionals.Count+ Professionals
             </a>
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ═══════════════════════════════════════
      TESTIMONIALS
-════════════════════════════════════════════ -->
+════════════════════════════════════════ -->
 <section class="testimonials-section" aria-labelledby="testi-heading">
     <div class="container">
         <div class="text-center mb-5">
             <span class="section-badge">Client Stories</span>
-            <h2 class="section-title" id="testi-heading">
-                What Our <span>Clients Say</span>
-            </h2>
+            <h2 class="section-title" id="testi-heading">What Our <span>Clients Say</span></h2>
         </div>
         <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="testi-card reveal">
-                    <div class="testi-quote" aria-hidden="true">"</div>
-                    <p class="testi-text">Found a GST specialist within 20 minutes of posting. The CA resolved our entire compliance backlog in a week. Absolutely outstanding platform.</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar" aria-hidden="true">SG</div>
-                        <div>
-                            <div class="testi-name">Suresh Gupta</div>
-                            <div class="testi-role">CEO, TechVentures Pvt. Ltd.</div>
-                            <div class="testi-stars" aria-label="5 star rating">★★★★★</div>
+            @{ int td = 0; }
+            @foreach (var t in Model.Testimonials)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="testi-card reveal @(td > 0 ? $"reveal-delay-{td*2}" : "")">
+                        <div class="testi-quote" aria-hidden="true">"</div>
+                        <p class="testi-text">@t.Text</p>
+                        <div class="testi-author">
+                            <div class="testi-avatar" aria-hidden="true">@t.Initials</div>
+                            <div>
+                                <div class="testi-name">@t.AuthorName</div>
+                                <div class="testi-role">@t.AuthorRole</div>
+                                <div class="testi-stars" aria-label="@t.Rating star rating">
+                                    @for (int s = 0; s < t.Rating; s++) { <span>★</span> }
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="testi-card reveal reveal-delay-2">
-                    <div class="testi-quote" aria-hidden="true">"</div>
-                    <p class="testi-text">As a startup, we needed someone who understood equity structuring. CACampus matched us with an expert who guided us through our seed round flawlessly.</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar" aria-hidden="true">NR</div>
-                        <div>
-                            <div class="testi-name">Nisha Rao</div>
-                            <div class="testi-role">Co-Founder, GreenLeaf Foods</div>
-                            <div class="testi-stars" aria-label="5 star rating">★★★★★</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="testi-card reveal reveal-delay-4">
-                    <div class="testi-quote" aria-hidden="true">"</div>
-                    <p class="testi-text">The compliance reminder feature alone saves us from costly penalties every quarter. The CA professionals here are thorough, prompt, and highly professional.</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar" aria-hidden="true">MK</div>
-                        <div>
-                            <div class="testi-name">Mohan Kumar</div>
-                            <div class="testi-role">Finance Head, Apex Exports</div>
-                            <div class="testi-stars" aria-label="5 star rating">★★★★★</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                td++;
+            }
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     PRICING
-════════════════════════════════════════════ -->
-<section class="pricing-section" id="pricing" aria-labelledby="pricing-heading">
+<!-- ═══════════════════════════════════════
+     FAQ
+════════════════════════════════════════ -->
+<section class="faq-section" id="faq" aria-labelledby="faq-heading">
     <div class="container">
         <div class="text-center mb-5">
-            <span class="section-badge">Transparent Pricing</span>
-            <h2 class="section-title" id="pricing-heading">
-                Simple, <span>No-Surprise</span> Plans
-            </h2>
-            <p class="section-desc mx-auto">Start free, upgrade when you grow. No hidden charges, no lock-ins.</p>
+            <span class="section-badge">Got Questions?</span>
+            <h2 class="section-title" id="faq-heading">Frequently Asked <span>Questions</span></h2>
         </div>
-        <div class="row g-4 align-items-stretch justify-content-center">
-            <!-- Starter -->
-            <div class="col-md-6 col-lg-4">
-                <div class="pricing-card reveal">
-                    <div class="pricing-tier">Starter</div>
-                    <div class="pricing-price">
-                        <span class="price-currency">₹</span>
-                        <span class="price-amount">0</span>
-                        <span class="price-period">/month</span>
-                    </div>
-                    <p class="pricing-desc">Perfect for individuals and small businesses exploring the platform.</p>
-                    <hr class="pricing-divider">
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Browse & contact 3 CAs/month</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Basic profile matching</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Compliance reminders (5 dates)</div>
-                    <div class="pricing-feature"><span class="pricing-cross">✗</span> Secure document vault</div>
-                    <div class="pricing-feature"><span class="pricing-cross">✗</span> Priority support</div>
-                    <a href="#" class="btn-pricing-outline">Get Started Free</a>
-                </div>
-            </div>
-            <!-- Professional (Featured) -->
-            <div class="col-md-6 col-lg-4">
-                <div class="pricing-card featured reveal reveal-delay-2">
-                    <span class="popular-badge">Most Popular</span>
-                    <div class="pricing-tier">Professional</div>
-                    <div class="pricing-price">
-                        <span class="price-currency">₹</span>
-                        <span class="price-amount">999</span>
-                        <span class="price-period">/month</span>
-                    </div>
-                    <p class="pricing-desc">For growing businesses that need consistent CA support.</p>
-                    <hr class="pricing-divider">
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Unlimited CA contacts</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> AI-powered skill matching</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Secure document vault (10 GB)</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> All compliance reminders</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Priority support (24h)</div>
-                    <a href="#" class="btn-pricing-primary">Start 14-Day Free Trial</a>
-                </div>
-            </div>
-            <!-- Enterprise -->
-            <div class="col-md-6 col-lg-4">
-                <div class="pricing-card reveal reveal-delay-4">
-                    <div class="pricing-tier">Enterprise</div>
-                    <div class="pricing-price">
-                        <span class="price-amount" style="font-size:2rem;color:var(--dark);">Custom</span>
-                    </div>
-                    <p class="pricing-desc">For large firms and corporates requiring bespoke integrations.</p>
-                    <hr class="pricing-divider">
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Dedicated account manager</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> White-label portal option</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> API access & integrations</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> Unlimited document vault</div>
-                    <div class="pricing-feature"><span class="pricing-check">✓</span> SLA-backed support (4h)</div>
-                    <a href="#contact" class="btn-pricing-outline">Talk to Sales</a>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion faq-accordion" id="faqAccordion">
+                    @{ int fi = 0; }
+                    @foreach (var faq in Model.Faqs)
+                    {
+                        var faqId = $"faqH{fi}";
+                        var collapseId = $"faqC{fi}";
+                        <div class="accordion-item faq-item reveal">
+                            <h3 class="accordion-header" id="@faqId">
+                                <button class="accordion-button @(fi > 0 ? "collapsed" : "")" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#@collapseId"
+                                        aria-expanded="@(fi == 0 ? "true" : "false")" aria-controls="@collapseId">
+                                    @faq.Question
+                                </button>
+                            </h3>
+                            <div id="@collapseId" class="accordion-collapse collapse @(fi == 0 ? "show" : "")"
+                                 aria-labelledby="@faqId" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">@faq.Answer</div>
+                            </div>
+                        </div>
+                        fi++;
+                    }
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     CTA SECTION
-════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════
+     CTA
+════════════════════════════════════════ -->
 <section class="cta-section" aria-labelledby="cta-heading">
     <div class="container">
         <div class="cta-content">
-            <span class="section-badge" style="background:rgba(212,160,23,0.15);color:var(--accent-light);border-color:rgba(212,160,23,0.3);">
-                Ready to Begin?
-            </span>
+            <span class="section-badge" style="background:rgba(212,160,23,0.15);color:#f0c040;border-color:rgba(212,160,23,0.3);">Ready to Begin?</span>
             <h2 class="section-title mt-2" id="cta-heading">
-                Join <span>12,000+ Professionals</span><br>Already on CACampus
+                Join <span>@Model.Stats.TotalCAs Professionals</span><br>Already on CACampus
             </h2>
-            <p class="section-desc">
-                Whether you're a business looking for expert CA services, or a CA wanting to grow your practice — CACampus is built for you.
-            </p>
+            <p class="section-desc">Whether you're a business looking for expert CA services, or a CA wanting to grow your practice — CACampus is built for you.</p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
                 <a href="#" class="btn-cta-white">
-                    <i class="fas fa-user-tie" aria-hidden="true"></i>
-                    I'm Looking for a CA
+                    <i class="fas fa-user-tie" aria-hidden="true"></i> I'm Looking for a CA
                 </a>
                 <a href="#" class="btn-cta-outline">
-                    <i class="fas fa-graduation-cap" aria-hidden="true"></i>
-                    I'm a CA Professional
+                    <i class="fas fa-graduation-cap" aria-hidden="true"></i> I'm a CA Professional
                 </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ═══════════════════════════════════════
      FOOTER
-════════════════════════════════════════════ -->
+════════════════════════════════════════ -->
 <footer class="ca-footer" id="contact" role="contentinfo">
     <div class="container">
         <div class="row g-5">
-            <!-- Brand -->
             <div class="col-lg-3 col-md-6">
-                <div class="footer-brand-icon" aria-hidden="true">CA</div>
-                <div class="footer-brand-name"><span>CA</span>Campus</div>
-                <p class="footer-tagline">India's most trusted network for connecting businesses with verified Chartered Accountants.</p>
-                <div class="footer-social mt-3" role="list" aria-label="Social media links">
-                    <a href="#" class="social-btn" role="listitem" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
-                    <a href="#" class="social-btn" role="listitem" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
-                    <a href="#" class="social-btn" role="listitem" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
-                    <a href="#" class="social-btn" role="listitem" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+                <div class="footer-brand">
+                    <div class="brand-icon" aria-hidden="true">CA</div>
+                    <span class="brand-name"><span>CA</span>Campus</span>
+                </div>
+                <p class="footer-about">India's premier platform connecting businesses with ICAI-verified Chartered Accountants.</p>
+                <div class="footer-socials" aria-label="Social media links">
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            <!-- Platform -->
             <div class="col-lg-2 col-md-6">
-                <div class="footer-heading">Platform</div>
+                <h6 class="footer-heading">Platform</h6>
                 <ul class="footer-links">
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#professionals">Find CAs</a></li>
+                    <li><a href="#professionals">Find a CA</a></li>
                     <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#">API Docs</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
                 </ul>
             </div>
-            <!-- For CAs -->
             <div class="col-lg-2 col-md-6">
-                <div class="footer-heading">For CAs</div>
+                <h6 class="footer-heading">Services</h6>
                 <ul class="footer-links">
-                    <li><a href="#">Join as CA</a></li>
-                    <li><a href="#">CA Dashboard</a></li>
-                    <li><a href="#">Grow Your Practice</a></li>
-                    <li><a href="#">CPE Resources</a></li>
-                    <li><a href="#">CA Community</a></li>
+                    <li><a href="#">GST &amp; Indirect Tax</a></li>
+                    <li><a href="#">Income Tax</a></li>
+                    <li><a href="#">Audit &amp; Assurance</a></li>
+                    <li><a href="#">Corporate Compliance</a></li>
+                    <li><a href="#">Startup Finance</a></li>
                 </ul>
             </div>
-            <!-- Resources -->
             <div class="col-lg-2 col-md-6">
-                <div class="footer-heading">Resources</div>
+                <h6 class="footer-heading">Company</h6>
                 <ul class="footer-links">
-                    <li><a href="#">Tax Calendar</a></li>
-                    <li><a href="#">GST Guide</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
                     <li><a href="#">Blog</a></li>
-                    <li><a href="#">Webinars</a></li>
-                    <li><a href="#">Help Centre</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="/Home/Privacy">Privacy Policy</a></li>
                 </ul>
             </div>
-            <!-- Contact -->
             <div class="col-lg-3 col-md-6">
-                <div class="footer-heading">Get in Touch</div>
+                <h6 class="footer-heading">Contact Us</h6>
                 <ul class="footer-links">
-                    <li>
-                        <i class="fas fa-envelope me-2" aria-hidden="true"></i>
-                        <a href="mailto:hello@cacampus.in">hello@cacampus.in</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-phone me-2" aria-hidden="true"></i>
-                        <a href="tel:+918000000000">+91 80000 00000</a>
-                    </li>
-                    <li class="mt-2" style="line-height:1.6;">
-                        <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
-                        WeWork Galaxy, Residency Rd,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bengaluru, Karnataka 560025
-                    </li>
+                    <li><i class="fas fa-envelope me-2" aria-hidden="true"></i>hello@cacampus.work.gd</li>
+                    <li><i class="fas fa-phone me-2" aria-hidden="true"></i>+91 98765 43210</li>
+                    <li><i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>New Delhi, India</li>
                 </ul>
             </div>
         </div>
-
         <hr class="footer-divider" />
-
         <div class="footer-bottom">
-            <p class="footer-copy">&copy; 2026 CACampus Technologies Pvt. Ltd. All rights reserved.</p>
-            <div class="footer-cert" role="list" aria-label="Certifications">
-                <span class="cert-badge" role="listitem">ICAI Partner</span>
-                <span class="cert-badge" role="listitem">ISO 27001</span>
-                <span class="cert-badge" role="listitem">SSL Secure</span>
-            </div>
-            <div>
-                <a href="#" style="color:rgba(255,255,255,0.5);font-size:0.82rem;text-decoration:none;margin-right:1rem;">Privacy Policy</a>
-                <a href="#" style="color:rgba(255,255,255,0.5);font-size:0.82rem;text-decoration:none;">Terms of Use</a>
-            </div>
+            <span>&copy; 2026 CACampus. All rights reserved.</span>
+            <span>Made with <i class="fas fa-heart" style="color:#d4a017;"></i> for CA Professionals across India</span>
         </div>
     </div>
 </footer>

@@ -1,92 +1,176 @@
+@using caportal.Models
 @{
     ViewData["Title"] = "CA Professionals";
+    var cas = (ViewBag.CAs as List<CaProfessional>) ?? new List<CaProfessional>();
 }
 
+<!-- Page Header -->
 <div class="page-header">
-  <div class="page-block">
-    <div class="page-header-title">
-      <h5 class="mb-0 font-medium">CA Professionals</h5>
-    </div>
-    <ul class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
-      <li class="breadcrumb-item" aria-current="page">CA List</li>
-    </ul>
-  </div>
-</div>
-
-<div class="grid grid-cols-12 gap-x-6">
-  <div class="col-span-12">
-    <div class="card">
-      <div class="card-header flex items-center justify-between">
-        <h5 class="mb-0">All Registered CAs (ICAI Verified)</h5>
-        <button class="btn btn-sm btn-primary">
-          <i data-feather="plus" class="inline w-4 h-4 me-1"></i>
-          Add New CA
-        </button>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table id="caTable" class="table table-hover table-striped" style="width:100%">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Membership</th>
-                <th>Specialisation</th>
-                <th>Experience</th>
-                <th>City</th>
-                <th>Rating</th>
-                <th>Cases</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>CA Priya Mehta</td><td>ICAI/2012/PM001</td><td>GST, Income Tax, Audit</td><td>12 yrs</td><td>Mumbai</td><td>⭐ 4.9</td><td>340</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>2</td><td>CA Rajesh Sharma</td><td>ICAI/2016/RS002</td><td>Transfer Pricing, FEMA</td><td>8 yrs</td><td>Delhi</td><td>⭐ 4.8</td><td>210</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>3</td><td>CA Anita Krishnan</td><td>ICAI/2009/AK003</td><td>Forensic Audit, ROC</td><td>15 yrs</td><td>Bangalore</td><td>⭐ 5.0</td><td>500</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>4</td><td>CA Vikram Joshi</td><td>ICAI/2018/VJ004</td><td>Startup Finance, MCA</td><td>6 yrs</td><td>Pune</td><td>⭐ 4.7</td><td>180</td><td><span class="badge bg-warning-500 text-white">Pending</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>5</td><td>CA Sunita Patel</td><td>ICAI/2014/SP005</td><td>ROC, MCA Filing</td><td>10 yrs</td><td>Ahmedabad</td><td>⭐ 4.6</td><td>280</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>6</td><td>CA Mohit Agarwal</td><td>ICAI/2011/MA006</td><td>Corporate Tax</td><td>13 yrs</td><td>Kolkata</td><td>⭐ 4.8</td><td>390</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>7</td><td>CA Deepa Nair</td><td>ICAI/2020/DN007</td><td>FEMA, RBI Compliance</td><td>4 yrs</td><td>Chennai</td><td>⭐ 4.5</td><td>95</td><td><span class="badge bg-danger-500 text-white">Suspended</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>8</td><td>CA Arjun Singh</td><td>ICAI/2017/AS008</td><td>GST, Audit</td><td>7 yrs</td><td>Hyderabad</td><td>⭐ 4.7</td><td>250</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>9</td><td>CA Kavita Rao</td><td>ICAI/2015/KR009</td><td>Tax Litigation</td><td>9 yrs</td><td>Jaipur</td><td>⭐ 4.9</td><td>320</td><td><span class="badge bg-warning-500 text-white">Pending</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>10</td><td>CA Nitin Gupta</td><td>ICAI/2013/NG010</td><td>Internal Audit</td><td>11 yrs</td><td>Lucknow</td><td>⭐ 4.6</td><td>270</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>11</td><td>CA Rekha Desai</td><td>ICAI/2010/RD011</td><td>Indirect Tax</td><td>14 yrs</td><td>Surat</td><td>⭐ 4.7</td><td>310</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>12</td><td>CA Sanjay Kumar</td><td>ICAI/2019/SK012</td><td>Audit, Tax</td><td>5 yrs</td><td>Patna</td><td>⭐ 4.4</td><td>140</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>13</td><td>CA Meera Jain</td><td>ICAI/2008/MJ013</td><td>Direct Tax</td><td>16 yrs</td><td>Indore</td><td>⭐ 4.9</td><td>420</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>14</td><td>CA Prakash Rao</td><td>ICAI/2021/PR014</td><td>GST Returns</td><td>3 yrs</td><td>Nagpur</td><td>⭐ 4.3</td><td>80</td><td><span class="badge bg-warning-500 text-white">Pending</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>15</td><td>CA Ishita Verma</td><td>ICAI/2017/IV015</td><td>Tax Planning</td><td>7 yrs</td><td>Chandigarh</td><td>⭐ 4.8</td><td>260</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>16</td><td>CA Ravi Menon</td><td>ICAI/2012/RM016</td><td>Corporate Audit</td><td>12 yrs</td><td>Kochi</td><td>⭐ 4.6</td><td>300</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>17</td><td>CA Nisha Kapoor</td><td>ICAI/2016/NK017</td><td>NRI Taxation</td><td>8 yrs</td><td>Mumbai</td><td>⭐ 4.9</td><td>350</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>18</td><td>CA Tarun Saxena</td><td>ICAI/2020/TS018</td><td>GST, ITR</td><td>4 yrs</td><td>Gurgaon</td><td>⭐ 4.5</td><td>120</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>19</td><td>CA Bhavna Shah</td><td>ICAI/2011/BS019</td><td>Merger &amp; Acquisition</td><td>13 yrs</td><td>Vadodara</td><td>⭐ 4.7</td><td>290</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>20</td><td>CA Anil Reddy</td><td>ICAI/2018/AR020</td><td>Startup Advisory</td><td>6 yrs</td><td>Vizag</td><td>⭐ 4.6</td><td>180</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-            </tbody>
-          </table>
+    <div class="page-block">
+        <div class="page-header-title">
+            <h5 class="mb-0 font-medium">CA Professionals</h5>
         </div>
-      </div>
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
+            <li class="breadcrumb-item" aria-current="page">CA List</li>
+        </ul>
     </div>
-  </div>
 </div>
 
-@section HeadStyles {
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
-}
+<!-- Summary Cards -->
+<div class="grid grid-cols-12 gap-x-6 mb-4">
+    <div class="col-span-12 md:col-span-4">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-primary mb-0">@ViewBag.TotalCAs</h4>
+                <p class="text-muted text-sm mb-0">Total Registered</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-12 md:col-span-4">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-success-600 mb-0">@ViewBag.ActiveCAs</h4>
+                <p class="text-muted text-sm mb-0">Active</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-12 md:col-span-4">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-warning-600 mb-0">@ViewBag.PendingCAs</h4>
+                <p class="text-muted text-sm mb-0">Pending Approval</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CA Table -->
+<div class="grid grid-cols-12 gap-x-6">
+    <div class="col-span-12">
+        <div class="card">
+            <div class="card-header flex items-center justify-between">
+                <h5 class="mb-0">All CA Professionals</h5>
+                <div class="flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="filterStatus('all')">All</button>
+                    <button class="btn btn-sm btn-success" onclick="filterStatus('Active')">Active</button>
+                    <button class="btn btn-sm btn-warning" onclick="filterStatus('Pending')">Pending</button>
+                    <button class="btn btn-sm btn-danger" onclick="filterStatus('Suspended')">Suspended</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="caListTable" class="table table-hover" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>CA Name</th>
+                                <th>Designation</th>
+                                <th>Membership No.</th>
+                                <th>Specialisations</th>
+                                <th>City</th>
+                                <th>Exp (yrs)</th>
+                                <th>Cases</th>
+                                <th>Rating</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ca in cas)
+                            {
+                                <tr data-status="@ca.Status">
+                                    <td>@ca.Id</td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                                @ca.Initials
+                                            </div>
+                                            <span class="font-medium">@ca.Name</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary-100 text-primary-700">@ca.Designation</span></td>
+                                    <td class="text-sm text-muted">@ca.MembershipNo</td>
+                                    <td>
+                                        @foreach (var tag in ca.Specialisations.Take(2))
+                                        {
+                                            <span class="badge bg-secondary me-1 mb-1">@tag</span>
+                                        }
+                                        @if (ca.Specialisations.Length > 2)
+                                        {
+                                            <span class="badge bg-light text-muted">+@(ca.Specialisations.Length - 2)</span>
+                                        }
+                                    </td>
+                                    <td>@ca.City</td>
+                                    <td>@ca.YearsExp</td>
+                                    <td>@ca.CasesHandled+</td>
+                                    <td>
+                                        <span class="text-warning-500 font-medium">⭐ @ca.Rating</span>
+                                    </td>
+                                    <td class="text-sm">@ca.JoinedOn.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        @switch (ca.Status)
+                                        {
+                                            case "Active":
+                                                <span class="badge bg-success-500 text-white">Active</span>
+                                                break;
+                                            case "Pending":
+                                                <span class="badge bg-warning-500 text-white">Pending</span>
+                                                break;
+                                            case "Suspended":
+                                                <span class="badge bg-danger-500 text-white">Suspended</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="flex gap-1">
+                                            <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                                <i data-feather="eye" class="w-3 h-3"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i data-feather="edit-2" class="w-3 h-3"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Suspend">
+                                                <i data-feather="slash" class="w-3 h-3"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-  <script>
-    $(function () {
-      $('#caTable').DataTable({
-        pageLength: 10,
-        lengthMenu: [10, 25, 50],
-        order: [[0, 'asc']],
-        responsive: true,
-        language: { search: "Search CA:" }
-      });
-    });
-  </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        var table;
+        $(function () {
+            table = $('#caListTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[9, 'desc']],
+                responsive: true,
+                columnDefs: [{ orderable: false, targets: [11] }]
+            });
+
+            if (typeof feather !== 'undefined') feather.replace();
+        });
+
+        function filterStatus(status) {
+            if (status === 'all') {
+                table.column(10).search('').draw();
+            } else {
+                table.column(10).search(status).draw();
+            }
+        }
+    </script>
 }

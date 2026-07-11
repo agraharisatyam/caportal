@@ -1,83 +1,216 @@
+@using caportal.Models
 @{
     ViewData["Title"] = "Clients";
+    var clients = ViewBag.Clients as List<Client> ?? [];
 }
 
+<!-- Page Header -->
 <div class="page-header">
-  <div class="page-block">
-    <div class="page-header-title">
-      <h5 class="mb-0 font-medium">Clients</h5>
-    </div>
-    <ul class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
-      <li class="breadcrumb-item" aria-current="page">Clients</li>
-    </ul>
-  </div>
-</div>
-
-<div class="grid grid-cols-12 gap-x-6">
-  <div class="col-span-12">
-    <div class="card">
-      <div class="card-header flex items-center justify-between">
-        <h5 class="mb-0">Registered Clients</h5>
-        <button class="btn btn-sm btn-primary">
-          <i data-feather="plus" class="inline w-4 h-4 me-1"></i>
-          Add Client
-        </button>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table id="clientTable" class="table table-hover table-striped" style="width:100%">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Company / Name</th>
-                <th>Type</th>
-                <th>Contact</th>
-                <th>City</th>
-                <th>CA Assigned</th>
-                <th>Service</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>TechVentures Pvt. Ltd.</td><td>Corporate</td><td>suresh@techventures.in</td><td>Bangalore</td><td>CA Priya Mehta</td><td>GST &amp; Tax</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>2</td><td>GreenLeaf Foods</td><td>Startup</td><td>nisha@greenleaf.in</td><td>Mumbai</td><td>CA Anita Krishnan</td><td>Audit</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>3</td><td>Apex Exports Pvt. Ltd.</td><td>Corporate</td><td>mohan@apexexports.com</td><td>Surat</td><td>CA Rajesh Sharma</td><td>FEMA &amp; Tax</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>4</td><td>Sunrise Real Estate</td><td>SME</td><td>raj@sunrise.in</td><td>Delhi</td><td>CA Vikram Joshi</td><td>ROC</td><td><span class="badge bg-warning-500 text-white">Pending</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>5</td><td>Kavya Textiles</td><td>SME</td><td>kavya@kavyatex.in</td><td>Coimbatore</td><td>CA Mohit Agarwal</td><td>GST</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>6</td><td>NextGen Software</td><td>Startup</td><td>ceo@nextgensw.io</td><td>Hyderabad</td><td>CA Ishita Verma</td><td>Tax Planning</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>7</td><td>Mr. Amit Verma</td><td>Individual</td><td>amit.v@gmail.com</td><td>Jaipur</td><td>CA Kavita Rao</td><td>ITR Filing</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>8</td><td>Bharat Motors</td><td>Corporate</td><td>accounts@bharatmotors.in</td><td>Pune</td><td>CA Nitin Gupta</td><td>Internal Audit</td><td><span class="badge bg-danger-500 text-white">Inactive</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>9</td><td>SkyHigh Logistics</td><td>SME</td><td>cfo@skyhigh.in</td><td>Ahmedabad</td><td>CA Sunita Patel</td><td>MCA</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>10</td><td>Dr. Preethi Suresh</td><td>Individual</td><td>preethi.s@outlook.com</td><td>Chennai</td><td>CA Rekha Desai</td><td>ITR</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>11</td><td>Rudra Constructions</td><td>Corporate</td><td>md@rudracorp.in</td><td>Nagpur</td><td>CA Arjun Singh</td><td>GST Audit</td><td><span class="badge bg-success-500 text-white">Active</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-              <tr><td>12</td><td>PixelPro Studios</td><td>Startup</td><td>hello@pixelpro.in</td><td>Kochi</td><td>CA Ravi Menon</td><td>Incorporation</td><td><span class="badge bg-warning-500 text-white">Pending</span></td><td><button class="btn btn-sm btn-link-secondary">View</button></td></tr>
-            </tbody>
-          </table>
+    <div class="page-block">
+        <div class="page-header-title">
+            <h5 class="mb-0 font-medium">Registered Clients</h5>
         </div>
-      </div>
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
+            <li class="breadcrumb-item" aria-current="page">Clients</li>
+        </ul>
     </div>
-  </div>
 </div>
 
-@section HeadStyles {
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
-}
+<!-- KPI Cards -->
+<div class="grid grid-cols-12 gap-x-6 mb-4">
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-muted text-sm mb-1">Total Clients</p>
+                        <h3 class="font-semibold mb-0">@ViewBag.TotalClients</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center text-white text-xl">
+                        <i data-feather="briefcase"></i>
+                    </div>
+                </div>
+                <p class="text-success-500 text-sm mb-0"><i data-feather="trending-up" class="inline w-4 h-4 me-1"></i> Growing steadily</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-muted text-sm mb-1">Active Clients</p>
+                        <h3 class="font-semibold mb-0">@ViewBag.ActiveClients</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-success-500 flex items-center justify-center text-white text-xl">
+                        <i data-feather="check-circle"></i>
+                    </div>
+                </div>
+                <p class="text-success-500 text-sm mb-0"><i data-feather="trending-up" class="inline w-4 h-4 me-1"></i> +@ViewBag.ActiveClients active now</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-muted text-sm mb-1">Pending</p>
+                        <h3 class="font-semibold mb-0">@ViewBag.PendingClients</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-warning-500 flex items-center justify-center text-white text-xl">
+                        <i data-feather="clock"></i>
+                    </div>
+                </div>
+                <p class="text-warning-500 text-sm mb-0"><i data-feather="alert-circle" class="inline w-4 h-4 me-1"></i> Awaiting onboarding</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-muted text-sm mb-1">Top Client Type</p>
+                        @{ var topType = clients.GroupBy(c => c.Type).OrderByDescending(g => g.Count()).FirstOrDefault(); }
+                        <h3 class="font-semibold mb-0">@(topType?.Key ?? "—")</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-danger-500 flex items-center justify-center text-white text-xl">
+                        <i data-feather="pie-chart"></i>
+                    </div>
+                </div>
+                <p class="text-muted text-sm mb-0">@(topType?.Count() ?? 0) clients in this category</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clients Table -->
+<div class="grid grid-cols-12 gap-x-6">
+    <div class="col-span-12">
+        <div class="card">
+            <div class="card-header flex items-center justify-between flex-wrap gap-2">
+                <h5 class="mb-0">All Clients</h5>
+                <div class="flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="filterType('all')">All</button>
+                    @foreach (var type in new[]{"Corporate","Startup","SME","Individual"})
+                    {
+                        <button class="btn btn-sm btn-outline-primary" onclick="filterType('@type')">@type</button>
+                    }
+                    <button class="btn btn-sm btn-primary ms-2">
+                        <i data-feather="plus" class="inline w-3 h-3 me-1"></i> Add Client
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="clientTable" class="table table-hover" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Company / Name</th>
+                                <th>Type</th>
+                                <th>Contact</th>
+                                <th>City</th>
+                                <th>CA Assigned</th>
+                                <th>Service</th>
+                                <th>Registered</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in clients)
+                            {
+                                <tr>
+                                    <td>@c.Id</td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xs font-bold flex-shrink-0">
+                                                @string.Concat(c.CompanyName.Split(' ').Take(2).Select(w => w[0]))
+                                            </div>
+                                            <span class="font-medium">@c.CompanyName</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var typeColor = c.Type switch {
+                                                "Corporate"  => "bg-primary-500",
+                                                "Startup"    => "bg-purple-500",
+                                                "SME"        => "bg-teal-500",
+                                                "Individual" => "bg-orange-500",
+                                                _            => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @typeColor text-white">@c.Type</span>
+                                    </td>
+                                    <td class="text-sm text-muted">
+                                        <a href="mailto:@c.ContactEmail" class="text-muted">@c.ContactEmail</a>
+                                    </td>
+                                    <td>@c.City</td>
+                                    <td class="text-sm">@c.AssignedCA</td>
+                                    <td><span class="badge bg-secondary">@c.Service</span></td>
+                                    <td class="text-sm">@c.RegisteredOn.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        @switch (c.Status)
+                                        {
+                                            case "Active":
+                                                <span class="badge bg-success-500 text-white">Active</span>
+                                                break;
+                                            case "Pending":
+                                                <span class="badge bg-warning-500 text-white">Pending</span>
+                                                break;
+                                            case "Inactive":
+                                                <span class="badge bg-danger-500 text-white">Inactive</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="flex gap-1">
+                                            <button class="btn btn-sm btn-outline-primary" title="View">
+                                                <i data-feather="eye" class="w-3 h-3"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i data-feather="edit-2" class="w-3 h-3"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Remove">
+                                                <i data-feather="trash-2" class="w-3 h-3"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-  <script>
-    $(function () {
-      $('#clientTable').DataTable({
-        pageLength: 10,
-        lengthMenu: [10, 25, 50],
-        order: [[0, 'asc']],
-        responsive: true,
-        language: { search: "Search Client:" }
-      });
-    });
-  </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        var table;
+        $(function () {
+            table = $('#clientTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 25, 50],
+                order: [[7, 'desc']],
+                responsive: true,
+                columnDefs: [{ orderable: false, targets: [9] }],
+                language: { search: "Search Clients:" }
+            });
+            if (typeof feather !== 'undefined') feather.replace();
+        });
+
+        function filterType(type) {
+            if (type === 'all') { table.column(2).search('').draw(); }
+            else { table.column(2).search(type).draw(); }
+        }
+    </script>
 }
