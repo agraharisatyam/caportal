@@ -291,6 +291,10 @@ DattaAble-1.0.0/
 # Empty VS-generated subfolder (csproj lives at root)
 caportal/
 
+# Production secrets - never commit
+appsettings.Production.json
+*.pubxml.user
+
 # Visual Studio 6 build log
 *.plg
 
