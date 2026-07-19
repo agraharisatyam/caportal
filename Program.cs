@@ -13,8 +13,10 @@ if (builder.Environment.IsDevelopment())
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
 
-// ── Site Settings (singleton in-memory) ──────────────────────────────────
+// ── Site Settings (DB-backed singleton cache) ─────────────────────────────
 builder.Services.AddSingleton<SiteSettingsService>();
 
 // ── Session (for simple admin auth) ──────────────────────────────────────
@@ -53,13 +55,14 @@ app.MapControllerRoute(
 
 // ── Area routes ───────────────────────────────────────────────────────────
 app.MapControllerRoute(
-    name: "admin_settings",
-    pattern: "Admin/Settings",
-    defaults: new { area = "Admin", controller = "Settings", action = "Index" });
-
-app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+// ── Explicit Admin routes (no area:exists constraint needed) ──────────────
+app.MapControllerRoute(
+    name: "admin_explicit",
+    pattern: "Admin/{controller=Dashboard}/{action=Index}/{id?}",
+    defaults: new { area = "Admin" });
 
 // ── Default route ─────────────────────────────────────────────────────────
 app.MapControllerRoute(

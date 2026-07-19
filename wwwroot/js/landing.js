@@ -8,7 +8,7 @@
     // ── Navbar scroll effect ──────────────────
     const nav = document.getElementById('mainNav');
     if (nav) {
-        const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+        const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 60);
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
     }
@@ -99,126 +99,127 @@
     }
 
     // ══════════════════════════════════════════
-    // EXPERT CONSULTATION POPUP
+    // FLOATING CONSULT WIDGET
     // ══════════════════════════════════════════
-    const overlay    = document.getElementById('consultOverlay');
-    const trigger    = document.getElementById('consultTrigger');
-    const closeBtn   = document.getElementById('consultClose');
-    const form       = document.getElementById('consultForm');
-    const successMsg = document.getElementById('consultSuccess');
+    var floatTrigger  = document.getElementById('floatTriggerBtn');
+    var floatPanel    = document.getElementById('floatFormPanel');
+    var floatClose    = document.getElementById('floatFormClose');
+    var floatForm     = document.getElementById('floatConsultForm');
+    var floatSuccess  = document.getElementById('floatSuccess');
+    var floatBtnIcon  = document.getElementById('floatBtnIcon');
+    var isOpen        = false;
 
-    function openPopup() {
-        if (!overlay) return;
-        overlay.classList.add('active');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        // Focus first input for accessibility
+    function openWidget() {
+        if (!floatPanel) return;
+        isOpen = true;
+        floatPanel.classList.add('open');
+        floatPanel.setAttribute('aria-hidden', 'false');
+        floatTrigger.classList.add('open');
+        floatTrigger.setAttribute('aria-expanded', 'true');
+        floatBtnIcon.className = 'fas fa-times float-btn-icon';
+        // focus first input
         setTimeout(function () {
-            const first = overlay.querySelector('input, select');
+            var first = floatPanel.querySelector('input, select');
             if (first) first.focus();
-        }, 100);
+        }, 150);
     }
 
-    function closePopup() {
-        if (!overlay) return;
-        overlay.classList.remove('active');
-        overlay.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+    function closeWidget() {
+        if (!floatPanel) return;
+        isOpen = false;
+        floatPanel.classList.remove('open');
+        floatPanel.setAttribute('aria-hidden', 'true');
+        floatTrigger.classList.remove('open');
+        floatTrigger.setAttribute('aria-expanded', 'false');
+        floatBtnIcon.className = 'fas fa-comments float-btn-icon';
     }
 
-    // Open on floating button
-    if (trigger) trigger.addEventListener('click', openPopup);
+    if (floatTrigger) {
+        floatTrigger.addEventListener('click', function () {
+            isOpen ? closeWidget() : openWidget();
+        });
+    }
 
-    // Open on "Consult Now" navbar button
+    if (floatClose) {
+        floatClose.addEventListener('click', closeWidget);
+    }
+
+    // "Consult Now" navbar button also opens it
     document.querySelectorAll('.btn-nav-cta').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            openPopup();
+            openWidget();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
 
-    // Close on X button
-    if (closeBtn) closeBtn.addEventListener('click', closePopup);
-
-    // Close on overlay click (outside popup)
-    if (overlay) {
-        overlay.addEventListener('click', function (e) {
-            if (e.target === overlay) closePopup();
-        });
-    }
-
-    // Close on ESC key
+    // Close on ESC
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closePopup();
+        if (e.key === 'Escape' && isOpen) closeWidget();
     });
 
-    // Auto-open after 8 seconds (first visit only)
-    if (!sessionStorage.getItem('consultShown')) {
+    // Auto-open after 10 seconds (once per session)
+    if (!sessionStorage.getItem('floatShown')) {
         setTimeout(function () {
-            openPopup();
-            sessionStorage.setItem('consultShown', '1');
-        }, 8000);
+            openWidget();
+            sessionStorage.setItem('floatShown', '1');
+        }, 10000);
     }
 
     // Form validation & submit
-    if (form) {
-        form.addEventListener('submit', function (e) {
+    if (floatForm) {
+        floatForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            let valid = true;
+            var valid = true;
 
-            const name    = document.getElementById('consultName');
-            const phone   = document.getElementById('consultPhone');
-            const service = document.getElementById('consultService');
+            var name    = document.getElementById('fcName');
+            var phone   = document.getElementById('fcPhone');
+            var service = document.getElementById('fcService');
 
-            // Reset errors
-            document.querySelectorAll('.consult-error').forEach(function (el) {
-                el.classList.remove('visible');
+            // reset
+            ['fcNameErr','fcPhoneErr','fcServiceErr'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.classList.remove('show');
             });
             [name, phone, service].forEach(function (el) {
-                el.classList.remove('error');
+                if (el) el.classList.remove('error');
             });
 
-            // Validate name
-            if (!name.value.trim() || name.value.trim().length < 2) {
-                document.getElementById('nameError').classList.add('visible');
+            if (!name || !name.value.trim() || name.value.trim().length < 2) {
+                document.getElementById('fcNameErr').classList.add('show');
                 name.classList.add('error');
                 valid = false;
             }
 
-            // Validate phone
-            const phoneVal = phone.value.replace(/\s/g, '');
+            var phoneVal = phone ? phone.value.replace(/\s/g, '') : '';
             if (!phoneVal || !/^[+0-9]{10,15}$/.test(phoneVal)) {
-                document.getElementById('phoneError').classList.add('visible');
+                document.getElementById('fcPhoneErr').classList.add('show');
                 phone.classList.add('error');
                 valid = false;
             }
 
-            // Validate service
-            if (!service.value) {
-                document.getElementById('serviceError').classList.add('visible');
+            if (!service || !service.value) {
+                document.getElementById('fcServiceErr').classList.add('show');
                 service.classList.add('error');
                 valid = false;
             }
 
             if (!valid) return;
 
-            // Success
-            form.querySelectorAll('.consult-field, .consult-submit').forEach(function (el) {
+            // Show success
+            floatForm.querySelectorAll('.float-field, .float-submit').forEach(function (el) {
                 el.style.display = 'none';
             });
-            if (successMsg) {
-                successMsg.style.display = 'block';
-            }
+            if (floatSuccess) floatSuccess.style.display = 'block';
 
-            // Auto close after 3s
+            // Reset & close after 3s
             setTimeout(function () {
-                closePopup();
-                // Reset form
-                form.reset();
-                form.querySelectorAll('.consult-field, .consult-submit').forEach(function (el) {
+                closeWidget();
+                floatForm.reset();
+                floatForm.querySelectorAll('.float-field, .float-submit').forEach(function (el) {
                     el.style.display = '';
                 });
-                if (successMsg) successMsg.style.display = 'none';
+                if (floatSuccess) floatSuccess.style.display = 'none';
             }, 3000);
         });
     }

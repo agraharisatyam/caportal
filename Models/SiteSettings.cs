@@ -8,6 +8,11 @@ public class SiteSettings
     public string SiteEmail       { get; set; } = "hello@cacampus.work.gd";
     public string SitePhone       { get; set; } = "+91 98765 43210";
 
+    // ── Logo ──────────────────────────────────────────
+    public string LogoPath        { get; set; } = "";   // e.g. /images/logo.png
+    public string LogoSmallPath   { get; set; } = "";   // favicon/small logo
+    public string LogoAlt         { get; set; } = "CACampus Logo";
+
     // ── Header ────────────────────────────────────────
     public string HeaderBgColor   { get; set; } = "#ffffff";
     public string HeaderFontColor { get; set; } = "#1a3c5e";

@@ -336,9 +336,21 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-3 col-md-6">
+                @{
+                    var ftSvc = ViewContext.HttpContext.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+                    var ftLogo = ftSvc?.Get().LogoPath;
+                    var ftLogoAlt = ftSvc?.Get().LogoAlt ?? "CACampus";
+                }
                 <div class="footer-brand">
-                    <div class="brand-icon" aria-hidden="true">CA</div>
-                    <span class="brand-name"><span>CA</span>Campus</span>
+                    @if (!string.IsNullOrEmpty(ftLogo))
+                    {
+                        <img src="@ftLogo" alt="@ftLogoAlt" class="site-logo-footer" />
+                    }
+                    else
+                    {
+                        <div class="brand-icon" aria-hidden="true">CA</div>
+                        <span class="brand-name"><span>CA</span>Campus</span>
+                    }
                 </div>
                 <p class="footer-about">India's premier platform connecting businesses with ICAI-verified Chartered Accountants.</p>
                 <div class="footer-socials" aria-label="Social media links">

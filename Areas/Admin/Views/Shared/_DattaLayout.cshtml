@@ -28,8 +28,28 @@
     <div class="navbar-wrapper">
       <div class="m-header flex items-center py-4 px-6 h-header-height">
         <a href="/ajs" class="b-brand flex items-center gap-3">
-          <img src="~/datta/images/logo-white.svg" class="img-fluid logo logo-lg" alt="CACampus" />
-          <img src="~/datta/images/favicon.svg" class="img-fluid logo logo-sm" alt="CA" />
+          @{
+              var adminSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+              var adminSettings = adminSvc?.Get();
+              var adminLogo = adminSettings?.LogoPath;
+              var adminLogoSm = adminSettings?.LogoSmallPath;
+          }
+          @if (!string.IsNullOrEmpty(adminLogo))
+          {
+              <img src="@adminLogo" class="img-fluid logo logo-lg" style="max-height:40px; alt="Logo" />
+          }
+          else
+          {
+              <img src="~/datta/images/logo-white.svg" class="img-fluid logo logo-lg" alt="CACampus" />
+          }
+          @if (!string.IsNullOrEmpty(adminLogoSm))
+          {
+              <img src="@adminLogoSm" class="img-fluid logo logo-sm" style="max-height:32px;" alt="Logo" />
+          }
+          else
+          {
+              <img src="~/datta/images/favicon.svg" class="img-fluid logo logo-sm" alt="CA" />
+          }
         </a>
       </div>
       <div class="navbar-content h-[calc(100vh_-_74px)] py-2.5">

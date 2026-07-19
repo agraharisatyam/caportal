@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using caportal.Models;
 
 namespace caportal.Data;
 
@@ -10,6 +11,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<TodoItem> TodoItems { get; set; } = null!;
+    public DbSet<SiteSettingsRecord> SiteSettings { get; set; } = null!;
 }
 
 public class TodoItem

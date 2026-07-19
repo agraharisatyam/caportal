@@ -16,95 +16,34 @@
 <body>
 
 <!-- ═══════════════════════════════════════════
-     TOP BAR
-════════════════════════════════════════════ -->
-<div class="topbar" role="banner">
-    <div class="container">
-        <div class="topbar-inner">
-            <!-- Left: dropdown links -->
-            <div class="topbar-left">
-                <div class="topbar-dropdown" id="findExpertDrop">
-                    <button class="topbar-btn" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-user-tie me-1"></i> Find an Expert
-                        <i class="fas fa-chevron-down ms-1 topbar-arrow"></i>
-                    </button>
-                    <div class="topbar-menu" role="menu">
-                        <a href="#professionals" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-search me-2 text-muted"></i>Browse All CAs
-                        </a>
-                        <a href="#professionals" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-star me-2 text-warning"></i>Top Rated CAs
-                        </a>
-                        <a href="#professionals" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>CAs Near Me
-                        </a>
-                        <a href="#professionals" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-clock me-2 text-success"></i>Available Now
-                        </a>
-                    </div>
-                </div>
-
-                <div class="topbar-separator" aria-hidden="true"></div>
-
-                <div class="topbar-dropdown" id="taxLegalDrop">
-                    <button class="topbar-btn" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-balance-scale me-1"></i> Tax &amp; Legal
-                        <i class="fas fa-chevron-down ms-1 topbar-arrow"></i>
-                    </button>
-                    <div class="topbar-menu" role="menu">
-                        <a href="#" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-file-invoice-dollar me-2 text-primary"></i>GST &amp; Indirect Tax
-                        </a>
-                        <a href="#" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-landmark me-2 text-primary"></i>Income Tax
-                        </a>
-                        <a href="#" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-building me-2 text-primary"></i>Corporate Compliance
-                        </a>
-                        <a href="#" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-rocket me-2 text-primary"></i>Startup Finance
-                        </a>
-                        <a href="#" class="topbar-menu-item" role="menuitem">
-                            <i class="fas fa-globe me-2 text-primary"></i>FEMA &amp; RBI
-                        </a>
-                    </div>
-                </div>
-
-                <div class="topbar-separator" aria-hidden="true"></div>
-
-                <a href="#contact" class="topbar-btn">
-                    <i class="fas fa-envelope me-1"></i> Contact Us
-                </a>
-            </div>
-
-            <!-- Right: phone + login -->
-            <div class="topbar-right">
-                <a href="tel:+919876543210" class="topbar-btn topbar-phone">
-                    <i class="fas fa-phone-alt me-1"></i> +91 98765 43210
-                </a>
-                <div class="topbar-separator" aria-hidden="true"></div>
-                <a href="/Admin/Auth/Login" class="topbar-btn">
-                    <i class="fas fa-lock me-1"></i> Admin
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     MAIN NAVBAR
+     MAIN NAVBAR (merged topbar + navbar)
 ════════════════════════════════════════════ -->
 <nav class="ca-navbar" id="mainNav" aria-label="Main navigation">
+    @{
+        var navSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+        var navSettings = navSvc?.Get();
+        var navLogo = navSettings?.LogoPath;
+        var navSiteName = navSettings?.SiteName ?? "CACampus";
+        var navTagline  = navSettings?.SiteTagline ?? "Verified CA Network";
+        var navPhone    = navSettings?.SitePhone ?? "+91 98765 43210";
+    }
     <div class="container">
         <div class="navbar-inner">
 
-            <!-- Logo -->
-            <a class="navbar-brand" href="/" aria-label="CACampus home">
-                <div class="brand-icon" aria-hidden="true">CA</div>
-                <div class="brand-text-wrap">
-                    <span class="brand-name"><span class="brand-ca">CA</span>Campus</span>
-                    <span class="brand-tagline">Verified CA Network</span>
-                </div>
+            <!-- Brand / Logo -->
+            <a class="navbar-brand" href="/" aria-label="@navSiteName home">
+                @if (!string.IsNullOrEmpty(navLogo))
+                {
+                    <img src="@navLogo" alt="@(navSettings?.LogoAlt ?? navSiteName)" class="site-logo-main" />
+                }
+                else
+                {
+                    <div class="brand-icon" aria-hidden="true">CA</div>
+                    <div class="brand-text-wrap">
+                        <span class="brand-name"><span class="brand-ca">CA</span>@navSiteName.Replace("CA","")</span>
+                        <span class="brand-tagline">@navTagline</span>
+                    </div>
+                }
             </a>
 
             <!-- Desktop Nav links -->
@@ -135,11 +74,47 @@
                         </div>
                     </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                <li class="nav-item nav-dropdown" id="findExpertNav">
+                    <a class="nav-link nav-link-dropdown" href="#professionals">
+                        Find an Expert <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                    </a>
+                    <div class="nav-mega-menu" role="menu">
+                        <div class="row g-0">
+                            <div class="col-6">
+                                <div class="mega-section-title">Browse CAs</div>
+                                <a href="#professionals" class="mega-item" role="menuitem"><i class="fas fa-search"></i>Browse All CAs</a>
+                                <a href="#professionals" class="mega-item" role="menuitem"><i class="fas fa-star"></i>Top Rated CAs</a>
+                            </div>
+                            <div class="col-6">
+                                <div class="mega-section-title">Availability</div>
+                                <a href="#professionals" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>CAs Near Me</a>
+                                <a href="#professionals" class="mega-item" role="menuitem"><i class="fas fa-clock"></i>Available Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown" id="taxLegalNav">
+                    <a class="nav-link nav-link-dropdown" href="#">
+                        Tax &amp; Legal <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                    </a>
+                    <div class="nav-mega-menu" role="menu">
+                        <div class="row g-0">
+                            <div class="col-6">
+                                <div class="mega-section-title">Taxation</div>
+                                <a href="#" class="mega-item" role="menuitem"><i class="fas fa-file-invoice-dollar"></i>GST &amp; Indirect Tax</a>
+                                <a href="#" class="mega-item" role="menuitem"><i class="fas fa-landmark"></i>Income Tax</a>
+                                <a href="#" class="mega-item" role="menuitem"><i class="fas fa-building"></i>Corporate Compliance</a>
+                            </div>
+                            <div class="col-6">
+                                <div class="mega-section-title">Finance &amp; Law</div>
+                                <a href="#" class="mega-item" role="menuitem"><i class="fas fa-rocket"></i>Startup Finance</a>
+                                <a href="#" class="mega-item" role="menuitem"><i class="fas fa-globe"></i>FEMA &amp; RBI</a>
+                            </div>
+                        </div>
+                    </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#professionals">Find CAs</a>
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#pricing">Pricing</a>
@@ -149,10 +124,14 @@
                 </li>
             </ul>
 
-            <!-- Desktop CTA buttons -->
+            <!-- Desktop right side: phone + admin + CTAs -->
             <div class="d-none d-lg-flex align-items-center gap-2">
-                <a href="#" class="btn-nav-login">
-                    <i class="fas fa-sign-in-alt me-1"></i> Log In
+                <a href="tel:@navPhone.Replace(" ","")" class="nav-link nav-phone">
+                    <i class="fas fa-phone-alt me-1"></i> @navPhone
+                </a>
+                <div class="nav-sep" aria-hidden="true"></div>
+                <a href="/Admin/Auth/Login" class="btn-nav-login">
+                    <i class="fas fa-lock me-1"></i> Admin
                 </a>
                 <a href="#" class="btn-nav-cta">
                     <i class="fas fa-comments me-1"></i> Consult Now
@@ -173,13 +152,20 @@
                 <ul class="navbar-nav gap-1 mb-3">
                     <li><a class="nav-link" href="/">Home</a></li>
                     <li><a class="nav-link" href="#features">Services</a></li>
+                    <li><a class="nav-link" href="#professionals">Find an Expert</a></li>
+                    <li><a class="nav-link" href="#">Tax &amp; Legal</a></li>
                     <li><a class="nav-link" href="#how-it-works">How It Works</a></li>
                     <li><a class="nav-link" href="#professionals">Find CAs</a></li>
                     <li><a class="nav-link" href="#pricing">Pricing</a></li>
                     <li><a class="nav-link" href="#contact">Contact</a></li>
                 </ul>
-                <div class="d-flex gap-2">
-                    <a href="#" class="btn btn-outline-light btn-sm flex-fill text-center">Log In</a>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="tel:@navPhone.Replace(" ","")" class="btn btn-outline-secondary btn-sm flex-fill text-center">
+                        <i class="fas fa-phone-alt me-1"></i> @navPhone
+                    </a>
+                    <a href="/Admin/Auth/Login" class="btn btn-outline-light btn-sm flex-fill text-center">
+                        <i class="fas fa-lock me-1"></i> Admin
+                    </a>
                     <a href="#" class="btn-nav-cta btn btn-sm flex-fill text-center">Consult Now</a>
                 </div>
             </div>
@@ -189,42 +175,56 @@
 
 @RenderBody()
 
-<!-- ═══════════════════════════════════════════
-     EXPERT CONSULTATION POPUP
-════════════════════════════════════════════ -->
-<div class="consult-overlay" id="consultOverlay" role="dialog" aria-modal="true" aria-labelledby="consultTitle" aria-hidden="true">
-    <div class="consult-popup">
-        <!-- Close button -->
-        <button class="consult-close" id="consultClose" aria-label="Close consultation popup">
+<!-- Floating Consult Widget — button + inline form -->
+<div class="float-widget" id="floatWidget">
+
+    <!-- Form panel (slides up above button) -->
+    <div class="float-form-panel" id="floatFormPanel" aria-hidden="true">
+        <!-- Close -->
+        <button class="float-form-close" id="floatFormClose" aria-label="Close consultation form">
             <i class="fas fa-times"></i>
         </button>
 
         <!-- Header -->
-        <div class="consult-header">
-            <div class="consult-icon" aria-hidden="true">
-                <i class="fas fa-user-tie"></i>
+        <div class="float-form-header">
+            @{
+                var floatSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+                var floatSettings = floatSvc?.Get();
+                var floatLogo = floatSettings?.LogoPath;
+                var floatSiteName = floatSettings?.SiteName ?? "CACampus";
+            }
+            <div class="float-form-icon" aria-hidden="true">
+                @if (!string.IsNullOrEmpty(floatLogo))
+                {
+                    <img src="@floatLogo" alt="@(floatSettings?.LogoAlt ?? floatSiteName)" style="max-height:48px;max-width:120px;object-fit:contain;" />
+                }
+                else
+                {
+                    <i class="fas fa-user-tie"></i>
+                }
             </div>
-            <h2 class="consult-title" id="consultTitle">Expert Consultation</h2>
-            <p class="consult-sub">Enter your details to get a free callback from our Chartered Accountants.</p>
+            <h3 class="float-form-title">Expert Consultation</h3>
+            <p class="float-form-sub">Enter your details to get a free callback from our Chartered Accountants.</p>
         </div>
 
         <!-- Form -->
-        <form class="consult-form" id="consultForm" novalidate>
-            <div class="consult-field">
-                <label class="consult-label" for="consultName">FULL NAME</label>
-                <input type="text" id="consultName" class="consult-input" placeholder="John Doe" required autocomplete="name" />
-                <span class="consult-error" id="nameError">Please enter your full name.</span>
+        <form class="float-form-body" id="floatConsultForm" novalidate>
+
+            <div class="float-field">
+                <label class="float-label" for="fcName">FULL NAME</label>
+                <input type="text" id="fcName" class="float-input" placeholder="John Doe" required autocomplete="name" />
+                <span class="float-err" id="fcNameErr">Please enter your full name.</span>
             </div>
 
-            <div class="consult-field">
-                <label class="consult-label" for="consultPhone">PHONE NUMBER</label>
-                <input type="tel" id="consultPhone" class="consult-input" placeholder="+91 98765 43210" required autocomplete="tel" pattern="[0-9+\s]{10,15}" />
-                <span class="consult-error" id="phoneError">Please enter a valid phone number.</span>
+            <div class="float-field">
+                <label class="float-label" for="fcPhone">PHONE NUMBER</label>
+                <input type="tel" id="fcPhone" class="float-input" placeholder="+91 98765 43210" required autocomplete="tel" />
+                <span class="float-err" id="fcPhoneErr">Please enter a valid phone number.</span>
             </div>
 
-            <div class="consult-field">
-                <label class="consult-label" for="consultService">SELECT SERVICE</label>
-                <select id="consultService" class="consult-input consult-select" required>
+            <div class="float-field">
+                <label class="float-label" for="fcService">SELECT SERVICE</label>
+                <select id="fcService" class="float-input float-select" required>
                     <option value="" disabled selected>Choose a category...</option>
                     <option value="gst">GST &amp; Indirect Tax</option>
                     <option value="income-tax">Income Tax Filing</option>
@@ -236,27 +236,28 @@
                     <option value="tax-litigation">Tax Litigation</option>
                     <option value="other">Other</option>
                 </select>
-                <span class="consult-error" id="serviceError">Please select a service.</span>
+                <span class="float-err" id="fcServiceErr">Please select a service.</span>
             </div>
 
-            <button type="submit" class="consult-submit">
+            <button type="submit" class="float-submit">
                 <i class="fas fa-phone-alt me-2" aria-hidden="true"></i>REQUEST CALLBACK
             </button>
 
-            <!-- Success message -->
-            <div class="consult-success" id="consultSuccess" aria-live="polite" style="display:none;">
+            <div class="float-success" id="floatSuccess" style="display:none;" aria-live="polite">
                 <i class="fas fa-check-circle me-2"></i>
-                Thank you! Our CA will call you within 2 hours.
+                Thank you! We'll call you within 2 hours.
             </div>
+
         </form>
     </div>
-</div>
 
-<!-- Floating trigger button -->
-<button class="consult-float-btn" id="consultTrigger" aria-label="Open expert consultation">
-    <i class="fas fa-comments" aria-hidden="true"></i>
-    <span>Free Consult</span>
-</button>
+    <!-- Trigger button -->
+    <button class="float-trigger-btn" id="floatTriggerBtn" aria-expanded="false" aria-controls="floatFormPanel">
+        <i class="fas fa-comments float-btn-icon" id="floatBtnIcon" aria-hidden="true"></i>
+        <span id="floatBtnText">Free Consult</span>
+    </button>
+
+</div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

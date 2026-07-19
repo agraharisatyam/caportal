@@ -7,8 +7,20 @@
 <!-- Page Header -->
 <div class="page-header">
     <div class="page-block">
-        <div class="page-header-title">
-            <h5 class="mb-0 font-medium">Welcome back, @ViewBag.Username 👋</h5>
+        <div class="flex items-center gap-4 mb-1">
+            @{
+                var dashSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+                var dashSettings = dashSvc?.Get();
+                var dashLogo = dashSettings?.LogoPath;
+                var dashSiteName = dashSettings?.SiteName ?? "CACampus";
+            }
+            @if (!string.IsNullOrEmpty(dashLogo))
+            {
+                <img src="@dashLogo" alt="@(dashSettings?.LogoAlt ?? dashSiteName)" style="max-height:44px;max-width:140px;object-fit:contain;" />
+            }
+            <div class="page-header-title">
+                <h5 class="mb-0 font-medium">Welcome back, @ViewBag.Username 👋</h5>
+            </div>
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="/ajs">Home</a></li>

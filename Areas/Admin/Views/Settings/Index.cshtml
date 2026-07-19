@@ -24,8 +24,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="alert-circle" class="inline w-4 h-4 me-2"></i>
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-<form method="post" asp-area="Admin" asp-controller="Settings" asp-action="Index" id="settingsForm">
+<form method="post" asp-area="Admin" asp-controller="Settings" asp-action="Save" id="settingsForm">
     @Html.AntiForgeryToken()
 
     <div class="grid grid-cols-12 gap-x-6">
@@ -73,6 +81,61 @@
 
             <!-- ══ PANEL: Site Identity ══ -->
             <div class="settings-panel active" id="panel-identity">
+                <div class="card mb-4">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="image" class="inline w-4 h-4 me-2"></i>Logo Upload</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold">Main Logo <span class="text-muted small">(navbar, footer)</span></label>
+                                @if (!string.IsNullOrEmpty(Model.LogoPath))
+                                {
+                                    <div class="logo-preview-box mb-2" id="mainLogoPreviewBox">
+                                        <img src="@Model.LogoPath" alt="@Model.LogoAlt" id="mainLogoPreviewImg"
+                                             style="max-height:60px;max-width:200px;object-fit:contain;" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="logo-preview-box mb-2" id="mainLogoPreviewBox" style="display:none;">
+                                        <img id="mainLogoPreviewImg" src="" alt="Preview"
+                                             style="max-height:60px;max-width:200px;object-fit:contain;" />
+                                    </div>
+                                }
+                                <input type="file" id="logoFileInput" class="form-control"
+                                       accept=".png,.jpg,.jpeg,.svg,.webp"
+                                       onchange="previewLogo(this,'mainLogoPreviewImg','mainLogoPreviewBox')" />
+                                <div class="form-text">PNG/SVG recommended.</div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold">Small Logo <span class="text-muted small">(sidebar)</span></label>
+                                @if (!string.IsNullOrEmpty(Model.LogoSmallPath))
+                                {
+                                    <div class="logo-preview-box mb-2" id="smallLogoPreviewBox">
+                                        <img src="@Model.LogoSmallPath" alt="small" id="smallLogoPreviewImg"
+                                             style="max-height:40px;max-width:80px;object-fit:contain;" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="logo-preview-box mb-2" id="smallLogoPreviewBox" style="display:none;">
+                                        <img id="smallLogoPreviewImg" src="" alt="Preview"
+                                             style="max-height:40px;max-width:80px;object-fit:contain;" />
+                                    </div>
+                                }
+                                <input type="file" id="logoSmallFileInput" class="form-control"
+                                       accept=".png,.jpg,.jpeg,.svg,.webp"
+                                       onchange="previewLogo(this,'smallLogoPreviewImg','smallLogoPreviewBox')" />
+                                <div class="form-text">Square image recommended.</div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary w-full" onclick="uploadLogoAjax()">
+                                    <i data-feather="upload" class="inline w-4 h-4 me-1"></i> Upload
+                                </button>
+                                <div id="uploadStatus" class="mt-2 text-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card">
                     <div class="card-header"><h5 class="mb-0"><i data-feather="globe" class="inline w-4 h-4 me-2"></i>Site Identity</h5></div>
                     <div class="card-body">
@@ -410,6 +473,16 @@
     @Html.AntiForgeryToken()
 </form>
 
+<!-- Upload Logo form — OUTSIDE settingsForm to avoid nesting -->
+<form method="post"
+      asp-area="Admin"
+      asp-controller="Settings"
+      asp-action="UploadLogo"
+      enctype="multipart/form-data"
+      id="uploadLogoForm">
+    @Html.AntiForgeryToken()
+</form>
+
 @section Scripts {
 <style>
 /* ── Settings Page Styles ── */
@@ -438,10 +511,15 @@
 .hero-preview-inner { text-align:center; padding:24px; }
 .hero-preview-title { font-size:1.4rem; font-weight:800; color:#fff; margin-bottom:8px; }
 .hero-preview-sub   { font-size:.85rem; color:rgba(255,255,255,.7); }
-.btn-preview {
-    padding:10px 28px; border:none; border-radius:8px; font-weight:700;
-    font-size:.9rem; cursor:pointer; background:#d4a017; color:#0d1f33;
-    transition:all .2s;
+.logo-preview-box {
+    background: #2a2a2a;
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
 }
 </style>
 <script>
@@ -538,5 +616,62 @@
     // Init swatch backgrounds from current values
     document.addEventListener('DOMContentLoaded', updatePreview);
 })();
+
+// ── Logo file instant preview ──────────────────
+function previewLogo(input, imgId, boxId) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(imgId);
+        var box = document.getElementById(boxId);
+        if (img) { img.src = e.target.result; }
+        if (box) { box.style.display = 'flex'; }
+    };
+    reader.readAsDataURL(file);
+}
+
+// ── AJAX logo upload ───────────────────────────
+function uploadLogoAjax() {
+    var logoFile      = document.getElementById('logoFileInput');
+    var logoSmallFile = document.getElementById('logoSmallFileInput');
+    var status        = document.getElementById('uploadStatus');
+
+    if ((!logoFile || !logoFile.files.length) && (!logoSmallFile || !logoSmallFile.files.length)) {
+        status.innerHTML = '<span style="color:#ef4444">Please select a file first.</span>';
+        return;
+    }
+
+    var fd = new FormData();
+    if (logoFile && logoFile.files.length)      fd.append('logoFile',      logoFile.files[0]);
+    if (logoSmallFile && logoSmallFile.files.length) fd.append('logoSmallFile', logoSmallFile.files[0]);
+
+    // Get antiforgery token from the page
+    var token = document.querySelector('input[name="__RequestVerificationToken"]');
+    if (token) fd.append('__RequestVerificationToken', token.value);
+
+    status.innerHTML = '<span style="color:#d4a017">Uploading...</span>';
+
+    fetch('/Admin/Settings/UploadLogo', {
+        method: 'POST',
+        body: fd
+    })
+    .then(function(res) {
+        if (res.redirected || res.ok) {
+            status.innerHTML = '<span style="color:#22c55e">✅ Logo uploaded! Refreshing...</span>';
+            setTimeout(function() { window.location.reload(); }, 1200);
+        } else {
+            status.innerHTML = '<span style="color:#ef4444">Error: ' + res.status + ' ' + res.statusText + '</span>';
+        }
+    })
+    .catch(function(err) {
+        status.innerHTML = '<span style="color:#ef4444">Failed: ' + err + '</span>';
+    });
+}
 </script>
+}
+.btn-preview {
+    padding:10px 28px; border:none; border-radius:8px; font-weight:700;
+    font-size:.9rem; cursor:pointer; background:#d4a017; color:#0d1f33;
+    transition:all .2s;
 }
