@@ -11,7 +11,7 @@ public class SiteSettingsRecord
     // Identity
     public string SiteName         { get; set; } = "CACampus";
     public string SiteTagline      { get; set; } = "Verified CA Network";
-    public string SiteEmail        { get; set; } = "hello@cacampus.work.gd";
+    public string SiteEmail        { get; set; } = "";
     public string SitePhone        { get; set; } = "+91 98765 43210";
 
     // Logo

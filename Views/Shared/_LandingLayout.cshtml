@@ -1,13 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="CACampus — India's premier platform connecting businesses with verified Chartered Accountants." />
-    <title>@ViewData["Title"] - CACampus</title>
+
+    @{
+        var seoSvc      = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+        var seoSettings = seoSvc?.Get();
+        var seoSiteName = seoSettings?.SiteName ?? "CACampus";
+        var seoTagline  = seoSettings?.SiteTagline ?? "Verified CA Network";
+        var seoEmail    = seoSettings?.SiteEmail ?? "";
+        var seoPhone    = seoSettings?.SitePhone ?? "+91 98765 43210";
+        var seoLogo     = seoSettings?.LogoPath ?? "";
+        var pageTitle   = ViewData["Title"]?.ToString() ?? "Find Verified Chartered Accountants";
+        var pageDesc    = ViewData["Description"]?.ToString()
+                          ?? $"{seoSiteName} — India's premier platform connecting businesses with ICAI-verified Chartered Accountants. GST, Income Tax, Audit, Corporate Compliance, FEMA & Startup Finance.";
+        var canonicalUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+        var ogImage      = !string.IsNullOrEmpty(seoLogo)
+                           ? $"{Context.Request.Scheme}://{Context.Request.Host}{seoLogo.Split('?')[0]}"
+                           : $"{Context.Request.Scheme}://{Context.Request.Host}/images/og-default.png";
+        var fullTitle    = pageTitle.Contains(seoSiteName) ? pageTitle : $"{pageTitle} | {seoSiteName}";
+    }
+
+    <!-- ═══ Primary SEO ═══ -->
+    <title>@fullTitle</title>
+    <meta name="google-site-verification" content="google95a83b0d5ee7be01" />
+    <meta name="description" content="@pageDesc" />
+    <meta name="keywords" content="Chartered Accountant India, find CA online, GST filing, income tax, ICAI verified CA, audit services, corporate compliance, startup finance, FEMA, tax litigation, ROC filing, CA near me" />
+    <meta name="author" content="@seoSiteName" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="@canonicalUrl" />
+
+    <!-- ═══ Open Graph (Facebook, WhatsApp, LinkedIn) ═══ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="@seoSiteName" />
+    <meta property="og:title" content="@fullTitle" />
+    <meta property="og:description" content="@pageDesc" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="@seoSiteName — @seoTagline" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- ═══ Twitter Card ═══ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@fullTitle" />
+    <meta name="twitter:description" content="@pageDesc" />
+    <meta name="twitter:image" content="@ogImage" />
+    <meta name="twitter:image:alt" content="@seoSiteName — @seoTagline" />
+
+    <!-- ═══ Geo / India targeting ═══ -->
+    <meta name="geo.region" content="IN" />
+    <meta name="geo.placename" content="India" />
+    <meta name="language" content="English" />
+    <meta name="target" content="all" />
+    <meta name="rating" content="general" />
+
+    <!-- ═══ Favicons ═══ -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0d1f33" />
+
+    <!-- ═══ Schema.org JSON-LD Structured Data ═══ -->
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@graph": [
+        {
+          "@@type": "Organization",
+          "@@id": "@($"{Context.Request.Scheme}://{Context.Request.Host}/#organization")",
+          "name": "@seoSiteName",
+          "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")",
+          "logo": {
+            "@@type": "ImageObject",
+            "url": "@ogImage"
+          },
+          "description": "@pageDesc",
+          "email": "@seoEmail",
+          "telephone": "@seoPhone",
+          "address": {
+            "@@type": "PostalAddress",
+            "addressCountry": "IN",
+            "addressLocality": "New Delhi"
+          },
+          "foundingDate": "2026",
+          "areaServed": {
+            "@@type": "Country",
+            "name": "India"
+          }
+        },
+        {
+          "@@type": "WebSite",
+          "@@id": "@($"{Context.Request.Scheme}://{Context.Request.Host}/#website")",
+          "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")",
+          "name": "@seoSiteName",
+          "description": "@pageDesc",
+          "publisher": { "@@id": "@($"{Context.Request.Scheme}://{Context.Request.Host}/#organization")" },
+          "potentialAction": {
+            "@@type": "SearchAction",
+            "target": {
+              "@@type": "EntryPoint",
+              "urlTemplate": "@($"{Context.Request.Scheme}://{Context.Request.Host}/search?q={{search_term_string}}")"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@@type": "WebPage",
+          "@@id": "@canonicalUrl",
+          "url": "@canonicalUrl",
+          "name": "@fullTitle",
+          "description": "@pageDesc",
+          "isPartOf": { "@@id": "@($"{Context.Request.Scheme}://{Context.Request.Host}/#website")" },
+          "breadcrumb": {
+            "@@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@@type": "ListItem", "position": 1, "name": "Home", "item": "@($"{Context.Request.Scheme}://{Context.Request.Host}")" }
+            ]
+          }
+        },
+        {
+          "@@type": "ProfessionalService",
+          "name": "@seoSiteName",
+          "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")",
+          "description": "India's premier platform connecting businesses with ICAI-verified Chartered Accountants for GST, Income Tax, Audit, Corporate Compliance, FEMA and Startup Finance.",
+          "serviceType": ["GST Filing", "Income Tax", "Audit", "Corporate Compliance", "FEMA", "Transfer Pricing", "Startup Finance", "Tax Litigation"],
+          "areaServed": { "@@type": "Country", "name": "India" },
+          "priceRange": "Free to ₹₹₹",
+          "telephone": "@seoPhone",
+          "email": "@seoEmail"
+        },
+        {
+          "@@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@@type": "Question",
+              "name": "How are CA professionals verified on CACampus?",
+              "acceptedAnswer": { "@@type": "Answer", "text": "Every CA listed is cross-verified against the ICAI member register. We check membership number, practising certificate validity, and disciplinary history before approving any profile." }
+            },
+            {
+              "@@type": "Question",
+              "name": "Is CACampus free to use for clients?",
+              "acceptedAnswer": { "@@type": "Answer", "text": "Yes. Our Starter plan is completely free — browse and contact up to 3 CA professionals per month at no cost. Upgrade to Professional for unlimited access." }
+            },
+            {
+              "@@type": "Question",
+              "name": "How long does it take to find a CA?",
+              "acceptedAnswer": { "@@type": "Answer", "text": "Most clients receive responses from matched CA professionals within 1–2 hours of posting their requirement." }
+            },
+            {
+              "@@type": "Question",
+              "name": "Are payments secure on CACampus?",
+              "acceptedAnswer": { "@@type": "Answer", "text": "Yes. We use milestone-based escrow payments. Your payment is held securely and released to the CA only after you confirm the deliverable has been met." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- ═══ Fonts & Styles ═══ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" /></noscript>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecDqYW1uqWOV/firPRuAzG4Bg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />

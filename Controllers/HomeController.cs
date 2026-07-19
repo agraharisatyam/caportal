@@ -69,6 +69,41 @@ namespace caportal.Controllers
 
         public IActionResult Privacy() => View();
 
+        // GET /sitemap.xml
+        [HttpGet("/sitemap.xml")]
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
+        public ContentResult Sitemap()
+        {
+            var host = $"{Request.Scheme}://{Request.Host}";
+            var xml = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+  <url><loc>{host}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>{host}/#professionals</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>{host}/#features</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>{host}/#how-it-works</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>{host}/#pricing</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>{host}/#faq</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>{host}/#contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+</urlset>";
+            return Content(xml, "application/xml");
+        }
+
+        // GET /robots.txt
+        [HttpGet("/robots.txt")]
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
+        public ContentResult Robots()
+        {
+            var host = $"{Request.Scheme}://{Request.Host}";
+            var txt = $@"User-agent: *
+Allow: /
+Disallow: /Admin/
+Disallow: /ajs
+
+Sitemap: {host}/sitemap.xml
+";
+            return Content(txt, "text/plain");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

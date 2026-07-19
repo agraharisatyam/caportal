@@ -1,0 +1,14 @@
+{
+  "name": "CACampus — Find Verified CAs",
+  "short_name": "CACampus",
+  "description": "India's premier platform to find ICAI-verified Chartered Accountants for GST, Income Tax, Audit & more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1f33",
+  "theme_color": "#d4a017",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "/favicon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

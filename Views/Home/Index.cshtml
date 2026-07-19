@@ -1,6 +1,7 @@
 ﻿@model caportal.Models.HomeViewModel
 @{
-    ViewData["Title"] = "Find Verified Chartered Accountants";
+    ViewData["Title"] = "Find Verified Chartered Accountants in India";
+    ViewData["Description"] = "CACampus connects businesses with 12,000+ ICAI-verified Chartered Accountants across India. Find CAs for GST filing, Income Tax, Audit, Corporate Compliance, FEMA & Startup Finance. Free to start.";
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
     var featured = Model.FeaturedProfessionals.Where(p => p.IsFeatured).ToList();
 }
@@ -8,7 +9,7 @@
 <!-- ═══════════════════════════════════════
      HERO V2 — Dark gold, full-width
 ════════════════════════════════════════ -->
-<section class="hero-v2" aria-labelledby="hero-heading">
+<section class="hero-v2" aria-labelledby="hero-heading" itemscope itemtype="https://schema.org/WebPageElement">
     <div class="hero-v2-overlay" aria-hidden="true"></div>
     <div class="container position-relative" style="z-index:2;">
 
@@ -17,12 +18,12 @@
             India's #1 CA &amp; Legal Compliance Platform
         </div>
 
-        <h1 class="hero-v2-title" id="hero-heading">
+        <h1 class="hero-v2-title" id="hero-heading" itemprop="headline">
             CA &amp; Legal Compliance<br>
             <span class="hero-v2-gold">Platform</span>
         </h1>
 
-        <p class="hero-v2-sub">
+        <p class="hero-v2-sub" itemprop="description">
             Connecting businesses with <strong>ICAI-verified Chartered Accountants</strong> across India.<br>
             GST &middot; Income Tax &middot; Audit &middot; Corporate Law &middot; FEMA &middot; Startup Finance
         </p>
@@ -188,24 +189,26 @@
             @foreach (var ca in featured)
             {
                 <div class="col-md-6 col-lg-3">
-                    <div class="prof-card reveal @(delay > 0 ? $"reveal-delay-{delay}" : "")">
+                    <div class="prof-card reveal @(delay > 0 ? $"reveal-delay-{delay}" : "")" itemscope itemtype="https://schema.org/Person">
                         <div class="prof-card-header">
                             @if (ca.IsVerified)
                             {
                                 <span class="prof-verified"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified</span>
                             }
                             <div class="prof-avatar" aria-label="@ca.Name">@ca.Initials</div>
-                            <div class="prof-name">@ca.Name</div>
-                            <div class="prof-designation">@ca.Designation &middot; @ca.YearsExp yrs &middot; @ca.City</div>
+                            <div class="prof-name" itemprop="name">@ca.Name</div>
+                            <div class="prof-designation" itemprop="jobTitle">@ca.Designation &middot; @ca.YearsExp yrs &middot; <span itemprop="workLocation">@ca.City</span></div>
                         </div>
                         <div class="prof-card-body">
                             <div class="mb-2">
                                 @foreach (var tag in ca.Specialisations.Take(2))
                                 {
-                                    <span class="prof-tag">@tag</span>
+                                    <span class="prof-tag" itemprop="knowsAbout">@tag</span>
                                 }
                             </div>
-                            <div class="prof-rating" aria-label="Rating @ca.Rating out of 5">
+                            <div class="prof-rating" aria-label="Rating @ca.Rating out of 5" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+                                <meta itemprop="ratingValue" content="@ca.Rating" />
+                                <meta itemprop="bestRating" content="5" />
                                 @for (int s = 1; s <= 5; s++)
                                 {
                                     <span>@(s <= (int)ca.Rating ? "★" : "☆")</span>
@@ -391,11 +394,25 @@
             </div>
             <div class="col-lg-3 col-md-6">
                 <h6 class="footer-heading">Contact Us</h6>
-                <ul class="footer-links">
-                    <li><i class="fas fa-envelope me-2" aria-hidden="true"></i>hello@cacampus.work.gd</li>
-                    <li><i class="fas fa-phone me-2" aria-hidden="true"></i>+91 98765 43210</li>
-                    <li><i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>New Delhi, India</li>
-                </ul>
+                <address class="footer-links" style="font-style:normal;" itemscope itemtype="https://schema.org/Organization">
+                    <meta itemprop="name" content="CACampus" />
+                    @{
+                        var ftEmail = ftSvc?.Get().SiteEmail ?? "";
+                        var ftPhone = ftSvc?.Get().SitePhone ?? "";
+                    }
+                    @if (!string.IsNullOrEmpty(ftEmail))
+                    {
+                        <li><i class="fas fa-envelope me-2" aria-hidden="true"></i><a href="mailto:@ftEmail" itemprop="email" class="text-decoration-none">@ftEmail</a></li>
+                    }
+                    @if (!string.IsNullOrEmpty(ftPhone))
+                    {
+                        <li><i class="fas fa-phone me-2" aria-hidden="true"></i><a href="tel:@ftPhone.Replace(" ","")" itemprop="telephone" class="text-decoration-none">@ftPhone</a></li>
+                    }
+                    <li itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                        <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
+                        <span itemprop="addressLocality">New Delhi</span>, <span itemprop="addressCountry">India</span>
+                    </li>
+                </address>
             </div>
         </div>
         <hr class="footer-divider" />

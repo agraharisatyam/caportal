@@ -45,6 +45,8 @@ app.UseRouting();
 app.UseSession();          // must be BEFORE MapControllerRoute
 app.UseAuthorization();
 
+// ── SEO: sitemap and robots served dynamically ────────────────────────────
+
 app.MapStaticAssets();
 
 // ── Area route: /ajs  → Admin/Dashboard/Index ─────────────────────────
