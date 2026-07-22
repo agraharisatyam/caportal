@@ -11,10 +11,12 @@ if (builder.Environment.IsDevelopment())
 
 // ── EF Core ───────────────────────────────────────────────────────────────
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+    options.UseSqlServer(connectionString));
+
+// Register scoped DbContext for controllers that inject it directly
+builder.Services.AddScoped<ApplicationDbContext>(sp =>
+    sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
 // ── Site Settings (DB-backed singleton cache) ─────────────────────────────
 builder.Services.AddSingleton<SiteSettingsService>();

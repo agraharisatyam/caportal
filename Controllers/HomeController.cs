@@ -1,6 +1,8 @@
+using caportal.Data;
 using caportal.Models;
 using caportal.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace caportal.Controllers
@@ -8,10 +10,12 @@ namespace caportal.Controllers
     public class HomeController : Controller
     {
         private readonly SiteSettingsService _settingsService;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
 
-        public HomeController(SiteSettingsService settingsService)
+        public HomeController(SiteSettingsService settingsService, IDbContextFactory<ApplicationDbContext> dbFactory)
         {
             _settingsService = settingsService;
+            _dbFactory = dbFactory;
         }
 
         // GET /site-dynamic.css — returns CSS generated from current settings
@@ -22,13 +26,38 @@ namespace caportal.Controllers
             return Content(_settingsService.GenerateCss(), "text/css");
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var settings = _settingsService.Get();
             ViewBag.Settings = settings;
+            ViewBag.ServicesBadge = settings.ServicesBadge;
+            ViewBag.ServicesTitle = settings.ServicesTitle;
+
+            // Load services from DB, seed defaults if empty
+            using var db = _dbFactory.CreateDbContext();
+            var services = await db.CoveredServices.OrderBy(s => s.DisplayOrder).ToListAsync();
+
+            if (!services.Any())
+            {
+                var defaults = new List<CoveredService>
+                {
+                    new() { Icon="fas fa-file-invoice-dollar", Title="GST & Indirect Tax",    Description="Registration, returns, audits & litigation",         DisplayOrder=1 },
+                    new() { Icon="fas fa-landmark",            Title="Income Tax",             Description="ITR filing, assessments & appeals",                  DisplayOrder=2 },
+                    new() { Icon="fas fa-building",            Title="Corporate Compliance",   Description="ROC filings, MCA & company law",                     DisplayOrder=3 },
+                    new() { Icon="fas fa-balance-scale",       Title="Tax Litigation",         Description="ITAT, HC & SC representations",                     DisplayOrder=4 },
+                    new() { Icon="fas fa-chart-line",          Title="Audit & Assurance",      Description="Statutory, internal & forensic audit",               DisplayOrder=5 },
+                    new() { Icon="fas fa-rocket",              Title="Startup Finance",         Description="Fundraising, ESOP & equity structuring",             DisplayOrder=6 },
+                    new() { Icon="fas fa-globe",               Title="FEMA & RBI",             Description="Cross-border transactions & NRI taxation",           DisplayOrder=7 },
+                    new() { Icon="fas fa-handshake",           Title="Transfer Pricing",        Description="International transactions & documentation",         DisplayOrder=8 },
+                };
+                db.CoveredServices.AddRange(defaults);
+                await db.SaveChangesAsync();
+                services = defaults;
+            }
 
             var vm = new HomeViewModel
             {
+                Services = services,
                 Stats = new SiteStats
                 {
                     TotalCAs          = "12K+",
@@ -68,6 +97,124 @@ namespace caportal.Controllers
         }
 
         public IActionResult Privacy() => View();
+
+        [HttpGet("/services/{slug}")]
+        public IActionResult ServiceDetail(string slug)
+        {
+            var service = ServiceDetailsRepository.GetBySlug(slug);
+            if (service == null)
+            {
+                return RedirectToAction("Index");
+            }
+            ViewBag.Settings = _settingsService.Get();
+            return View(service);
+        }
+
+        // ── Find an Expert listing ─────────────────────────────────────────
+        [HttpGet("/find-expert")]
+        public IActionResult FindExpert(string? city, string? service, string? exp, string? rating, string? sort, int page = 1)
+        {
+            ViewBag.Settings = _settingsService.Get();
+
+            // Full CA roster (same as Index, but exposed for filtering)
+            var allProfessionals = new List<CaProfessional>
+            {
+                new() { Id=1,  Name="CA Priya Mehta",     Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit"],           Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsVerified=true },
+                new() { Id=2,  Name="CA Rajesh Sharma",   Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA"],            Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsVerified=true },
+                new() { Id=3,  Name="CA Anita Krishnan",  Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC","MCA"],          Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsVerified=true },
+                new() { Id=4,  Name="CA Vikram Joshi",    Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA"],              Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsVerified=true },
+                new() { Id=5,  Name="CA Sunita Patel",    Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST"],                    Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsVerified=true },
+                new() { Id=6,  Name="CA Mohit Agarwal",   Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing"],   Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsVerified=true },
+                new() { Id=7,  Name="CA Deepa Nair",      Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance"],              Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsVerified=false },
+                new() { Id=8,  Name="CA Arjun Singh",     Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax"],            Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsVerified=true },
+                new() { Id=9,  Name="CA Kavita Rao",      Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax"],         Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsVerified=true },
+                new() { Id=10, Name="CA Nitin Gupta",     Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA"],               Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsVerified=true },
+                new() { Id=11, Name="CA Rahul Sharma",    Initials="RH", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Company Registration","Audit"], Rating=4.9m, CasesHandled=850, ResponseTime="1h", MembershipNo="ICAI/2012/RH011", IsVerified=true },
+                new() { Id=12, Name="CA Amit Verma",      Initials="AV", Designation="FCA", YearsExp=15, City="Delhi",     Specialisations=["GST","Income Tax","Company Registration","Audit"], Rating=5.0m, CasesHandled=1200, ResponseTime="45m", MembershipNo="ICAI/2009/AV012", IsVerified=true },
+                new() { Id=13, Name="CA Sanjay Kumar",    Initials="SK", Designation="ACA", YearsExp=6,  City="Bangalore", Specialisations=["Startup Finance","Bookkeeping"],       Rating=4.6m, CasesHandled=120, ResponseTime="2h",  MembershipNo="ICAI/2018/SK013", IsVerified=true },
+                new() { Id=14, Name="CA Lakshmi Iyer",    Initials="LI", Designation="FCA", YearsExp=18, City="Chennai",   Specialisations=["Tax Litigation","FEMA","Income Tax"],  Rating=5.0m, CasesHandled=780, ResponseTime="1h",  MembershipNo="ICAI/2006/LI014", IsVerified=true },
+                new() { Id=15, Name="CA Ravi Khurana",    Initials="RK", Designation="ACA", YearsExp=5,  City="Pune",      Specialisations=["GST","ROC Filing"],                   Rating=4.5m, CasesHandled=98,  ResponseTime="3h",  MembershipNo="ICAI/2019/RK015", IsVerified=true },
+            };
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(city))
+                allProfessionals = allProfessionals.Where(p => p.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!string.IsNullOrEmpty(service))
+                allProfessionals = allProfessionals.Where(p => p.Specialisations.Any(s => s.Contains(service, StringComparison.OrdinalIgnoreCase))).ToList();
+
+            if (!string.IsNullOrEmpty(exp))
+            {
+                allProfessionals = exp switch
+                {
+                    "0-5"  => allProfessionals.Where(p => p.YearsExp <= 5).ToList(),
+                    "5-10" => allProfessionals.Where(p => p.YearsExp is >= 5 and <= 10).ToList(),
+                    "10+"  => allProfessionals.Where(p => p.YearsExp > 10).ToList(),
+                    _      => allProfessionals
+                };
+            }
+
+            if (!string.IsNullOrEmpty(rating) && decimal.TryParse(rating, out var minRating))
+                allProfessionals = allProfessionals.Where(p => p.Rating >= minRating).ToList();
+
+            // Sort
+            allProfessionals = sort switch
+            {
+                "rating"   => allProfessionals.OrderByDescending(p => p.Rating).ToList(),
+                "exp"      => allProfessionals.OrderByDescending(p => p.YearsExp).ToList(),
+                "fee_asc"  => allProfessionals.OrderBy(p => p.YearsExp).ToList(),
+                "fee_desc" => allProfessionals.OrderByDescending(p => p.YearsExp).ToList(),
+                _          => allProfessionals.OrderByDescending(p => p.IsFeatured).ThenByDescending(p => p.Rating).ToList()
+            };
+
+            ViewBag.Professionals = allProfessionals;
+            ViewBag.Page     = page;
+            ViewBag.QCity    = city    ?? "";
+            ViewBag.QService = service ?? "";
+            ViewBag.QExp     = exp     ?? "";
+            ViewBag.QRating  = rating  ?? "";
+            ViewBag.QSort    = sort    ?? "relevant";
+
+            return View();
+        }
+
+        // ── Expert detail profile ──────────────────────────────────────────
+        [HttpGet("/expert/{slug}")]
+        public IActionResult ExpertDetail(string slug)
+        {
+            ViewBag.Settings = _settingsService.Get();
+
+            // Parse the id from the slug (format: name-slug-{id})
+            var parts = slug.Split('-');
+            int expertId = 1;
+            if (parts.Length > 0 && int.TryParse(parts[^1], out var parsedId))
+                expertId = parsedId;
+
+            // Build the professional list (same dataset as FindExpert)
+            var allProfessionals = new List<CaProfessional>
+            {
+                new() { Id=1,  Name="CA Priya Mehta",     Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit","Tax Planning","FEMA"],              Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsVerified=true },
+                new() { Id=2,  Name="CA Rajesh Sharma",   Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA","GST","International Tax"],           Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsVerified=true },
+                new() { Id=3,  Name="CA Anita Krishnan",  Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC","MCA","Statutory Audit","Compliance"],   Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsVerified=true },
+                new() { Id=4,  Name="CA Vikram Joshi",    Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA","Equity Structuring","Fundraising"],    Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsVerified=true },
+                new() { Id=5,  Name="CA Sunita Patel",    Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST","Payroll","Labour Compliance"],               Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsVerified=true },
+                new() { Id=6,  Name="CA Mohit Agarwal",   Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing","Income Tax","Audit"],       Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsVerified=true },
+                new() { Id=7,  Name="CA Deepa Nair",      Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance","NRI Taxation"],                       Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsVerified=false },
+                new() { Id=8,  Name="CA Arjun Singh",     Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax","MIS Reporting"],                   Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsVerified=true },
+                new() { Id=9,  Name="CA Kavita Rao",      Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax","ITAT Representation","Appeals"],  Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsVerified=true },
+                new() { Id=10, Name="CA Nitin Gupta",     Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA","Bookkeeping","Accounting"],             Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsVerified=true },
+                new() { Id=11, Name="CA Rahul Sharma",    Initials="RH", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Company Registration","Audit","TDS"],       Rating=4.9m, CasesHandled=850, ResponseTime="1h",  MembershipNo="ICAI/2012/RH011", IsVerified=true },
+                new() { Id=12, Name="CA Amit Verma",      Initials="AV", Designation="FCA", YearsExp=15, City="Delhi",     Specialisations=["GST","Income Tax","Company Registration","Audit","FEMA"],      Rating=5.0m, CasesHandled=1200, ResponseTime="45m", MembershipNo="ICAI/2009/AV012", IsVerified=true },
+                new() { Id=13, Name="CA Sanjay Kumar",    Initials="SK", Designation="ACA", YearsExp=6,  City="Bangalore", Specialisations=["Startup Finance","Bookkeeping","MCA","Virtual CFO"],           Rating=4.6m, CasesHandled=120, ResponseTime="2h",  MembershipNo="ICAI/2018/SK013", IsVerified=true },
+                new() { Id=14, Name="CA Lakshmi Iyer",    Initials="LI", Designation="FCA", YearsExp=18, City="Chennai",   Specialisations=["Tax Litigation","FEMA","Income Tax","Cross-border Tax"],       Rating=5.0m, CasesHandled=780, ResponseTime="1h",  MembershipNo="ICAI/2006/LI014", IsVerified=true },
+                new() { Id=15, Name="CA Ravi Khurana",    Initials="RK", Designation="ACA", YearsExp=5,  City="Pune",      Specialisations=["GST","ROC Filing","Company Registration"],                    Rating=4.5m, CasesHandled=98,  ResponseTime="3h",  MembershipNo="ICAI/2019/RK015", IsVerified=true },
+            };
+
+            var professional = allProfessionals.FirstOrDefault(p => p.Id == expertId)
+                               ?? allProfessionals.First();
+
+            return View(professional);
+        }
 
         // GET /sitemap.xml
         [HttpGet("/sitemap.xml")]

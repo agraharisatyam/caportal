@@ -56,6 +56,10 @@ public class SiteSettings
     public string H2Size          { get; set; } = "36";  // px
     public string H3Size          { get; set; } = "28";  // px
 
+    // ── Covered Services Section ──────────────────────
+    public string ServicesBadge   { get; set; } = "What We Cover";
+    public string ServicesTitle   { get; set; } = "Comprehensive Solutions <span>for Your Business</span>";
+
     // ── Buttons ───────────────────────────────────────
     public string BtnPrimaryBg    { get; set; } = "#d4a017";
     public string BtnPrimaryColor { get; set; } = "#0d1f33";

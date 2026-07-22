@@ -1381,6 +1381,30 @@ section { padding: 5rem 0; }
     transition: all 0.3s;
 }
 
+/* When service icon contains an uploaded image — show full size, no background */
+.service-icon:has(img) {
+    width: auto;
+    height: auto;
+    background: none;
+    border-radius: 0;
+    display: block;
+    margin: 0 auto 14px;
+}
+
+.service-icon img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto 0;
+    transition: transform 0.3s;
+}
+
+.service-card:hover .service-icon img {
+    transform: scale(1.03);
+}
+
 .service-card:hover .service-icon {
     background: linear-gradient(135deg, #d4a017, #f0c040);
     color: #0d1f33;
@@ -1509,14 +1533,15 @@ section { padding: 5rem 0; }
 }
 
 /* Mega menu dropdown */
-.nav-dropdown { position: relative; }
+.nav-dropdown { position: static; }
 
 .nav-link-dropdown { cursor: pointer; }
 
+/* Base mega menu — for small dropdowns */
 .nav-mega-menu {
     display: none;
     position: absolute;
-    top: calc(100% + 12px);
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
     background: #fff;
@@ -1543,6 +1568,123 @@ section { padding: 5rem 0; }
 }
 
 .nav-dropdown:hover .nav-mega-menu { display: block; }
+
+/* ── Full-width 6-col Services mega menu ── */
+.nav-mega-menu--full {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96vw;
+    max-width: 1200px;
+    border-radius: 16px;
+    padding: 32px 32px 24px;
+    display: none !important;
+    flex-direction: row !important;
+    gap: 0;
+    min-width: unset;
+    background: #ffffff !important;
+    border: 1px solid #ede8d8;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+    z-index: 2001;
+}
+
+.nav-dropdown:hover .nav-mega-menu--full {
+    display: flex !important;
+}
+
+.nav-mega-menu--full::before { display: none; }
+
+/* Each column */
+.mega-col {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 18px;
+    border-right: 1px solid #f3f0e8;
+}
+.mega-col:first-child { padding-left: 0; }
+.mega-col:last-child  { border-right: none; padding-right: 0; }
+
+/* Column header — icon box + gold title */
+.mega-col-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #f5edd0;
+}
+
+.mega-col-icon {
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c9a227;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.mega-col-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #c9a227;
+    letter-spacing: 0;
+    line-height: 1.2;
+}
+
+/* List items */
+.mega-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mega-list li a {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 4px 0;
+    font-size: 0.83rem;
+    font-weight: 400;
+    color: #444;
+    text-decoration: none;
+    transition: color 0.15s;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.mega-list li a::before {
+    content: '›';
+    color: #c9a227;
+    font-size: 1.1rem;
+    line-height: 1;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.mega-list li a:hover { color: #c9a227; }
+
+/* Bottom bar inside mega menu */
+.mega-footer-bar {
+    display: flex;
+    gap: 16px;
+    padding: 10px 0 0;
+    margin-top: 12px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.mega-footer-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #d4a017;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.mega-footer-link:hover { color: #b8870f; }
 
 .mega-section-title {
     font-size: 0.7rem;
@@ -2088,7 +2230,7 @@ section { padding: 5rem 0; }
     box-shadow: 0 20px 70px rgba(0,0,0,0.2);
     width: 340px;
     margin-bottom: 12px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 
     /* form opens from bottom-left */
@@ -2116,28 +2258,30 @@ section { padding: 5rem 0; }
 /* ── Close button ── */
 .float-form-close {
     position: absolute;
-    top: 14px;
-    right: 14px;
+    top: 12px;
+    right: 12px;
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    background: #1a3c5e;
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
-    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff !important;
     transition: all 0.2s;
-    z-index: 10;
+    z-index: 20;
     line-height: 1;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .float-form-close:hover {
     background: #ef4444;
-    border-color: #ef4444;
-    color: #ffffff;
+    color: #ffffff !important;
     transform: rotate(90deg);
 }
 
@@ -2338,4 +2482,301 @@ section { padding: 5rem 0; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+/* =============================================
+   MEGA MENU — hard overrides (beat dynamic CSS)
+   ============================================= */
+.nav-mega-menu--full,
+.nav-mega-menu--full * {
+    box-sizing: border-box;
+}
+
+.nav-mega-menu--full {
+    background: #ffffff !important;
+    color: #374151 !important;
+}
+
+.nav-mega-menu--full .mega-col {
+    background: transparent !important;
+    display: block !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+}
+
+.nav-mega-menu--full .mega-col-icon {
+    background: transparent !important;
+    color: #c9a227 !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.8rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+
+.nav-mega-menu--full .mega-col-title {
+    color: #c9a227 !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+}
+
+.nav-mega-menu--full .mega-list {
+    background: transparent !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.nav-mega-menu--full .mega-list li {
+    background: transparent !important;
+}
+
+.nav-mega-menu--full .mega-list li a {
+    color: #374151 !important;
+    background: transparent !important;
+    font-size: 0.83rem !important;
+    font-weight: 400 !important;
+    text-decoration: none !important;
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 6px !important;
+    padding: 4px 0 !important;
+    white-space: nowrap !important;
+}
+
+.nav-mega-menu--full .mega-list li a::before {
+    content: '›' !important;
+    color: #c9a227 !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    flex-shrink: 0 !important;
+}
+
+.nav-mega-menu--full .mega-list li a:hover {
+    color: #c9a227 !important;
+}
+
+.nav-mega-menu--full .mega-col-header {
+    border-bottom: 2px solid #f5edd0 !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 14px !important;
+    background: transparent !important;
+}
+
+/* =============================================
+   MEGA MENU FINAL OVERRIDE — premium dark style
+   ============================================= */
+.nav-mega-menu--full {
+    background: #0d1f33 !important;
+    border: 1px solid rgba(212,175,55,0.25) !important;
+    border-radius: 0 0 16px 16px !important;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5) !important;
+    padding: 36px 40px 28px !important;
+    position: absolute !important;
+    display: none !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 96vw !important;
+    max-width: 1260px !important;
+}
+
+.nav-dropdown:hover .nav-mega-menu--full {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+}
+
+/* Columns */
+.nav-mega-menu--full .mega-col {
+    flex: 1 1 0 !important;
+    padding: 0 24px !important;
+    border-right: 1px solid rgba(255,255,255,0.08) !important;
+    background: transparent !important;
+    display: block !important;
+}
+.nav-mega-menu--full .mega-col:first-child { padding-left: 0 !important; }
+.nav-mega-menu--full .mega-col:last-child  { border-right: none !important; padding-right: 0 !important; }
+
+/* Icon */
+.nav-mega-menu--full .mega-col-icon {
+    width: 52px !important;
+    height: 52px !important;
+    background: rgba(212,175,55,0.12) !important;
+    border: 1px solid rgba(212,175,55,0.3) !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #d4a017 !important;
+    font-size: 1.4rem !important;
+    margin-bottom: 10px !important;
+}
+
+/* Title */
+.nav-mega-menu--full .mega-col-title {
+    color: #d4a017 !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2px !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid rgba(212,175,55,0.25) !important;
+    display: block !important;
+}
+
+/* Header container */
+.nav-mega-menu--full .mega-col-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 14px !important;
+    border-bottom: 1px solid rgba(212,175,55,0.2) !important;
+    background: transparent !important;
+}
+
+/* List */
+.nav-mega-menu--full .mega-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.nav-mega-menu--full .mega-list li a {
+    color: rgba(255,255,255,0.78) !important;
+    font-size: 0.83rem !important;
+    font-weight: 400 !important;
+    padding: 5px 0 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 7px !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    background: transparent !important;
+    transition: color 0.15s !important;
+    line-height: 1.5 !important;
+}
+
+.nav-mega-menu--full .mega-list li a::before {
+    content: '›' !important;
+    color: #d4a017 !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    flex-shrink: 0 !important;
+    line-height: 1.4 !important;
+}
+
+.nav-mega-menu--full .mega-list li a:hover {
+    color: #d4a017 !important;
+}
+
+/* SVG icons inside mega menu */
+.nav-mega-menu--full .mega-col-icon {
+    width: 56px !important;
+    height: 56px !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 !important;
+    margin-bottom: 8px !important;
+}
+
+.nav-mega-menu--full .mega-col-icon svg {
+    width: 44px !important;
+    height: 44px !important;
+    display: block !important;
+}
+
+/* Fix: remove double border under icon — keep only mega-col-header border */
+.nav-mega-menu--full .mega-col-title {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.nav-mega-menu--full .mega-col-header {
+    border-bottom: 1px solid rgba(212,175,55,0.3) !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 14px !important;
+}
+
+/* ── Mega menu hover gap fix ── */
+
+/* Bridge pseudo-element fills the gap between nav link and panel */
+.nav-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -20px;
+    right: -20px;
+    height: 20px; /* covers any gap */
+    background: transparent;
+    z-index: 1999;
+}
+
+/* Use JS-controlled class instead of pure CSS :hover for the full menu */
+.nav-mega-menu--full {
+    transition: opacity 0.15s ease, transform 0.15s ease !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    display: flex !important;
+    flex-direction: row !important;
+    visibility: hidden;
+}
+
+.nav-mega-menu--full.is-open {
+    opacity: 1 !important;
+    pointer-events: all !important;
+    visibility: visible !important;
+}
+
+/* Keep pure CSS hover working as fallback for non-full menus */
+.nav-dropdown:hover .nav-mega-menu:not(.nav-mega-menu--full) {
+    display: block;
+}
+
+/* Disable old CSS-only hover triggers for the full mega menu (JS handles it now) */
+.nav-dropdown:hover .nav-mega-menu--full {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+.nav-dropdown:hover .nav-mega-menu--full.is-open {
+    opacity: 1 !important;
+    pointer-events: all !important;
+    visibility: visible !important;
+}
+
+/* =============================================
+   MEGA MENU — POSITIONING FIX (final)
+   ============================================= */
+
+/* nav is the positioning context */
+.ca-navbar { position: sticky; top: 0; }
+.ca-navbar .container { position: static; }
+.ca-navbar .navbar-inner { position: static; }
+.ca-navbar ul.navbar-nav { position: static; }
+
+/* li must be relative so ::after bridge works,
+   but the MENU itself anchors to the nav */
+.nav-dropdown { position: relative; }
+
+/* Full mega menu: anchors to the nav element edges */
+.nav-mega-menu--full {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+    border-radius: 0 0 16px 16px !important;
+    margin-top: 0 !important;
 }

@@ -111,11 +111,12 @@ h3 {{ font-size: {s.H3Size}px; }}
 .brand-name {{ color: {s.HeaderFontColor} !important; }}
 .brand-ca   {{ color: {s.AccentColor} !important; }}
 .nav-mega-menu {{
-  background: #1E1E1E !important;
+  background: #fff !important;
   border-color: rgba(212,175,55,0.2) !important;
 }}
-.nav-mega-menu::before {{ background: #1E1E1E !important; border-color: rgba(212,175,55,0.2) !important; }}
-.mega-item {{ color: #FFFFFF !important; }}
+.nav-mega-menu::before {{ background: #fff !important; border-color: rgba(212,175,55,0.2) !important; }}
+.nav-mega-menu--full {{ background: #0d1f33 !important; }}
+.mega-item {{ color: #1a3c5e !important; }}
 .mega-item:hover {{ background: rgba(212,175,55,0.1) !important; color: {s.AccentColor} !important; }}
 .mega-section-title {{ color: {s.AccentColor} !important; border-color: rgba(212,175,55,0.15) !important; }}
 .btn-nav-login {{
@@ -151,6 +152,11 @@ h3 {{ font-size: {s.H3Size}px; }}
 .float-submit {{
   background: linear-gradient(135deg,{s.AccentColor},{s.AccentColorLight}) !important;
   color: #111111 !important;
+}}
+
+/* Global Font Override to Calibri */
+*:not(.fa):not(.fas):not(.far):not(.fab):not([class*='fa-']):not(.feather):not([class*='feather-']):not([class*='ti-']):not(.brand-icon) {{
+  font-family: 'Calibri', 'Inter', sans-serif !important;
 }}
 ";
     }
@@ -201,6 +207,7 @@ h3 {{ font-size: {s.H3Size}px; }}
         H3Size           = r.H3Size,
         BtnPrimaryBg     = r.BtnPrimaryBg,     BtnPrimaryColor  = r.BtnPrimaryColor,
         BtnBorderRadius  = r.BtnBorderRadius,
+        ServicesBadge    = r.ServicesBadge,    ServicesTitle    = r.ServicesTitle,
     };
 
     private static void MapToRecord(SiteSettings s, SiteSettingsRecord r)
@@ -228,5 +235,6 @@ h3 {{ font-size: {s.H3Size}px; }}
         r.H3Size           = s.H3Size;
         r.BtnPrimaryBg     = s.BtnPrimaryBg;     r.BtnPrimaryColor  = s.BtnPrimaryColor;
         r.BtnBorderRadius  = s.BtnBorderRadius;
+        r.ServicesBadge    = s.ServicesBadge;    r.ServicesTitle    = s.ServicesTitle;
     }
 }

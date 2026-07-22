@@ -13,6 +13,58 @@
         onScroll();
     }
 
+    // ── Mega menu — hover with delay, correct positioning ──
+    var megaCloseTimer = null;
+    var mainNavEl = document.getElementById('mainNav');
+
+    function positionMegaMenu(menu) {
+        if (!mainNavEl) return;
+        var navRect = mainNavEl.getBoundingClientRect();
+        menu.style.top = navRect.bottom + 'px';
+    }
+
+    document.querySelectorAll('.nav-dropdown').forEach(function (dropdown) {
+        var menu = dropdown.querySelector('.nav-mega-menu--full');
+        if (!menu) return;
+
+        function openMenu() {
+            clearTimeout(megaCloseTimer);
+            // close others
+            document.querySelectorAll('.nav-mega-menu--full.is-open').forEach(function (m) {
+                if (m !== menu) m.classList.remove('is-open');
+            });
+            positionMegaMenu(menu);
+            menu.classList.add('is-open');
+        }
+
+        function closeMenu() {
+            megaCloseTimer = setTimeout(function () {
+                menu.classList.remove('is-open');
+            }, 180);
+        }
+
+        dropdown.addEventListener('mouseenter', openMenu);
+        dropdown.addEventListener('mouseleave', closeMenu);
+        menu.addEventListener('mouseenter', function () { clearTimeout(megaCloseTimer); });
+        menu.addEventListener('mouseleave', closeMenu);
+    });
+
+    // Close mega menu on outside click
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.nav-dropdown') && !e.target.closest('.nav-mega-menu--full')) {
+            document.querySelectorAll('.nav-mega-menu--full.is-open').forEach(function (m) {
+                m.classList.remove('is-open');
+            });
+        }
+    });
+
+    // Reposition on scroll (since navbar is sticky)
+    window.addEventListener('scroll', function () {
+        document.querySelectorAll('.nav-mega-menu--full.is-open').forEach(function (menu) {
+            positionMegaMenu(menu);
+        });
+    }, { passive: true });
+
     // ── Smooth scroll for anchor links ────────
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {

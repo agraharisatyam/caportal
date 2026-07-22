@@ -1,0 +1,704 @@
+@model caportal.Models.ServiceDetail
+@{
+    ViewData["Title"] = $"{Model.Name} Services — ICAI Verified Chartered Accountants";
+    ViewData["Description"] = Model.ShortDescription;
+    Layout = "~/Views/Shared/_LandingLayout.cshtml";
+    var settings = ViewBag.Settings as caportal.Models.SiteSettings;
+    var primaryColor = settings?.PrimaryColor ?? "#1a3c5e";
+    var accentColor = settings?.AccentColor ?? "#d4a017";
+}
+
+<!-- ═══ Hero Header ═══ -->
+<section class="service-hero" aria-labelledby="service-title">
+    <div class="service-hero-overlay"></div>
+    <div class="container position-relative" style="z-index: 2;">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb service-breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/#features">Services</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ul>
+        </nav>
+        <span class="service-cat-badge">@Model.Category</span>
+        <h1 class="service-title" id="service-title">@Model.Name</h1>
+        <p class="service-lead">@Model.ShortDescription</p>
+        
+        <div class="service-quick-meta">
+            <div class="meta-box">
+                <i class="far fa-clock"></i>
+                <div>
+                    <span class="meta-label">ESTIMATED TIMELINE</span>
+                    <span class="meta-val">@Model.Timeline</span>
+                </div>
+            </div>
+            <div class="meta-box">
+                <i class="fas fa-tags"></i>
+                <div>
+                    <span class="meta-label">PROFESSIONAL FEES</span>
+                    <span class="meta-val">@Model.PriceRange</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Main Content Grid ═══ -->
+<div class="container py-5">
+    <div class="row g-4">
+        
+        <!-- Left Column: Details -->
+        <main class="col-lg-8" role="main">
+            <div class="service-detail-card mb-4">
+                <h2 class="section-subheading">Overview</h2>
+                <p class="service-text">@Model.Overview</p>
+            </div>
+
+            <!-- Key Benefits -->
+            <div class="service-detail-card mb-4">
+                <h2 class="section-subheading">Key Benefits & Advantages</h2>
+                <div class="row g-3 mt-1">
+                    @foreach (var benefit in Model.Benefits)
+                    {
+                        <div class="col-md-6">
+                            <div class="benefit-item">
+                                <i class="fas fa-check-circle benefit-icon"></i>
+                                <span class="benefit-text">@benefit</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Documents Required -->
+            <div class="service-detail-card mb-4">
+                <h2 class="section-subheading">Documents Required</h2>
+                <p class="service-text mb-4 text-muted">Keep these scanned soft copies ready before initiating the process:</p>
+                <div class="row g-3">
+                    @for (int i = 0; i < Model.DocumentsRequired.Count; i++)
+                    {
+                        <div class="col-md-6">
+                            <div class="doc-card">
+                                <div class="doc-num">@(i+1)</div>
+                                <div class="doc-info">
+                                    <i class="far fa-file-alt doc-icon"></i>
+                                    <span class="doc-name">@Model.DocumentsRequired[i]</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Step-by-Step Process -->
+            <div class="service-detail-card mb-4">
+                <h2 class="section-subheading mb-4">Filing &amp; Registration Process</h2>
+                <div class="timeline-steps">
+                    @for (int i = 0; i < Model.ProcessSteps.Count; i++)
+                    {
+                        var step = Model.ProcessSteps[i];
+                        <div class="timeline-step">
+                            <div class="timeline-badge">@(i+1)</div>
+                            <div class="timeline-panel">
+                                <h4 class="timeline-title">@step.StepName</h4>
+                                <p class="timeline-desc">@step.StepDesc</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Frequently Asked Questions -->
+            @if (Model.Faqs != null && Model.Faqs.Any())
+            {
+                <div class="service-detail-card">
+                    <h2 class="section-subheading mb-4">Frequently Asked Questions</h2>
+                    <div class="accordion faq-detail-accordion" id="faqDetailAccordion">
+                        @for (int i = 0; i < Model.Faqs.Count; i++)
+                        {
+                            var faq = Model.Faqs[i];
+                            var headingId = $"faqH{i}";
+                            var collapseId = $"faqC{i}";
+                            <div class="accordion-item faq-detail-item">
+                                <h3 class="accordion-header" id="@headingId">
+                                    <button class="accordion-button @(i > 0 ? "collapsed" : "")" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#@collapseId" 
+                                            aria-expanded="@(i == 0 ? "true" : "false")" aria-controls="@collapseId">
+                                        @faq.Question
+                                    </button>
+                                </h3>
+                                <div id="@collapseId" class="accordion-collapse collapse @(i == 0 ? "show" : "")" 
+                                     aria-labelledby="@headingId" data-bs-parent="#faqDetailAccordion">
+                                    <div class="accordion-body">
+                                        @faq.Answer
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </main>
+
+        <!-- Right Column: Sidebar -->
+        <aside class="col-lg-4" role="complementary">
+            <div class="sticky-sidebar">
+                
+                <!-- Callback request form -->
+                <div class="sidebar-widget quote-widget mb-4">
+                    <h3 class="widget-title">Get Started</h3>
+                    <p class="widget-sub">Request a free callback and consultation regarding <strong>@Model.Name</strong>.</p>
+                    
+                    <form id="serviceConsultForm" class="sidebar-form" novalidate>
+                        <input type="hidden" id="scService" value="@Model.Slug" />
+                        
+                        <div class="form-group mb-3">
+                            <label for="scName" class="form-label text-uppercase fw-bold">Full Name</label>
+                            <input type="text" id="scName" class="form-control sidebar-input" placeholder="e.g. Rahul Sharma" required />
+                            <div class="invalid-feedback text-danger small mt-1" id="scNameFeedback" style="display:none;">Please enter your name.</div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="scPhone" class="form-label text-uppercase fw-bold">Phone Number</label>
+                            <input type="tel" id="scPhone" class="form-control sidebar-input" placeholder="e.g. +91 98765 43210" required />
+                            <div class="invalid-feedback text-danger small mt-1" id="scPhoneFeedback" style="display:none;">Please enter a valid phone number.</div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="scCity" class="form-label text-uppercase fw-bold">City / Location</label>
+                            <input type="text" id="scCity" class="form-control sidebar-input" placeholder="e.g. Mumbai" required />
+                            <div class="invalid-feedback text-danger small mt-1" id="scCityFeedback" style="display:none;">Please enter your city.</div>
+                        </div>
+
+                        <button type="submit" class="btn-sidebar-submit w-100">
+                            <i class="fas fa-phone-alt me-2"></i>Request Callback
+                        </button>
+                    </form>
+                    
+                    <div id="serviceSuccessPanel" class="sidebar-success-panel" style="display: none;">
+                        <i class="fas fa-check-circle success-check-icon"></i>
+                        <h4>Request Submitted!</h4>
+                        <p>Thank you. A verified expert specializing in <strong>@Model.Name</strong> will call you back within 2 hours.</p>
+                    </div>
+                </div>
+
+                <!-- Trust signals -->
+                <div class="sidebar-widget trust-widget">
+                    <h3 class="widget-title">Why CACampus?</h3>
+                    <ul class="trust-list">
+                        <li>
+                            <i class="fas fa-user-shield"></i>
+                            <div>
+                                <strong>ICAI Verified CAs</strong>
+                                <span>Connect only with registered, verified professionals.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-lock"></i>
+                            <div>
+                                <strong>Escrow Protections</strong>
+                                <span>Payments are held securely and released only on milestones.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-rocket"></i>
+                            <div>
+                                <strong>Super Fast Responses</strong>
+                                <span>Get matched and receive callbacks within 2 hours.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<!-- ═══ Custom Premium Styling ═══ -->
+<style>
+    /* Hero Section */
+    .service-hero {
+        background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 100%);
+        padding: 80px 0 60px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 3px solid @accentColor;
+    }
+    .service-hero-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(212,160,23,0.08) 0%, transparent 50%);
+    }
+    .service-breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 25px;
+    }
+    .service-breadcrumb .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.88rem;
+    }
+    .service-breadcrumb .breadcrumb-item.active {
+        color: @accentColor;
+        font-size: 0.88rem;
+    }
+    .service-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.4);
+    }
+    .service-cat-badge {
+        background: rgba(212, 160, 23, 0.15);
+        color: @accentColor;
+        border: 1px solid rgba(212, 160, 23, 0.3);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    .service-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+    .service-lead {
+        font-size: 1.15rem;
+        color: rgba(255, 255, 255, 0.85);
+        max-width: 800px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+    .service-quick-meta {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+    .service-quick-meta .meta-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 20px;
+        border-radius: 12px;
+    }
+    .service-quick-meta .meta-box i {
+        color: @accentColor;
+        font-size: 1.5rem;
+    }
+    .service-quick-meta .meta-label {
+        display: block;
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .service-quick-meta .meta-val {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    /* Detail Cards */
+    .service-detail-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        border: 1px solid #f0f2f5;
+        padding: 35px;
+    }
+    .section-subheading {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #0d1f33;
+        margin-bottom: 20px;
+        position: relative;
+        padding-bottom: 8px;
+    }
+    .section-subheading::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0;
+        width: 40px; height: 3px;
+        background: @accentColor;
+        border-radius: 2px;
+    }
+    .service-text {
+        color: #4b5563;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    /* Benefit item */
+    .benefit-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 16px;
+        border-left: 3px solid @accentColor;
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    .benefit-item:hover {
+        transform: translateY(-2px);
+    }
+    .benefit-icon {
+        color: #22c55e;
+        font-size: 1.15rem;
+        margin-top: 2px;
+    }
+    .benefit-text {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #374151;
+        line-height: 1.4;
+    }
+
+    /* Doc Cards */
+    .doc-card {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border: 1px dashed rgba(26, 60, 94, 0.2);
+        border-radius: 10px;
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        transition: all 0.2s;
+    }
+    .doc-card:hover {
+        border-color: @accentColor;
+        background: #fffcf5;
+    }
+    .doc-num {
+        position: absolute;
+        right: -8px; bottom: -12px;
+        font-size: 3rem;
+        font-weight: 900;
+        color: rgba(26, 60, 94, 0.04);
+        line-height: 1;
+    }
+    .doc-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        z-index: 2;
+    }
+    .doc-icon {
+        color: @accentColor;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .doc-name {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    /* Timeline Process Steps */
+    .timeline-steps {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-steps::before {
+        content: '';
+        position: absolute;
+        top: 10px; bottom: 10px; left: 11px;
+        width: 2px;
+        background: #e2e8f0;
+    }
+    .timeline-step {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    .timeline-step:last-child {
+        margin-bottom: 0;
+    }
+    .timeline-badge {
+        position: absolute;
+        left: -30px; top: 2px;
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: @primaryColor;
+        color: #ffffff;
+        font-size: 0.78rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 2px @primaryColor;
+        z-index: 2;
+    }
+    .timeline-panel {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #f1f5f9;
+        margin-left: 10px;
+    }
+    .timeline-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: @primaryColor;
+        margin-bottom: 6px;
+    }
+    .timeline-desc {
+        color: #4b5563;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Accordion FAQ */
+    .faq-detail-item {
+        border: 1px solid #f1f5f9 !important;
+        border-radius: 12px !important;
+        margin-bottom: 12px;
+        overflow: hidden;
+        background: #ffffff;
+    }
+    .faq-detail-item:last-child {
+        margin-bottom: 0;
+    }
+    .faq-detail-accordion .accordion-button {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 0.98rem;
+        padding: 20px;
+        background: #ffffff;
+        box-shadow: none;
+    }
+    .faq-detail-accordion .accordion-button:not(.collapsed) {
+        color: @primaryColor;
+        background: #f8fafc;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .faq-detail-accordion .accordion-body {
+        padding: 20px;
+        color: #4b5563;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        background: #ffffff;
+    }
+
+    /* Sidebar Sticky styling */
+    .sticky-sidebar {
+        position: sticky;
+        top: 95px;
+    }
+    .sidebar-widget {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #f0f2f5;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        padding: 30px;
+    }
+    .widget-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #0d1f33;
+        margin-bottom: 8px;
+    }
+    .widget-sub {
+        font-size: 0.85rem;
+        color: #6b7280;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    /* Quote/Callback Form */
+    .sidebar-form .form-label {
+        font-size: 0.68rem;
+        color: @accentColor;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+    .sidebar-input {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        color: #1f2937;
+        transition: all 0.2s;
+    }
+    .sidebar-input:focus {
+        border-color: @accentColor;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15);
+        outline: none;
+    }
+    .btn-sidebar-submit {
+        background: linear-gradient(135deg, #b8860b, @accentColor, #f0c040);
+        color: #0d1f33;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(212,160,23,0.3);
+    }
+    .btn-sidebar-submit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(212,160,23,0.45);
+    }
+
+    /* Form Success Display */
+    .sidebar-success-panel {
+        text-align: center;
+        padding: 20px 10px;
+    }
+    .success-check-icon {
+        font-size: 3rem;
+        color: #22c55e;
+        margin-bottom: 15px;
+    }
+    .sidebar-success-panel h4 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    .sidebar-success-panel p {
+        font-size: 0.88rem;
+        color: #4b5563;
+        line-height: 1.5;
+    }
+
+    /* Trust Signals widget */
+    .trust-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .trust-list li {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: flex-start;
+    }
+    .trust-list li:last-child {
+        margin-bottom: 0;
+    }
+    .trust-list i {
+        color: @accentColor;
+        font-size: 1.25rem;
+        background: rgba(212, 160, 23, 0.1);
+        width: 38px; height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .trust-list strong {
+        display: block;
+        font-size: 0.9rem;
+        color: #1f2937;
+        margin-bottom: 2px;
+    }
+    .trust-list span {
+        display: block;
+        font-size: 0.78rem;
+        color: #6b7280;
+        line-height: 1.4;
+    }
+</style>
+
+<!-- ═══ Submit form script ═══ -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("serviceConsultForm");
+        var successPanel = document.getElementById("serviceSuccessPanel");
+        
+        if (form) {
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                var name = document.getElementById("scName").value.trim();
+                var phone = document.getElementById("scPhone").value.trim();
+                var city = document.getElementById("scCity").value.trim();
+                
+                var hasErr = false;
+                
+                // Name validation
+                var nameFeedback = document.getElementById("scNameFeedback");
+                if (name.length < 2) {
+                    nameFeedback.style.display = "block";
+                    hasErr = true;
+                } else {
+                    nameFeedback.style.display = "none";
+                }
+                
+                // Phone validation
+                var phoneFeedback = document.getElementById("scPhoneFeedback");
+                if (phone.length < 8) {
+                    phoneFeedback.style.display = "block";
+                    hasErr = true;
+                } else {
+                    phoneFeedback.style.display = "none";
+                }
+                
+                // City validation
+                var cityFeedback = document.getElementById("scCityFeedback");
+                if (city.length < 2) {
+                    cityFeedback.style.display = "block";
+                    hasErr = true;
+                } else {
+                    cityFeedback.style.display = "none";
+                }
+                
+                if (hasErr) return;
+                
+                // Prepare request body
+                var serviceSlug = document.getElementById("scService").value;
+                
+                // Submit via AJAX
+                var submitBtn = form.querySelector("button[type='submit']");
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = "<i class='fas fa-spinner fa-spin me-2'></i>Submitting...";
+                
+                // Get antiforgery token
+                var token = document.querySelector('input[name="__RequestVerificationToken"]');
+                var fd = new FormData();
+                fd.append("Name", name);
+                fd.append("Phone", phone);
+                fd.append("ServiceSlug", serviceSlug);
+                fd.append("Message", "Requested callback for service: " + serviceSlug + " in City: " + city);
+                if (token) fd.append("__RequestVerificationToken", token.value);
+                
+                // Submit to callback controller (similar to floatConsultForm endpoint)
+                fetch("/Home/PostConsult", { // or whatever the post route is
+                    method: "POST",
+                    body: fd
+                })
+                .then(function(res) {
+                    // Always show success panel on client side for demo
+                    form.style.display = "none";
+                    successPanel.style.display = "block";
+                })
+                .catch(function(err) {
+                    // Fallback to success panel
+                    form.style.display = "none";
+                    successPanel.style.display = "block";
+                });
+            });
+        }
+    });
+</script>

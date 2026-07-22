@@ -62,6 +62,10 @@ public class SiteSettingsRecord
     public string H2Size           { get; set; } = "36";
     public string H3Size           { get; set; } = "28";
 
+    // Services Section
+    public string ServicesBadge    { get; set; } = "What We Cover";
+    public string ServicesTitle    { get; set; } = "Comprehensive Solutions <span>for Your Business</span>";
+
     // Buttons
     public string BtnPrimaryBg     { get; set; } = "#D4AF37";
     public string BtnPrimaryColor  { get; set; } = "#111111";

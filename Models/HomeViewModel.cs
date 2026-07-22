@@ -6,6 +6,7 @@ public class HomeViewModel
     public SiteStats Stats { get; set; } = new();
     public List<Testimonial> Testimonials { get; set; } = [];
     public List<FaqItem> Faqs { get; set; } = [];
+    public List<CoveredService> Services { get; set; } = [];
 }
 
 public class SiteStats

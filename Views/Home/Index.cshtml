@@ -1,4 +1,4 @@
-﻿@model caportal.Models.HomeViewModel
+@model caportal.Models.HomeViewModel
 @{
     ViewData["Title"] = "Find Verified Chartered Accountants in India";
     ViewData["Description"] = "CACampus connects businesses with 12,000+ ICAI-verified Chartered Accountants across India. Find CAs for GST filing, Income Tax, Audit, Corporate Compliance, FEMA & Startup Finance. Free to start.";
@@ -85,30 +85,26 @@
 <section class="services-grid-section" aria-labelledby="services-heading">
     <div class="container">
         <div class="text-center mb-4">
-            <span class="section-badge">What We Cover</span>
-            <h2 class="section-title" id="services-heading">Comprehensive Solutions <span>for Your Business</span></h2>
+            <span class="section-badge">@ViewBag.ServicesBadge</span>
+            <h2 class="section-title" id="services-heading">@Html.Raw(ViewBag.ServicesTitle)</h2>
         </div>
         <div class="row g-3">
-            @{
-                var services = new (string Icon, string Title, string Desc)[]
-                {
-                    ("fas fa-file-invoice-dollar","GST & Indirect Tax","Registration, returns, audits & litigation"),
-                    ("fas fa-landmark","Income Tax","ITR filing, assessments & appeals"),
-                    ("fas fa-building","Corporate Compliance","ROC filings, MCA & company law"),
-                    ("fas fa-balance-scale","Tax Litigation","ITAT, HC & SC representations"),
-                    ("fas fa-chart-line","Audit & Assurance","Statutory, internal & forensic audit"),
-                    ("fas fa-rocket","Startup Finance","Fundraising, ESOP & equity structuring"),
-                    ("fas fa-globe","FEMA & RBI","Cross-border transactions & NRI taxation"),
-                    ("fas fa-handshake","Transfer Pricing","International transactions & documentation"),
-                };
-            }
-            @foreach (var svc in services)
+            @foreach (var svc in Model.Services)
             {
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="service-card reveal">
-                        <div class="service-icon"><i class="@svc.Icon" aria-hidden="true"></i></div>
+                        <div class="service-icon">
+                            @if (!string.IsNullOrEmpty(svc.ImagePath))
+                            {
+                                <img src="@svc.ImagePath" alt="@svc.Title" />
+                            }
+                            else
+                            {
+                                <i class="@svc.Icon" aria-hidden="true"></i>
+                            }
+                        </div>
                         <div class="service-title">@svc.Title</div>
-                        <div class="service-desc">@svc.Desc</div>
+                        <div class="service-desc">@svc.Description</div>
                     </div>
                 </div>
             }
@@ -364,32 +360,47 @@
                 </div>
             </div>
             <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Platform</h6>
+                <h6 class="footer-heading">Registration</h6>
                 <ul class="footer-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#professionals">Find a CA</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#">Proprietorship</a></li>
+                    <li><a href="#">LLP Registration</a></li>
+                    <li><a href="#">Private Limited Co.</a></li>
+                    <li><a href="#">OPC Registration</a></li>
+                    <li><a href="#">Section 8 Company</a></li>
+                    <li><a href="#">Indian Subsidiary</a></li>
                 </ul>
             </div>
             <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Services</h6>
+                <h6 class="footer-heading">Tax &amp; GST</h6>
                 <ul class="footer-links">
-                    <li><a href="#">GST &amp; Indirect Tax</a></li>
-                    <li><a href="#">Income Tax</a></li>
-                    <li><a href="#">Audit &amp; Assurance</a></li>
-                    <li><a href="#">Corporate Compliance</a></li>
-                    <li><a href="#">Startup Finance</a></li>
+                    <li><a href="#">GST Registration</a></li>
+                    <li><a href="#">GST Return Filing</a></li>
+                    <li><a href="#">Income Tax Filing</a></li>
+                    <li><a href="#">TDS / TCS Filing</a></li>
+                    <li><a href="#">GST Notice Reply</a></li>
+                    <li><a href="#">NRI ITR Filing</a></li>
                 </ul>
             </div>
             <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Company</h6>
+                <h6 class="footer-heading">Licences &amp; IPR</h6>
                 <ul class="footer-links">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Press</a></li>
-                    <li><a href="/Home/Privacy">Privacy Policy</a></li>
+                    <li><a href="#">FSSAI Licence</a></li>
+                    <li><a href="#">Trade Licence</a></li>
+                    <li><a href="#">IEC Registration</a></li>
+                    <li><a href="#">Trademark Registration</a></li>
+                    <li><a href="#">Copyright Registration</a></li>
+                    <li><a href="#">ISO Certification</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <h6 class="footer-heading">Compliance &amp; Audit</h6>
+                <ul class="footer-links">
+                    <li><a href="#">ROC / MCA Filing</a></li>
+                    <li><a href="#">Annual Compliance</a></li>
+                    <li><a href="#">Statutory Audit</a></li>
+                    <li><a href="#">EPF / ESIC</a></li>
+                    <li><a href="#">FEMA / Transfer Pricing</a></li>
+                    <li><a href="#">NGO / Trust Reg.</a></li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6">
