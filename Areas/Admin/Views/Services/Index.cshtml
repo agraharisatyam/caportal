@@ -176,6 +176,12 @@
                         <input type="number" name="displayOrder" id="fOrder" class="form-control"
                                value="1" min="1" max="999" />
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Page URL <small class="text-muted">(on click)</small></label>
+                        <input type="text" name="pageUrl" id="fPageUrl" class="form-control"
+                               placeholder="#professionals" />
+                        <div class="form-text">e.g. <code>#professionals</code> or <code>/services/gst</code></div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -219,6 +225,7 @@
         document.getElementById('fTitle').value = '';
         document.getElementById('fDesc').value  = '';
         document.getElementById('fOrder').value = '@nextOrder';
+        document.getElementById('fPageUrl').value = '#professionals';
         document.getElementById('fImageFile').value = '';
         document.getElementById('currentImgWrap').style.display = 'none';
         document.getElementById('currentImg').src = '';

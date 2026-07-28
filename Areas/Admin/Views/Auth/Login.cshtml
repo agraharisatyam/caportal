@@ -1,142 +1,367 @@
 @{
     Layout = null;
     ViewData["Title"] = "Admin Login";
+    var loginSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+    var loginSettings = loginSvc?.Get();
+    var loginLogo = loginSettings?.LogoPath;
+    var loginSiteName = loginSettings?.SiteName ?? "CACampus";
 }
 <!doctype html>
-<html lang="en" data-pc-preset="preset-1" data-pc-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
-  <title>Login - CACampus Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — @loginSiteName</title>
   <link rel="icon" href="~/datta/images/favicon.svg" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="~/datta/fonts/tabler-icons.min.css" />
-  <link rel="stylesheet" href="~/datta/fonts/feather.css" />
   <link rel="stylesheet" href="~/datta/fonts/fontawesome.css" />
-  <link rel="stylesheet" href="~/datta/fonts/material.css" />
-  <link rel="stylesheet" href="~/datta/css/style.css" />
   <style>
-    .ca-login-brand { text-align:center; margin-bottom:1.5rem; }
-    .ca-login-brand .brand-title { font-size:1.6rem; font-weight:700; color:#1a3c5e; margin-top:.5rem; }
-    .ca-login-brand .brand-title span { color:#d4a017; }
-    .ca-login-brand .brand-sub { font-size:.8rem; color:#6b7280; margin-top:2px; }
-    .error-msg { color:#ef4444; font-size:.85rem; margin-bottom:1rem;
-                  background:#fef2f2; border:1px solid #fecaca;
-                  padding:.6rem 1rem; border-radius:8px; }
-    .input-eye { position:relative; }
-    .input-eye .eye-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%);
-                           background:none; border:none; cursor:pointer; color:#9ca3af; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5d87a 0%, #f0a04b 50%, #e8624a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      padding: 24px;
+    }
+
+    /* ── Outer card ── */
+    .login-card {
+      display: flex;
+      width: 100%;
+      max-width: 960px;
+      min-height: 540px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+    }
+
+    /* ── Left panel ── */
+    .login-left {
+      flex: 1;
+      position: relative;
+      background: #c0195a;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 48px 40px;
+      overflow: hidden;
+      /* diagonal right edge */
+      clip-path: polygon(0 0, 92% 0, 100% 100%, 0 100%);
+    }
+
+    /* Repeating leaf/floral pattern overlay */
+    .login-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 60px 80px at 10% 20%, rgba(255,255,255,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 40px 60px at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 100%),
+        radial-gradient(ellipse 80px 60px at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 100%);
+      z-index: 0;
+    }
+
+    /* SVG floral pattern */
+    .login-left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ccircle cx='60' cy='60' r='40' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1.5'/%3E%3Ccircle cx='60' cy='60' r='25' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3Ccircle cx='60' cy='20' r='8' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3Ccircle cx='60' cy='100' r='8' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3Ccircle cx='20' cy='60' r='8' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3Ccircle cx='100' cy='60' r='8' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 120px 120px;
+      z-index: 0;
+      opacity: 0.9;
+    }
+
+    .login-left-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-left-sub {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+
+    .login-left-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      line-height: 1.2;
+    }
+
+    .login-left-stats {
+      display: flex;
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .login-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-stat-num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .login-stat-lbl {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.65);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Right panel ── */
+    .login-right {
+      width: 420px;
+      flex-shrink: 0;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+    }
+
+    /* Logo */
+    .login-logo {
+      margin-bottom: 8px;
+    }
+
+    .login-logo img {
+      max-height: 60px;
+      max-width: 180px;
+      object-fit: contain;
+    }
+
+    .login-logo-text {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1a3c5e;
+    }
+
+    .login-logo-text span { color: #c0195a; }
+
+    /* Welcome heading */
+    .login-welcome {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .login-sub {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    /* Inputs */
+    .login-field {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #c0195a;
+      border-radius: 6px;
+      background: #ffffff;
+      font-size: 0.88rem;
+      color: #1a1a2e;
+      outline: none;
+      transition: box-shadow 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .login-input::placeholder { color: #9ca3af; }
+
+    .login-input:focus {
+      box-shadow: 0 0 0 3px rgba(192,25,90,0.15);
+      border-color: #a01248;
+    }
+
+    .input-wrap { position: relative; }
+
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9ca3af;
+      padding: 0;
+    }
+
+    /* Error */
+    .error-msg {
+      width: 100%;
+      color: #b91c1c;
+      font-size: .82rem;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: .55rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 14px;
+    }
+
+    /* Login button */
+    .login-btn {
+      width: 160px;
+      padding: 11px;
+      background: #c0195a;
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .login-btn:hover {
+      background: #a01248;
+      transform: translateY(-1px);
+    }
+
+    .login-footer-text {
+      font-size: 0.72rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.5;
+      max-width: 300px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 767px) {
+      .login-left { display: none; }
+      .login-card { max-width: 420px; }
+      .login-right { width: 100%; padding: 40px 28px; }
+    }
   </style>
 </head>
 <body>
-  <!-- Pre-loader -->
-  <div class="loader-bg fixed inset-0 bg-white dark:bg-themedark-cardbg z-[1034]">
-    <div class="loader-track h-[5px] w-full inline-block absolute overflow-hidden top-0">
-      <div class="loader-fill w-[300px] h-[5px] bg-primary-500 absolute top-0 left-0 animate-[hitZak_0.6s_ease-in-out_infinite_alternate]"></div>
-    </div>
-  </div>
 
-  <div class="auth-main relative">
-    <div class="auth-wrapper v1 flex items-center w-full h-full min-h-screen">
-      <div class="auth-form flex items-center justify-center grow flex-col min-h-screen relative p-6">
-        <div class="w-full max-w-[380px] relative">
-          <!-- Animated blobs -->
-          <div class="auth-bg">
-            <span class="absolute top-[-100px] right-[-100px] w-[300px] h-[300px] block rounded-full bg-theme-bg-1 animate-[floating_7s_infinite]"></span>
-            <span class="absolute top-[150px] right-[-150px] w-5 h-5 block rounded-full bg-primary-500 animate-[floating_9s_infinite]"></span>
-            <span class="absolute left-[-150px] bottom-[150px] w-5 h-5 block rounded-full bg-theme-bg-1 animate-[floating_7s_infinite]"></span>
-            <span class="absolute left-[-100px] bottom-[-100px] w-[300px] h-[300px] block rounded-full bg-theme-bg-2 animate-[floating_9s_infinite]"></span>
+  <div class="login-card">
+
+    <!-- ── Left Panel ── -->
+    <div class="login-left">
+      <div class="login-left-content">
+        <div class="login-left-sub">My Dashboard</div>
+        <div class="login-left-title">ADMIN LOGIN</div>
+        <div class="login-left-stats">
+          <div class="login-stat">
+            <span class="login-stat-num">50K+</span>
+            <span class="login-stat-lbl">Clients</span>
           </div>
-
-          <div class="card sm:my-12 w-full shadow-none">
-            <div class="card-body !p-10">
-
-              <!-- Brand -->
-              <div class="ca-login-brand">
-                @{
-                    var loginSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
-                    var loginSettings = loginSvc?.Get();
-                    var loginLogo = loginSettings?.LogoPath;
-                    var loginSiteName = loginSettings?.SiteName ?? "CACampus";
-                }
-                @if (!string.IsNullOrEmpty(loginLogo))
-                {
-                    <img src="@loginLogo" alt="@(loginSettings?.LogoAlt ?? loginSiteName)" style="max-height:56px;max-width:180px;object-fit:contain;margin-bottom:.5rem;" />
-                }
-                else
-                {
-                    <div class="brand-title"><span>CA</span>Campus</div>
-                }
-                <div class="brand-sub">Admin Portal · Secure Access</div>
-              </div>
-
-              <h4 class="text-center font-medium mb-6">Sign In</h4>
-
-              @if (!string.IsNullOrEmpty(ViewBag.Error as string))
-              {
-                <div class="error-msg">
-                  <i class="ti ti-alert-circle me-1"></i> @ViewBag.Error
-                </div>
-              }
-
-              <form method="post" asp-area="Admin" asp-controller="Auth" asp-action="Login">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
-
-                <div class="mb-4">
-                  <label class="form-label font-medium" for="username">Username</label>
-                  <input type="text" class="form-control" id="username" name="username"
-                         placeholder="Enter username" autocomplete="username" required autofocus />
-                </div>
-
-                <div class="mb-4">
-                  <label class="form-label font-medium" for="password">Password</label>
-                  <div class="input-eye">
-                    <input type="password" class="form-control" id="password" name="password"
-                           placeholder="Enter password" autocomplete="current-password" required />
-                    <button type="button" class="eye-btn" onclick="togglePwd()" tabindex="-1" aria-label="Toggle password">
-                      <i class="ti ti-eye" id="eyeIcon"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="mt-6">
-                  <button type="submit" class="btn btn-primary w-full">
-                    <i class="ti ti-login me-1"></i> Login
-                  </button>
-                </div>
-              </form>
-
-              <p class="text-center text-muted text-sm mt-5 mb-0">
-                CACampus &copy; 2026 &mdash; All rights reserved
-              </p>
-            </div>
+          <div class="login-stat">
+            <span class="login-stat-num">200+</span>
+            <span class="login-stat-lbl">Expert CAs</span>
+          </div>
+          <div class="login-stat">
+            <span class="login-stat-num">100%</span>
+            <span class="login-stat-lbl">Verified</span>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- ── Right Panel ── -->
+    <div class="login-right">
+
+      <!-- Logo -->
+      <div class="login-logo mb-2">
+        @if (!string.IsNullOrEmpty(loginLogo))
+        {
+          <img src="@loginLogo" alt="@(loginSettings?.LogoAlt ?? loginSiteName)" />
+        }
+        else
+        {
+          <div class="login-logo-text"><span>CA</span>@loginSiteName.Replace("CA","")</div>
+        }
+      </div>
+
+      <h2 class="login-welcome">WELCOME BACK!</h2>
+      <p class="login-sub">Please login to view your dashboard</p>
+
+      @if (!string.IsNullOrEmpty(ViewBag.Error as string))
+      {
+        <div class="error-msg">
+          <i class="fas fa-exclamation-circle me-1"></i> @ViewBag.Error
+        </div>
+      }
+
+      <form method="post" asp-area="Admin" asp-controller="Auth" asp-action="Login"
+            style="width:100%;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+        <div class="login-field">
+          <input type="text" name="username" class="login-input"
+                 placeholder="User Name" autocomplete="username" required autofocus />
+        </div>
+
+        <div class="login-field">
+          <div class="input-wrap">
+            <input type="password" name="password" id="password" class="login-input"
+                   placeholder="Password" autocomplete="current-password" required />
+            <button type="button" class="eye-btn" onclick="togglePwd()" tabindex="-1">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align:center;">
+          <button type="submit" class="login-btn">LOGIN</button>
+        </div>
+      </form>
+
+      <p class="login-footer-text">
+        By signing in you accept all our terms and conditions, privacy policy and cookie policy.
+        We do not share your data with any third party vendors.
+      </p>
+
+      <p style="font-size:0.72rem;color:#9ca3af;margin-top:12px;">
+        &copy; @DateTime.Now.Year @loginSiteName &mdash; All rights reserved
+      </p>
+    </div>
+
   </div>
 
-  <script src="~/datta/js/plugins/simplebar.min.js"></script>
-  <script src="~/datta/js/plugins/popper.min.js"></script>
-  <script src="~/datta/js/plugins/feather.min.js"></script>
-  <script src="~/datta/js/component.js"></script>
-  <script src="~/datta/js/theme.js"></script>
-  <script src="~/datta/js/script.js"></script>
   <script>
     function togglePwd() {
       var p = document.getElementById('password');
       var i = document.getElementById('eyeIcon');
       if (p.type === 'password') {
         p.type = 'text';
-        i.className = 'ti ti-eye-off';
+        i.className = 'fas fa-eye-slash';
       } else {
         p.type = 'password';
-        i.className = 'ti ti-eye';
+        i.className = 'fas fa-eye';
       }
     }
-    layout_change('false');
-    preset_change('preset-1');
   </script>
+
 </body>
 </html>

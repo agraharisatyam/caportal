@@ -48,6 +48,7 @@
                         <a class="settings-tab" data-tab="hero"     href="#"><i data-feather="image" class="w-4 h-4"></i> Hero Section</a>
                         <a class="settings-tab" data-tab="body"     href="#"><i data-feather="type" class="w-4 h-4"></i> Body & Typography</a>
                         <a class="settings-tab" data-tab="colors"   href="#"><i data-feather="droplet" class="w-4 h-4"></i> Brand Colors</a>
+                        <a class="settings-tab" data-tab="featuredcas" href="#"><i data-feather="users" class="w-4 h-4"></i> Featured CAs Section</a>
                         <a class="settings-tab" data-tab="footer"   href="#"><i data-feather="minus-square" class="w-4 h-4"></i> Footer</a>
                         <a class="settings-tab" data-tab="buttons"  href="#"><i data-feather="square" class="w-4 h-4"></i> Buttons</a>
                     </div>
@@ -392,6 +393,29 @@
                 </div>
             </div>
 
+            <!-- ══ PANEL: Featured CAs Section ══ -->
+            <div class="settings-panel" id="panel-featuredcas">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i data-feather="users" class="inline w-4 h-4 me-2"></i>Featured CAs Settings</h5></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Section Badge</label>
+                                <input asp-for="FeaturedCAsBadge" class="form-control" />
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Section Title <small class="text-muted">(use &lt;span&gt; for highlight)</small></label>
+                                <input asp-for="FeaturedCAsTitle" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Section Subtitle</label>
+                                <textarea asp-for="FeaturedCAsSubtitle" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ══ PANEL: Footer ══ -->
             <div class="settings-panel" id="panel-footer">
                 <div class="card">
@@ -415,6 +439,38 @@
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Footer About Text</label>
                                 <textarea asp-for="FooterText" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <!-- Social Media URLs -->
+                            <div class="col-12">
+                                <h6 class="fw-bold mb-3" style="color:#d4a017;">
+                                    <i data-feather="share-2" class="inline w-4 h-4 me-1"></i> Social Media Links
+                                </h6>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold"><i class="fab fa-facebook-f me-1" style="color:#1877f2;"></i>Facebook URL</label>
+                                <input asp-for="SocialFacebook" class="form-control" placeholder="https://facebook.com/yourpage" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold"><i class="fab fa-instagram me-1" style="color:#e1306c;"></i>Instagram URL</label>
+                                <input asp-for="SocialInstagram" class="form-control" placeholder="https://instagram.com/yourhandle" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold"><i class="fab fa-linkedin-in me-1" style="color:#0a66c2;"></i>LinkedIn URL</label>
+                                <input asp-for="SocialLinkedIn" class="form-control" placeholder="https://linkedin.com/company/yourpage" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold"><i class="fab fa-x-twitter me-1" style="color:#000;"></i>Twitter / X URL</label>
+                                <input asp-for="SocialTwitter" class="form-control" placeholder="https://x.com/yourhandle" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold"><i class="fab fa-youtube me-1" style="color:#ff0000;"></i>YouTube URL</label>
+                                <input asp-for="SocialYouTube" class="form-control" placeholder="https://youtube.com/@yourchannel" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold"><i class="fab fa-whatsapp me-1" style="color:#25d366;"></i>WhatsApp Number</label>
+                                <input asp-for="SocialWhatsApp" class="form-control" placeholder="+91 98765 43210" />
+                                <div class="form-text">Phone number only — will be used for wa.me link</div>
                             </div>
                         </div>
                     </div>

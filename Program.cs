@@ -70,6 +70,11 @@ app.MapControllerRoute(
 
 // ── Default route ─────────────────────────────────────────────────────────
 app.MapControllerRoute(
+    name: "service_detail",
+    pattern: "service/{id:int}",
+    defaults: new { controller = "Service", action = "Detail" });
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();

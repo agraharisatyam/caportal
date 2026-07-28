@@ -49,6 +49,14 @@ public class SiteSettings
     public string FooterFontColor { get; set; } = "rgba(255,255,255,0.7)";
     public string FooterText      { get; set; } = "India's premier platform connecting businesses with ICAI-verified Chartered Accountants.";
 
+    // ── Social Media ──────────────────────────────────
+    public string SocialFacebook  { get; set; } = "";
+    public string SocialInstagram { get; set; } = "";
+    public string SocialLinkedIn  { get; set; } = "";
+    public string SocialTwitter   { get; set; } = "";
+    public string SocialYouTube   { get; set; } = "";
+    public string SocialWhatsApp  { get; set; } = "";
+
     // ── Typography ────────────────────────────────────
     public string HeadingFont     { get; set; } = "Playfair Display";
     public string HeadingColor    { get; set; } = "#0d1f33";
@@ -59,6 +67,25 @@ public class SiteSettings
     // ── Covered Services Section ──────────────────────
     public string ServicesBadge   { get; set; } = "What We Cover";
     public string ServicesTitle   { get; set; } = "Comprehensive Solutions <span>for Your Business</span>";
+
+    // ── Why Choose Us Section ─────────────────────────
+    public string WhyChooseUsBadge      { get; set; } = "WHY CHOOSE";
+    public string WhyChooseUsTitle      { get; set; } = "CA CHARTERED CAMPUS?";
+    public string WhyChooseUsSub        { get; set; } = "We combine expertise, technology and commitment to deliver reliable CA, legal and compliance solutions for individuals and businesses.";
+    public string WhyChooseUsStatsTitle { get; set; } = "TRUSTED BY 50,000+ BUSINESSES";
+    public string WhyChooseUsStat1Val   { get; set; } = "50,000+";
+    public string WhyChooseUsStat1Lbl   { get; set; } = "Businesses Served";
+    public string WhyChooseUsStat2Val   { get; set; } = "200+";
+    public string WhyChooseUsStat2Lbl   { get; set; } = "Expert CAs";
+    public string WhyChooseUsStat3Val   { get; set; } = "15+";
+    public string WhyChooseUsStat3Lbl   { get; set; } = "Service Categories";
+    public string WhyChooseUsStat4Val   { get; set; } = "24x7";
+    public string WhyChooseUsStat4Lbl   { get; set; } = "Support Available";
+
+    // ── Featured CAs Section ──────────────────────────
+    public string FeaturedCAsBadge      { get; set; } = "Top Talent";
+    public string FeaturedCAsTitle      { get; set; } = "Trusted Chartered Accountants <span>Across India</span>";
+    public string FeaturedCAsSubtitle   { get; set; } = "Handpicked CAs with proven track records, top ratings, and deep domain expertise.";
 
     // ── Buttons ───────────────────────────────────────
     public string BtnPrimaryBg    { get; set; } = "#d4a017";

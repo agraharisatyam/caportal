@@ -82,6 +82,14 @@
                         <div class="form-text">Lower numbers appear first.</div>
                     </div>
 
+                    <!-- Page URL -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Page URL <small class="text-muted">(where card click leads)</small></label>
+                        <input type="text" name="pageUrl" class="form-control"
+                               value="@Model.PageUrl" placeholder="#professionals or /services/gst" />
+                        <div class="form-text">Use <code>#professionals</code> to scroll to CAs, or a full URL like <code>/services/gst</code>.</div>
+                    </div>
+
                     <!-- Actions -->
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary px-5">

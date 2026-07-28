@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-direction="ltr" dir="ltr" data-pc-theme="light">
+<html lang="en" data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-direction="ltr" dir="ltr" data-pc-theme="dark">
 <head>
   <title>@ViewData["Title"] - CACampus Admin</title>
   <meta charset="utf-8" />
@@ -12,6 +12,13 @@
   <link rel="stylesheet" href="~/datta/fonts/fontawesome.css" />
   <link rel="stylesheet" href="~/datta/fonts/material.css" />
   <link rel="stylesheet" href="~/datta/css/style.css" />
+  <link rel="stylesheet" href="~/css/admin-dark-gold.css" asp-append-version="true" />
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem('admin-theme') || 'dark';
+      document.documentElement.setAttribute('data-pc-theme', savedTheme);
+    })();
+  </script>
   @await RenderSectionAsync("HeadStyles", required: false)
 </head>
 <body>
@@ -79,6 +86,12 @@
             <a href="/Admin/Services" class="pc-link">
               <span class="pc-micon"><i data-feather="grid"></i></span>
               <span class="pc-mtext">Manage Services</span>
+            </a>
+          </li>
+          <li class="pc-item">
+            <a href="/Admin/WhyChooseUs" class="pc-link">
+              <span class="pc-micon"><i data-feather="check-square"></i></span>
+              <span class="pc-mtext">Why Choose Us</span>
             </a>
           </li>
 
@@ -178,9 +191,29 @@
   @await RenderSectionAsync("Scripts", required: false)
 
   <script>
-    // init feather icons after page load
+    // Hook layout_change to persist selected theme in localStorage
+    var original_layout_change = window.layout_change;
+    window.layout_change = function(theme) {
+        document.documentElement.setAttribute('data-pc-theme', theme);
+        localStorage.setItem('admin-theme', theme);
+        updateThemeIcon(theme);
+        if (typeof original_layout_change === 'function') {
+            original_layout_change(theme);
+        }
+    };
+
+    function updateThemeIcon(theme) {
+        var toggle = document.querySelector('.pc-h-item.dropdown a.dropdown-toggle i');
+        if (toggle && typeof feather !== 'undefined') {
+            toggle.setAttribute('data-feather', theme === 'dark' ? 'moon' : 'sun');
+            feather.replace();
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
-      if (typeof feather !== 'undefined') feather.replace();
+        if (typeof feather !== 'undefined') feather.replace();
+        var savedTheme = localStorage.getItem('admin-theme') || 'dark';
+        updateThemeIcon(savedTheme);
     });
   </script>
 </body>

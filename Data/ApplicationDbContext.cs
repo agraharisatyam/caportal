@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<TodoItem> TodoItems { get; set; } = null!;
     public DbSet<SiteSettingsRecord> SiteSettings { get; set; } = null!;
     public DbSet<CoveredService> CoveredServices { get; set; } = null!;
+    public DbSet<WhyChooseUsItem> WhyChooseUsItems { get; set; } = null!;
 }
 
 public class TodoItem

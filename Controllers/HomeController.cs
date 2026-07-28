@@ -29,6 +29,33 @@ namespace caportal.Controllers
         public async Task<IActionResult> Index()
         {
             var settings = _settingsService.Get();
+
+            // Self-healing: if columns are empty in database for the existing row, populate default values
+            if (string.IsNullOrEmpty(settings.WhyChooseUsTitle))
+            {
+                settings.WhyChooseUsBadge      = "WHY CHOOSE";
+                settings.WhyChooseUsTitle      = "CA CHARTERED CAMPUS?";
+                settings.WhyChooseUsSub        = "We combine expertise, technology and commitment to deliver reliable CA, legal and compliance solutions for individuals and businesses.";
+                settings.WhyChooseUsStatsTitle = "TRUSTED BY 50,000+ BUSINESSES";
+                settings.WhyChooseUsStat1Val   = "50,000+";
+                settings.WhyChooseUsStat1Lbl   = "Businesses Served";
+                settings.WhyChooseUsStat2Val   = "200+";
+                settings.WhyChooseUsStat2Lbl   = "Expert CAs";
+                settings.WhyChooseUsStat3Val   = "15+";
+                settings.WhyChooseUsStat3Lbl   = "Service Categories";
+                settings.WhyChooseUsStat4Val   = "24x7";
+                settings.WhyChooseUsStat4Lbl   = "Support Available";
+                _settingsService.Save(settings);
+            }
+
+            if (string.IsNullOrEmpty(settings.FeaturedCAsTitle))
+            {
+                settings.FeaturedCAsBadge      = "Top Talent";
+                settings.FeaturedCAsTitle      = "Trusted Chartered Accountants <span>Across India</span>";
+                settings.FeaturedCAsSubtitle   = "Handpicked CAs with proven track records, top ratings, and deep domain expertise.";
+                _settingsService.Save(settings);
+            }
+
             ViewBag.Settings = settings;
             ViewBag.ServicesBadge = settings.ServicesBadge;
             ViewBag.ServicesTitle = settings.ServicesTitle;
@@ -55,9 +82,32 @@ namespace caportal.Controllers
                 services = defaults;
             }
 
+            // Load Why Choose Us items from DB, seed defaults if empty
+            var whyChooseUsItems = await db.WhyChooseUsItems.OrderBy(w => w.DisplayOrder).ToListAsync();
+            if (!whyChooseUsItems.Any())
+            {
+                var defaults = new List<WhyChooseUsItem>
+                {
+                    new() { Title = "EXPERT CA TEAM",            Description = "Qualified & experienced CAs and professionals with in-depth knowledge.", Icon = "fas fa-user-graduate", DisplayOrder = 1 },
+                    new() { Title = "100% RELIABLE",             Description = "Accurate, transparent and dependable services you can trust.",           Icon = "fas fa-shield-alt",    DisplayOrder = 2 },
+                    new() { Title = "ON-TIME DELIVERY",          Description = "We value your time and ensure timely delivery of all services.",          Icon = "fas fa-clock",         DisplayOrder = 3 },
+                    new() { Title = "AFFORDABLE PRICING",         Description = "Transparent pricing with no hidden charges and best value for money.",   Icon = "fas fa-rupee-sign",    DisplayOrder = 4 },
+                    new() { Title = "END-TO-END SUPPORT",        Description = "From consultation to completion, we provide complete support.",          Icon = "fas fa-thumbs-up",     DisplayOrder = 5 },
+                    new() { Title = "100% ONLINE PROCESS",       Description = "Paperless, hassle-free and fully online service experience.",             Icon = "fas fa-desktop",       DisplayOrder = 6 },
+                    new() { Title = "SECURE & CONFIDENTIAL",     Description = "Your data and documents are safe with us at every step.",                 Icon = "fas fa-lock",          DisplayOrder = 7 },
+                    new() { Title = "GOVERNMENT APPROVED",       Description = "All services are as per government norms and regulations.",               Icon = "fas fa-landmark",      DisplayOrder = 8 },
+                    new() { Title = "WIDE RANGE OF SERVICES",     Description = "One-stop solution for CA, tax, legal, compliance and business needs.",   Icon = "fas fa-award",         DisplayOrder = 9 },
+                    new() { Title = "DEDICATED SUPPORT",         Description = "Our support team is always available to assist you.",                     Icon = "fas fa-headset",       DisplayOrder = 10 }
+                };
+                db.WhyChooseUsItems.AddRange(defaults);
+                await db.SaveChangesAsync();
+                whyChooseUsItems = defaults;
+            }
+
             var vm = new HomeViewModel
             {
                 Services = services,
+                WhyChooseUsItems = whyChooseUsItems,
                 Stats = new SiteStats
                 {
                     TotalCAs          = "12K+",

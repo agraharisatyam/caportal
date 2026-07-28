@@ -69,7 +69,7 @@ namespace caportal.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(
             int id, string title, string description, int displayOrder,
-            IFormFile? imageFile, string? existingImagePath)
+            string? pageUrl, IFormFile? imageFile, string? existingImagePath)
         {
             var g = Auth(); if (g != null) return g;
 
@@ -102,6 +102,7 @@ namespace caportal.Areas.Admin.Controllers
                     Description  = description,
                     DisplayOrder = displayOrder,
                     ImagePath    = imagePath,
+                    PageUrl      = string.IsNullOrWhiteSpace(pageUrl) ? "#professionals" : pageUrl,
                     Icon         = "fas fa-briefcase"
                 });
                 TempData["Success"] = $"\"{title}\" added!";
@@ -114,6 +115,7 @@ namespace caportal.Areas.Admin.Controllers
                     existing.Title        = title;
                     existing.Description  = description;
                     existing.DisplayOrder = displayOrder;
+                    existing.PageUrl      = string.IsNullOrWhiteSpace(pageUrl) ? existing.PageUrl : pageUrl;
                     if (!string.IsNullOrEmpty(imagePath))
                         existing.ImagePath = imagePath;
                     TempData["Success"] = $"\"{title}\" updated!";
@@ -168,11 +170,10 @@ namespace caportal.Areas.Admin.Controllers
         [HttpPost("Admin/Services/Edit/{id:int}")]
         public async Task<IActionResult> Edit(
             int id, string title, string description, int displayOrder,
-            IFormFile? imageFile, string? existingImagePath)
+            string? pageUrl, IFormFile? imageFile, string? existingImagePath)
         {
             var g = Auth(); if (g != null) return g;
 
-            // Handle image upload
             string imagePath = existingImagePath ?? "";
             if (imageFile is { Length: > 0 })
             {
@@ -199,6 +200,7 @@ namespace caportal.Areas.Admin.Controllers
                 existing.Title        = title;
                 existing.Description  = description;
                 existing.DisplayOrder = displayOrder;
+                existing.PageUrl      = string.IsNullOrWhiteSpace(pageUrl) ? existing.PageUrl : pageUrl;
                 if (!string.IsNullOrEmpty(imagePath))
                     existing.ImagePath = imagePath;
                 await db.SaveChangesAsync();

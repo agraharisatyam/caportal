@@ -18,9 +18,7 @@
     var mainNavEl = document.getElementById('mainNav');
 
     function positionMegaMenu(menu) {
-        if (!mainNavEl) return;
-        var navRect = mainNavEl.getBoundingClientRect();
-        menu.style.top = navRect.bottom + 'px';
+        // Positioned via CSS relative to container
     }
 
     document.querySelectorAll('.nav-dropdown').forEach(function (dropdown) {

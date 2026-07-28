@@ -295,7 +295,7 @@ body {
 /* ── TRUST STRIP ────────────────────────────── */
 .trust-strip {
     background: var(--light);
-    padding: 1.5rem 0;
+    padding: 1.2rem 0;
     border-bottom: 1px solid var(--gray-light);
 }
 .trust-strip-inner {
@@ -313,7 +313,7 @@ body {
 .trust-logo:hover { color: var(--primary-light); }
 
 /* ── SECTION COMMON ─────────────────────────── */
-section { padding: 5rem 0; }
+section { padding: 3.5rem 0; }
 .section-badge {
     display: inline-block;
     background: rgba(37,87,167,0.1);
@@ -571,7 +571,7 @@ section { padding: 5rem 0; }
 /* ── CTA SECTION ────────────────────────────── */
 .cta-section {
     background: var(--gradient-hero);
-    padding: 5rem 0;
+    padding: 3.5rem 0;
     position: relative;
     overflow: hidden;
 }
@@ -704,7 +704,7 @@ section { padding: 5rem 0; }
    FAQ SECTION
    ============================================= */
 .faq-section {
-    padding: 80px 0;
+    padding: 56px 0;
     background: var(--light);
 }
 
@@ -756,7 +756,7 @@ section { padding: 5rem 0; }
    FEATURES SECTION
    ============================================= */
 .features-section {
-    padding: 80px 0;
+    padding: 56px 0;
     background: var(--white);
 }
 
@@ -812,7 +812,7 @@ section { padding: 5rem 0; }
    PRICING SECTION
    ============================================= */
 .pricing-section {
-    padding: 80px 0;
+    padding: 56px 0;
     background: var(--light);
 }
 
@@ -1129,7 +1129,7 @@ section { padding: 5rem 0; }
     background: linear-gradient(135deg, #0a1628 0%, #0d1f33 40%, #1a2a4a 70%, #0d1f33 100%);
     display: flex;
     align-items: center;
-    padding: 120px 0 80px;
+    padding: 100px 0 60px;
     overflow: hidden;
 }
 
@@ -1346,7 +1346,7 @@ section { padding: 5rem 0; }
    SERVICES GRID
    ============================================= */
 .services-grid-section {
-    padding: 70px 0;
+    padding: 48px 0;
     background: #fff;
 }
 
@@ -1383,8 +1383,8 @@ section { padding: 5rem 0; }
 
 /* When service icon contains an uploaded image — show full size, no background */
 .service-icon:has(img) {
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 130px;
     background: none;
     border-radius: 0;
     display: block;
@@ -1393,11 +1393,11 @@ section { padding: 5rem 0; }
 
 .service-icon img {
     width: 100%;
-    height: 160px;
-    object-fit: cover;
+    height: 100%;
+    object-fit: contain;
     border-radius: 10px;
     display: block;
-    margin: 0 auto 0;
+    margin: 0 auto;
     transition: transform 0.3s;
 }
 
@@ -1423,12 +1423,24 @@ section { padding: 5rem 0; }
     line-height: 1.5;
 }
 
+/* Increase text sizes specifically for cards containing large images to match visual proportion */
+.service-card:has(img) .service-title {
+    font-size: 1.05rem !important;
+    margin-top: 10px !important;
+    margin-bottom: 8px !important;
+}
+
+.service-card:has(img) .service-desc {
+    font-size: 0.84rem !important;
+    line-height: 1.45 !important;
+}
+
 /* =============================================
    EXPERT CONNECT BAND
    ============================================= */
 .expert-band {
     background: linear-gradient(135deg, #0d1f33, #1a3c5e);
-    padding: 40px 0;
+    padding: 32px 0;
     border-top: 2px solid rgba(212,160,23,0.3);
     border-bottom: 2px solid rgba(212,160,23,0.3);
 }
@@ -2569,10 +2581,10 @@ section { padding: 5rem 0; }
    MEGA MENU FINAL OVERRIDE — premium dark style
    ============================================= */
 .nav-mega-menu--full {
-    background: #0d1f33 !important;
-    border: 1px solid rgba(212,175,55,0.25) !important;
+    background: #ffffff !important;
+    border: 1px solid #ede8d8 !important;
     border-radius: 0 0 16px 16px !important;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 24px 60px rgba(13,31,51,0.12) !important;
     padding: 36px 40px 28px !important;
     position: absolute !important;
     display: none !important;
@@ -2592,7 +2604,7 @@ section { padding: 5rem 0; }
 .nav-mega-menu--full .mega-col {
     flex: 1 1 0 !important;
     padding: 0 24px !important;
-    border-right: 1px solid rgba(255,255,255,0.08) !important;
+    border-right: 1px solid #ede8d8 !important;
     background: transparent !important;
     display: block !important;
 }
@@ -2603,26 +2615,26 @@ section { padding: 5rem 0; }
 .nav-mega-menu--full .mega-col-icon {
     width: 52px !important;
     height: 52px !important;
-    background: rgba(212,175,55,0.12) !important;
-    border: 1px solid rgba(212,175,55,0.3) !important;
+    background: rgba(212,175,55,0.08) !important;
+    border: 1px solid rgba(212,175,55,0.2) !important;
     border-radius: 12px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    color: #d4a017 !important;
+    color: #c9a227 !important;
     font-size: 1.4rem !important;
     margin-bottom: 10px !important;
 }
 
 /* Title */
 .nav-mega-menu--full .mega-col-title {
-    color: #d4a017 !important;
+    color: #c9a227 !important;
     font-size: 0.95rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.2px !important;
     margin-bottom: 14px !important;
     padding-bottom: 12px !important;
-    border-bottom: 1px solid rgba(212,175,55,0.25) !important;
+    border-bottom: 1px solid #ede8d8 !important;
     display: block !important;
 }
 
@@ -2634,7 +2646,7 @@ section { padding: 5rem 0; }
     gap: 8px !important;
     margin-bottom: 14px !important;
     padding-bottom: 14px !important;
-    border-bottom: 1px solid rgba(212,175,55,0.2) !important;
+    border-bottom: 1px solid #ede8d8 !important;
     background: transparent !important;
 }
 
@@ -2646,9 +2658,9 @@ section { padding: 5rem 0; }
 }
 
 .nav-mega-menu--full .mega-list li a {
-    color: rgba(255,255,255,0.78) !important;
+    color: #4b5563 !important;
     font-size: 0.83rem !important;
-    font-weight: 400 !important;
+    font-weight: 500 !important;
     padding: 5px 0 !important;
     display: flex !important;
     align-items: baseline !important;
@@ -2760,7 +2772,7 @@ section { padding: 5rem 0; }
 
 /* nav is the positioning context */
 .ca-navbar { position: sticky; top: 0; }
-.ca-navbar .container { position: static; }
+.ca-navbar .container { position: relative !important; }
 .ca-navbar .navbar-inner { position: static; }
 .ca-navbar ul.navbar-nav { position: static; }
 
@@ -2768,15 +2780,790 @@ section { padding: 5rem 0; }
    but the MENU itself anchors to the nav */
 .nav-dropdown { position: relative; }
 
-/* Full mega menu: anchors to the nav element edges */
-.nav-mega-menu--full {
-    position: fixed !important;
-    top: auto !important;
+/* Services dropdown specifically should be static so it anchors to container */
+#servicesNav {
+    position: static !important;
+}
+
+/* Full mega menu: anchors to the container edges & forces white background design */
+body .ca-navbar .nav-mega-menu--full {
+    background: #ffffff !important;
+    border: 1px solid #ede8d8 !important;
+    border-radius: 0 0 16px 16px !important;
+    box-shadow: 0 24px 60px rgba(13,31,51,0.12) !important;
+    position: absolute !important;
+    top: 100% !important;
     left: 0 !important;
     right: 0 !important;
-    width: 100% !important;
+    width: auto !important;
     max-width: 100% !important;
     transform: none !important;
-    border-radius: 0 0 16px 16px !important;
     margin-top: 0 !important;
+}
+
+body .ca-navbar .nav-mega-menu--full .mega-col {
+    border-right: 1px solid #ede8d8 !important;
+}
+
+body .ca-navbar .nav-mega-menu--full .mega-col-header {
+    border-bottom: 1px solid #ede8d8 !important;
+}
+
+body .ca-navbar .nav-mega-menu--full .mega-list li a {
+    color: #4b5563 !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    background: transparent !important;
+}
+
+body .ca-navbar .nav-mega-menu--full .mega-list li a:hover {
+    background: linear-gradient(135deg, #fef9ec, #fff8e1) !important;
+    color: #d4a017 !important;
+    padding-left: 12px !important;
+}
+
+body .ca-navbar .nav-mega-menu--full .mega-col-title {
+    color: #c9a227 !important;
+}
+
+/* =============================================
+   FOOTER REDESIGN — MATCH SCREENSHOT
+   ============================================= */
+body .ca-footer {
+    background: #0d0d0d !important;
+    color: #a3a3a3 !important;
+    padding: 48px 0 0 !important;
+}
+
+body .ca-footer .footer-brand {
+    margin-bottom: 20px !important;
+}
+
+body .ca-footer .footer-about {
+    font-size: 0.88rem !important;
+    line-height: 1.65 !important;
+    color: #a3a3a3 !important;
+    margin-top: 10px !important;
+    margin-bottom: 18px !important;
+}
+
+body .ca-footer .footer-heading {
+    color: #d4a017 !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 16px !important;
+    position: relative !important;
+    padding-bottom: 6px !important;
+}
+
+body .ca-footer .footer-heading::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 30px !important;
+    height: 2px !important;
+    background: #d4a017 !important;
+}
+
+body .ca-footer .footer-links {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+body .ca-footer .footer-links li {
+    margin-bottom: 8px !important;
+}
+
+body .ca-footer .footer-links li a {
+    color: #a3a3a3 !important;
+    text-decoration: none !important;
+    font-size: 0.88rem !important;
+    transition: color 0.2s !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+body .ca-footer .footer-links li a::before {
+    content: '›' !important;
+    color: #d4a017 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    margin-right: 8px !important;
+    line-height: 1 !important;
+}
+
+body .ca-footer .footer-links li a:hover {
+    color: #ffffff !important;
+}
+
+/* Get In Touch details list */
+body .ca-footer .footer-contact-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+body .ca-footer .footer-contact-list li {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    margin-bottom: 10px !important;
+    font-size: 0.88rem !important;
+    color: #a3a3a3 !important;
+    line-height: 1.5 !important;
+}
+
+body .ca-footer .footer-contact-list li i {
+    color: #d4a017 !important;
+    font-size: 1rem !important;
+    margin-top: 4px !important;
+    flex-shrink: 0 !important;
+    width: 16px !important;
+    text-align: center !important;
+}
+
+/* Social Outline Icons */
+body .ca-footer .footer-socials {
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: 16px !important;
+}
+
+body .ca-footer .footer-socials a {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(212,160,23,0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #d4a017 !important;
+    font-size: 0.85rem !important;
+    transition: all 0.25s ease !important;
+    text-decoration: none !important;
+}
+
+body .ca-footer .footer-socials a:hover {
+    background: #d4a017 !important;
+    color: #0d0d0d !important;
+    border-color: #d4a017 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Newsletter Subscription Row */
+body .ca-footer .footer-newsletter-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 24px !important;
+    padding: 24px 0 !important;
+    margin-top: 32px !important;
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+body .ca-footer .newsletter-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+}
+
+body .ca-footer .newsletter-icon-circle {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 50% !important;
+    border: 1.5px solid #d4a017 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #d4a017 !important;
+    font-size: 1.25rem !important;
+    flex-shrink: 0 !important;
+}
+
+body .ca-footer .newsletter-text-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+body .ca-footer .newsletter-title {
+    color: #d4a017 !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    letter-spacing: 0.5px !important;
+}
+
+body .ca-footer .newsletter-desc {
+    color: #7c7c7c !important;
+    font-size: 0.85rem !important;
+    margin: 0 !important;
+}
+
+body .ca-footer .newsletter-form {
+    display: flex !important;
+    align-items: center !important;
+    background: #111111 !important;
+    border: 1px solid #222222 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    min-width: 320px !important;
+}
+
+body .ca-footer .newsletter-input {
+    flex: 1 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    padding: 10px 16px !important;
+    color: #ffffff !important;
+    font-size: 0.88rem !important;
+}
+
+body .ca-footer .newsletter-input::placeholder {
+    color: #4b5563 !important;
+}
+
+body .ca-footer .newsletter-btn {
+    background: linear-gradient(135deg, #d4a017, #f0c040) !important;
+    color: #0d0d0d !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    font-weight: 800 !important;
+    font-size: 0.88rem !important;
+    cursor: pointer !important;
+    transition: opacity 0.2s !important;
+    display: flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+}
+
+body .ca-footer .newsletter-btn:hover {
+    opacity: 0.9 !important;
+}
+
+/* Bottom strip styles */
+body .ca-footer .footer-bottom-strip {
+    background: #050505 !important;
+    border-top: 1px solid #141414 !important;
+    padding: 16px 0 !important;
+}
+
+body .ca-footer .footer-bottom-links {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+}
+
+body .ca-footer .footer-bottom-links a {
+    color: #6b7280 !important;
+    font-size: 0.8rem !important;
+    text-decoration: none !important;
+    transition: color 0.2s !important;
+}
+
+body .ca-footer .footer-bottom-links a:hover {
+    color: #ffffff !important;
+}
+
+body .ca-footer .link-sep {
+    color: #222222 !important;
+    font-size: 0.8rem !important;
+    user-select: none !important;
+}
+
+body .ca-footer .footer-copyright {
+    color: #6b7280 !important;
+    font-size: 0.8rem !important;
+}
+
+/* Disable hover bridge pseudo-element for Services dropdown to prevent accidental hover triggers below the navbar */
+#servicesNav::after {
+    display: none !important;
+}
+
+/* =============================================
+   TAX & LEGAL DROPDOWN STYLING
+   ============================================= */
+#taxLegalNav {
+    position: static !important;
+}
+
+#taxLegalNav::after {
+    display: none !important;
+}
+
+body .ca-navbar #taxLegalNav .nav-mega-menu--full {
+    flex-direction: column !important;
+}
+
+body .ca-navbar .mega-columns-wrap {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    gap: 0 !important;
+}
+
+/* Card inside column */
+body .ca-navbar .mega-column-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: #fdfaf4 !important;
+    border: 1px solid #f3ecd8 !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    margin-top: 16px !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease !important;
+}
+
+body .ca-navbar .mega-column-card:hover {
+    background: #fcf4e4 !important;
+    border-color: #e6d3a8 !important;
+    transform: translateY(-2px) !important;
+}
+
+body .ca-navbar .mega-card-icon {
+    width: 32px !important;
+    height: 32px !important;
+    background: rgba(212,160,23,0.1) !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #c9a227 !important;
+    font-size: 0.95rem !important;
+    flex-shrink: 0 !important;
+}
+
+body .ca-navbar .mega-card-text {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+}
+
+body .ca-navbar .mega-card-title {
+    color: #1a3c5e !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
+
+body .ca-navbar .mega-card-sub {
+    color: #7c7c7c !important;
+    font-size: 0.68rem !important;
+    line-height: 1.3 !important;
+}
+
+body .ca-navbar .mega-card-arrow {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    background: rgba(212,160,23,0.12) !important;
+    color: #c9a227 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.7rem !important;
+    transition: transform 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+body .ca-navbar .mega-column-card:hover .mega-card-arrow {
+    transform: translateX(3px) !important;
+}
+
+/* Mega Bottom bar */
+body .ca-navbar .mega-bottom-bar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+    background: #fcfaf4 !important;
+    border: 1px solid #ede8d8 !important;
+    border-radius: 12px !important;
+    padding: 16px 24px !important;
+    margin-top: 24px !important;
+    width: 100% !important;
+}
+
+body .ca-navbar .mega-bar-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+}
+
+body .ca-navbar .mega-bar-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #d4a017, #f0c040) !important;
+    color: #0d0d0d !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.2rem !important;
+    flex-shrink: 0 !important;
+}
+
+body .ca-navbar .mega-bar-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+}
+
+body .ca-navbar .mega-bar-title {
+    color: #1a3c5e !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+
+body .ca-navbar .mega-bar-sub {
+    color: #6b7280 !important;
+    font-size: 0.78rem !important;
+    margin: 0 !important;
+}
+
+body .ca-navbar .mega-bar-center {
+    display: flex !important;
+    align-items: center !important;
+    gap: 24px !important;
+    flex-wrap: wrap !important;
+}
+
+body .ca-navbar .mega-badge-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+body .ca-navbar .mega-badge-item i {
+    font-size: 1.1rem !important;
+    color: #c9a227 !important;
+    background: rgba(212,160,23,0.08) !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+body .ca-navbar .mega-badge-item div {
+    display: flex !important;
+    flex-direction: column !important;
+    line-height: 1.2 !important;
+}
+
+body .ca-navbar .mega-badge-item .badge-lbl {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    color: #1a3c5e !important;
+}
+
+body .ca-navbar .mega-badge-item .badge-val {
+    font-size: 0.68rem !important;
+    color: #6b7280 !important;
+}
+
+body .ca-navbar .mega-bar-right {
+    flex-shrink: 0 !important;
+}
+
+body .ca-navbar .mega-bar-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    background: linear-gradient(135deg, #d4a017, #f0c040) !important;
+    color: #0d0d0d !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    font-size: 0.82rem !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 12px rgba(212,160,23,0.2) !important;
+}
+
+body .ca-navbar .mega-bar-btn:hover {
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 6px 16px rgba(212,160,23,0.3) !important;
+}
+
+/* =============================================
+   FINAL FIXES
+   ============================================= */
+
+/* 1. Mega menu list text — force visible regardless of dynamic CSS */
+.nav-mega-menu--full .mega-list li,
+.nav-mega-menu--full .mega-list li a,
+.nav-mega-menu--full .mega-list li a * {
+    color: #1a1a1a !important;
+    background: transparent !important;
+    -webkit-text-fill-color: #1a1a1a !important;
+}
+
+.nav-mega-menu--full .mega-list li a::before {
+    color: #d4a017 !important;
+    -webkit-text-fill-color: #d4a017 !important;
+}
+
+.nav-mega-menu--full .mega-list li a:hover,
+.nav-mega-menu--full .mega-list li a:hover * {
+    color: #d4a017 !important;
+    -webkit-text-fill-color: #d4a017 !important;
+}
+
+/* 2. Service card with image — remove hover background flash */
+.service-card:has(img):hover .service-icon,
+.service-card:has(img) .service-icon:has(img) {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+.service-card:has(img):hover {
+    border-color: #d4a017;
+    box-shadow: 0 12px 40px rgba(212,160,23,0.15);
+}
+
+/* Remove side yellow bars on image service cards */
+.service-icon img {
+    display: block;
+    width: 100%;
+    height: 140px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: transparent;
+}
+
+.service-icon:has(img) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+/* =============================================
+   FOOTER — MOBILE HORIZONTAL LINKS
+   ============================================= */
+@media (max-width: 767px) {
+
+    /* Each footer column heading stays normal */
+    body .ca-footer .footer-heading {
+        font-size: 0.82rem !important;
+        margin-bottom: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+    }
+
+    /* Turn the <ul> into a wrapping flex row */
+    body .ca-footer .footer-links {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 0 !important;
+        padding: 0 !important;
+        margin: 0 0 4px !important;
+    }
+
+    /* Each <li> inline, add | separator */
+    body .ca-footer .footer-links li {
+        display: inline-flex !important;
+        align-items: center !important;
+        margin-bottom: 6px !important;
+    }
+
+    /* Pipe separator after each li except last */
+    body .ca-footer .footer-links li::after {
+        content: '|' !important;
+        color: rgba(255,255,255,0.25) !important;
+        margin: 0 8px !important;
+        font-size: 0.75rem !important;
+    }
+
+    body .ca-footer .footer-links li:last-child::after {
+        display: none !important;
+    }
+
+    /* Link styling */
+    body .ca-footer .footer-links li a {
+        font-size: 0.8rem !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Hide › arrow on mobile horizontal layout */
+    body .ca-footer .footer-links li a::before {
+        display: none !important;
+    }
+
+    /* Reduce footer column spacing on mobile */
+    .ca-footer .col-lg-2,
+    .ca-footer .col-lg-3 {
+        margin-bottom: 20px !important;
+    }
+}
+
+/* =============================================
+   MOBILE NAVBAR FIX
+   ============================================= */
+
+/* Toggle button — always dark visible icon */
+.mobile-toggle {
+    background: #fff !important;
+    border: 1.5px solid #d4a017 !important;
+    color: #1a3c5e !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    flex-shrink: 0 !important;
+}
+
+.mobile-toggle i {
+    color: #1a3c5e !important;
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+}
+
+.mobile-toggle:hover {
+    background: #d4a017 !important;
+    border-color: #d4a017 !important;
+}
+
+.mobile-toggle:hover i {
+    color: #fff !important;
+}
+
+/* Mobile menu panel */
+.mobile-menu {
+    background: #0d1f33 !important;
+    border-radius: 12px !important;
+    margin: 4px 0 12px !important;
+    padding: 20px 16px !important;
+    border: 1px solid rgba(212,175,55,0.2) !important;
+}
+
+.mobile-menu .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-size: 0.92rem !important;
+    font-weight: 500 !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+    display: block !important;
+}
+
+.mobile-menu .nav-link:hover {
+    color: #d4a017 !important;
+    background: rgba(212,175,55,0.08) !important;
+}
+
+/* Make sure collapse shows on mobile */
+@media (max-width: 991px) {
+    .ca-navbar .d-lg-flex { display: none !important; }
+    .ca-navbar .d-lg-none { display: flex !important; }
+
+    .navbar-inner {
+        flex-wrap: wrap !important;
+    }
+}
+
+/* =============================================
+   MOBILE TOGGLE — SVG HAMBURGER FINAL FIX
+   ============================================= */
+
+/* Hide on desktop — Bootstrap d-lg-none handles this but force it */
+@media (min-width: 992px) {
+    .mobile-toggle { display: none !important; }
+}
+
+/* Show on mobile with proper styling */
+@media (max-width: 991px) {
+    .mobile-toggle {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        background: #ffffff !important;
+        border: 2px solid #d4a017 !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+
+    .mobile-toggle svg rect {
+        fill: #1a3c5e !important;
+    }
+
+    .mobile-toggle:hover {
+        background: #d4a017 !important;
+    }
+
+    .mobile-toggle:hover svg rect {
+        fill: #ffffff !important;
+    }
+}
+
+/* =============================================
+   NAVBAR SCROLL SHRINK — nav links + buttons
+   ============================================= */
+.ca-navbar .nav-link,
+.ca-navbar .navbar-nav .nav-link,
+.btn-nav-login,
+.btn-nav-cta,
+.nav-phone {
+    transition: font-size 0.3s, padding 0.3s !important;
+}
+
+.ca-navbar.scrolled .nav-link,
+.ca-navbar.scrolled .navbar-nav .nav-link {
+    font-size: 0.78rem !important;
+    padding: 5px 10px !important;
+}
+
+.ca-navbar.scrolled .btn-nav-login {
+    font-size: 0.78rem !important;
+    padding: 5px 12px !important;
+}
+
+.ca-navbar.scrolled .btn-nav-cta {
+    font-size: 0.78rem !important;
+    padding: 6px 14px !important;
+}
+
+.ca-navbar.scrolled .nav-phone {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+}
+
+.ca-navbar.scrolled .mobile-toggle {
+    width: 36px !important;
+    height: 36px !important;
 }

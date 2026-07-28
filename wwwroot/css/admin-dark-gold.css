@@ -1,0 +1,431 @@
+/* ── CACampus Scoped Dark Gold Admin Dashboard Theme ── */
+
+html[data-pc-theme="dark"] {
+  --pc-background: #08090c;
+  --pc-card-bg: #111216;
+  --pc-sidebar-bg: #08090c;
+  --pc-header-bg: #08090c;
+  --pc-border-color: rgba(212, 175, 55, 0.15);
+  --gold: #d4a017;
+  --gold-light: #f0c040;
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+}
+
+/* Backgrounds */
+html[data-pc-theme="dark"] body, 
+html[data-pc-theme="dark"] .pc-container, 
+html[data-pc-theme="dark"] .pc-content {
+  background-color: var(--pc-background) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Sidebar Custom Styling */
+html[data-pc-theme="dark"] .pc-sidebar {
+  background: var(--pc-sidebar-bg) !important;
+  border-right: 1px solid var(--pc-border-color) !important;
+}
+html[data-pc-theme="dark"] .pc-sidebar .navbar-wrapper {
+  background: transparent !important;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-navbar > .pc-item.pc-caption {
+  color: var(--gold) !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-link {
+  color: var(--text-secondary) !important;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-link:hover {
+  color: var(--gold) !important;
+  background: rgba(212, 175, 55, 0.05) !important;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-item.active > .pc-link {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2) !important;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-item.active > .pc-link .pc-micon i,
+html[data-pc-theme="dark"] .pc-sidebar .pc-item.active > .pc-link svg {
+  color: #000000 !important;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-micon i,
+html[data-pc-theme="dark"] .pc-sidebar .pc-link svg {
+  color: var(--text-secondary) !important;
+  transition: color 0.2s;
+}
+html[data-pc-theme="dark"] .pc-sidebar .pc-link:hover .pc-micon i,
+html[data-pc-theme="dark"] .pc-sidebar .pc-link:hover svg {
+  color: var(--gold) !important;
+}
+
+/* Header Custom Styling */
+html[data-pc-theme="dark"] .pc-header {
+  background: var(--pc-header-bg) !important;
+  border-bottom: 1px solid var(--pc-border-color) !important;
+}
+html[data-pc-theme="dark"] .pc-header .pc-head-link {
+  color: var(--text-secondary) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+html[data-pc-theme="dark"] .pc-header .pc-head-link:hover {
+  color: var(--gold) !important;
+  background: rgba(212, 175, 55, 0.08) !important;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+}
+
+/* Cards Custom Styling */
+html[data-pc-theme="dark"] .card {
+  background-color: var(--pc-card-bg) !important;
+  border: 1px solid var(--pc-border-color) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+  color: var(--text-primary) !important;
+}
+html[data-pc-theme="dark"] .card-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--pc-border-color) !important;
+  color: var(--gold) !important;
+  font-weight: 700 !important;
+}
+html[data-pc-theme="dark"] .card-footer {
+  background: transparent !important;
+  border-top: 1px solid var(--pc-border-color) !important;
+}
+
+/* Inputs & Forms */
+html[data-pc-theme="dark"] .form-control, 
+html[data-pc-theme="dark"] .form-select {
+  background-color: #16171f !important;
+  border: 1px solid rgba(212, 175, 55, 0.15) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+}
+html[data-pc-theme="dark"] .form-control:focus, 
+html[data-pc-theme="dark"] .form-select:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.2) !important;
+}
+html[data-pc-theme="dark"] .form-label, 
+html[data-pc-theme="dark"] label {
+  color: var(--text-secondary) !important;
+}
+
+/* Tables */
+html[data-pc-theme="dark"] .table {
+  color: var(--text-primary) !important;
+}
+html[data-pc-theme="dark"] .table-light, 
+html[data-pc-theme="dark"] thead {
+  background-color: #17181f !important;
+  border-bottom: 1px solid var(--pc-border-color) !important;
+}
+html[data-pc-theme="dark"] .table-light th, 
+html[data-pc-theme="dark"] thead th {
+  color: var(--gold) !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+html[data-pc-theme="dark"] .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+html[data-pc-theme="dark"] .table td, 
+html[data-pc-theme="dark"] .table th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+}
+html[data-pc-theme="dark"] .table-hover tbody tr:hover td {
+  color: #ffffff !important;
+}
+
+/* KPI Icon Boxes */
+html[data-pc-theme="dark"] .bg-primary-500 {
+  background-color: rgba(212, 175, 55, 0.15) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+}
+html[data-pc-theme="dark"] .bg-primary-500 i, 
+html[data-pc-theme="dark"] .bg-primary-500 svg {
+  color: var(--gold-light) !important;
+}
+html[data-pc-theme="dark"] .bg-success-500 {
+  background-color: rgba(40, 167, 69, 0.15) !important;
+  border: 1px solid rgba(40, 167, 69, 0.3) !important;
+}
+html[data-pc-theme="dark"] .bg-success-500 i, 
+html[data-pc-theme="dark"] .bg-success-500 svg {
+  color: #28a745 !important;
+}
+html[data-pc-theme="dark"] .bg-warning-500 {
+  background-color: rgba(255, 193, 7, 0.15) !important;
+  border: 1px solid rgba(255, 193, 7, 0.3) !important;
+}
+html[data-pc-theme="dark"] .bg-warning-500 i, 
+html[data-pc-theme="dark"] .bg-warning-500 svg {
+  color: #ffc107 !important;
+}
+html[data-pc-theme="dark"] .bg-danger-500 {
+  background-color: rgba(220, 53, 69, 0.15) !important;
+  border: 1px solid rgba(220, 53, 69, 0.3) !important;
+}
+html[data-pc-theme="dark"] .bg-danger-500 i, 
+html[data-pc-theme="dark"] .bg-danger-500 svg {
+  color: #dc3545 !important;
+}
+
+/* Progress Bars */
+html[data-pc-theme="dark"] .bg-theme-bodybg {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Badges & Pills */
+html[data-pc-theme="dark"] .badge {
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+}
+html[data-pc-theme="dark"] .badge.bg-primary {
+  background-color: rgba(212, 175, 55, 0.15) !important;
+  color: var(--gold-light) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+}
+html[data-pc-theme="dark"] .badge.bg-success-500, 
+html[data-pc-theme="dark"] .badge.bg-success {
+  background-color: rgba(40, 167, 69, 0.15) !important;
+  color: #28a745 !important;
+  border: 1px solid rgba(40, 167, 69, 0.3) !important;
+}
+html[data-pc-theme="dark"] .badge.bg-warning-500, 
+html[data-pc-theme="dark"] .badge.bg-warning {
+  background-color: rgba(255, 193, 7, 0.15) !important;
+  color: #ffc107 !important;
+  border: 1px solid rgba(255, 193, 7, 0.3) !important;
+}
+html[data-pc-theme="dark"] .badge.bg-danger-500, 
+html[data-pc-theme="dark"] .badge.bg-danger {
+  background-color: rgba(220, 53, 69, 0.15) !important;
+  color: #dc3545 !important;
+  border: 1px solid rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Buttons */
+html[data-pc-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
+  border: none !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+html[data-pc-theme="dark"] .btn-primary:hover {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.25) !important;
+}
+html[data-pc-theme="dark"] .btn-outline-primary {
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+  background: transparent !important;
+}
+html[data-pc-theme="dark"] .btn-outline-primary:hover {
+  background: var(--gold) !important;
+  color: #000000 !important;
+}
+
+/* Modals */
+html[data-pc-theme="dark"] .modal-content {
+  background-color: var(--pc-card-bg) !important;
+  border: 1px solid var(--pc-border-color) !important;
+  color: var(--text-primary) !important;
+}
+html[data-pc-theme="dark"] .modal-header {
+  border-bottom: 1px solid var(--pc-border-color) !important;
+}
+html[data-pc-theme="dark"] .modal-footer {
+  border-top: 1px solid var(--pc-border-color) !important;
+}
+
+/* Scrollbars */
+html[data-pc-theme="dark"] ::-webkit-scrollbar-track {
+  background: #08090c;
+}
+html[data-pc-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #1e1f26;
+  border-radius: 4px;
+}
+html[data-pc-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* Fix generic text and details to white/gray */
+html[data-pc-theme="dark"] .text-muted {
+  color: var(--text-secondary) !important;
+}
+html[data-pc-theme="dark"] h1, 
+html[data-pc-theme="dark"] h2, 
+html[data-pc-theme="dark"] h3, 
+html[data-pc-theme="dark"] h4, 
+html[data-pc-theme="dark"] h5, 
+html[data-pc-theme="dark"] h6, 
+html[data-pc-theme="dark"] .h1, 
+html[data-pc-theme="dark"] .h2, 
+html[data-pc-theme="dark"] .h3, 
+html[data-pc-theme="dark"] .h4, 
+html[data-pc-theme="dark"] .h5, 
+html[data-pc-theme="dark"] .h6 {
+  color: #ffffff !important;
+}
+html[data-pc-theme="dark"] .breadcrumb-item a {
+  color: var(--text-secondary) !important;
+}
+html[data-pc-theme="dark"] .breadcrumb-item.active {
+  color: var(--gold) !important;
+}
+
+/* Datatable UI adjustments */
+html[data-pc-theme="dark"] .dataTables_wrapper {
+  color: var(--text-secondary) !important;
+}
+html[data-pc-theme="dark"] .dataTables_length select, 
+html[data-pc-theme="dark"] .dataTables_filter input {
+  background-color: #16171f !important;
+  border: 1px solid var(--pc-border-color) !important;
+  color: #ffffff !important;
+}
+html[data-pc-theme="dark"] .page-item.active .page-link {
+  background-color: var(--gold) !important;
+  border-color: var(--gold) !important;
+  color: #000000 !important;
+}
+html[data-pc-theme="dark"] .page-link {
+  background-color: #111216 !important;
+  border-color: var(--pc-border-color) !important;
+  color: var(--gold) !important;
+}
+html[data-pc-theme="dark"] .page-link:hover {
+  background-color: var(--gold) !important;
+  color: #000000 !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   COMPACT & PROFESSIONAL DASHBOARD UI OVERRIDES (APPLIES TO ALL THEMES)
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Compression on spacing & size */
+.pc-container {
+  padding-top: 56px !important;
+}
+.pc-content {
+  padding: 12px 16px !important;
+}
+
+/* Smaller headings */
+h1, .h1 { font-size: 1.45rem !important; }
+h2, .h2 { font-size: 1.3rem !important; }
+h3, .h3 { font-size: 1.15rem !important; }
+h4, .h4 { font-size: 1.0rem !important; }
+h5, .h5 { font-size: 0.9rem !important; }
+h6, .h6 { font-size: 0.8rem !important; }
+p, .text-sm, .text-muted, span, td, th {
+  font-size: 0.8rem !important;
+  line-height: 1.4 !important;
+}
+
+/* Compact Page Header & Breadcrumbs */
+.page-header {
+  margin-bottom: 10px !important;
+  padding: 4px 0 !important;
+}
+.breadcrumb {
+  margin-bottom: 0 !important;
+  font-size: 0.72rem !important;
+}
+
+/* Grid compression */
+.gap-x-6 {
+  column-gap: 12px !important;
+}
+.mb-4 {
+  margin-bottom: 10px !important;
+}
+
+/* Compact card sizing */
+.card {
+  margin-bottom: 10px !important;
+  border-radius: 8px !important;
+}
+.card-body {
+  padding: 12px 14px !important;
+}
+.card-header {
+  padding: 10px 14px !important;
+}
+
+/* Smaller KPI Icon Circles */
+.w-12.h-12 {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 8px !important;
+}
+.w-12.h-12 i, 
+.w-12.h-12 svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Ultra Compact Tables */
+.table td, .table th {
+  padding: 6px 12px !important;
+  font-size: 0.78rem !important;
+}
+.table thead th {
+  font-size: 0.76rem !important;
+  padding: 8px 12px !important;
+}
+
+/* Form elements & buttons */
+.form-control, 
+.form-select {
+  padding: 5px 10px !important;
+  font-size: 0.78rem !important;
+  border-radius: 6px !important;
+  height: auto !important;
+}
+.btn {
+  padding: 5px 12px !important;
+  font-size: 0.78rem !important;
+  border-radius: 6px !important;
+}
+.btn-sm {
+  padding: 3px 8px !important;
+  font-size: 0.72rem !important;
+}
+.form-label, label {
+  font-size: 0.75rem !important;
+  margin-bottom: 3px !important;
+}
+
+/* Compact Badges */
+.badge {
+  padding: 3px 8px !important;
+  font-size: 0.7rem !important;
+  border-radius: 4px !important;
+}
+
+/* DataTables pagination text and sizing */
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+  font-size: 0.72rem !important;
+  margin-top: 6px !important;
+}
+.dataTables_length, .dataTables_filter {
+  font-size: 0.75rem !important;
+  margin-bottom: 8px !important;
+}
+.dataTables_length select, .dataTables_filter input {
+  padding: 3px 6px !important;
+  font-size: 0.75rem !important;
+}

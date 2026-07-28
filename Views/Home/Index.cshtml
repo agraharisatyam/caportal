@@ -4,78 +4,15 @@
     ViewData["Description"] = "CACampus connects businesses with 12,000+ ICAI-verified Chartered Accountants across India. Find CAs for GST filing, Income Tax, Audit, Corporate Compliance, FEMA & Startup Finance. Free to start.";
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
     var featured = Model.FeaturedProfessionals.Where(p => p.IsFeatured).ToList();
+    var settings = ViewBag.Settings as caportal.Models.SiteSettings ?? new caportal.Models.SiteSettings();
 }
 
 <!-- ═══════════════════════════════════════
      HERO V2 — Dark gold, full-width
 ════════════════════════════════════════ -->
-<section class="hero-v2" aria-labelledby="hero-heading" itemscope itemtype="https://schema.org/WebPageElement">
-    <div class="hero-v2-overlay" aria-hidden="true"></div>
-    <div class="container position-relative" style="z-index:2;">
-
-        <div class="hero-v2-label">
-            <i class="fas fa-star me-1" style="color:#d4a017;font-size:.7rem;"></i>
-            India's #1 CA &amp; Legal Compliance Platform
-        </div>
-
-        <h1 class="hero-v2-title" id="hero-heading" itemprop="headline">
-            CA &amp; Legal Compliance<br>
-            <span class="hero-v2-gold">Platform</span>
-        </h1>
-
-        <p class="hero-v2-sub" itemprop="description">
-            Connecting businesses with <strong>ICAI-verified Chartered Accountants</strong> across India.<br>
-            GST &middot; Income Tax &middot; Audit &middot; Corporate Law &middot; FEMA &middot; Startup Finance
-        </p>
-
-        <!-- Search -->
-        <form class="hero-v2-search" role="search" aria-label="Find a CA">
-            <div class="hero-v2-search-inner">
-                <div class="hero-v2-field">
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                    <input type="text" placeholder="Search by specialisation (e.g. GST, Audit)" aria-label="Specialisation" />
-                </div>
-                <div class="hero-v2-field hero-v2-field-border">
-                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                    <input type="text" placeholder="City or State" aria-label="Location" />
-                </div>
-                <button type="submit" class="hero-v2-search-btn">
-                    <i class="fas fa-search me-2" aria-hidden="true"></i>Find Expert
-                </button>
-            </div>
-        </form>
-
-        <!-- Quick tags -->
-        <div class="hero-v2-tags" aria-label="Popular searches">
-            <span class="hero-v2-tag-label">Popular:</span>
-            @foreach (var tag in new[]{"GST Filing","Income Tax","Startup Compliance","Transfer Pricing","ROC / MCA","Tax Litigation","Forensic Audit"})
-            {
-                <a href="#professionals" class="hero-v2-tag">@tag</a>
-            }
-        </div>
-
-        <!-- Stats -->
-        <div class="hero-v2-stats" role="list" aria-label="Platform statistics">
-            <div class="hero-v2-stat" role="listitem">
-                <span class="hero-v2-stat-num">@Model.Stats.TotalCAs</span>
-                <span class="hero-v2-stat-lbl">Verified CAs</span>
-            </div>
-            <div class="hero-v2-stat-divider" aria-hidden="true"></div>
-            <div class="hero-v2-stat" role="listitem">
-                <span class="hero-v2-stat-num">@Model.Stats.CasesHandled</span>
-                <span class="hero-v2-stat-lbl">Cases Resolved</span>
-            </div>
-            <div class="hero-v2-stat-divider" aria-hidden="true"></div>
-            <div class="hero-v2-stat" role="listitem">
-                <span class="hero-v2-stat-num">@Model.Stats.Cities</span>
-                <span class="hero-v2-stat-lbl">Cities Covered</span>
-            </div>
-            <div class="hero-v2-stat-divider" aria-hidden="true"></div>
-            <div class="hero-v2-stat" role="listitem">
-                <span class="hero-v2-stat-num">@Model.Stats.ClientSatisfaction</span>
-                <span class="hero-v2-stat-lbl">Client Satisfaction</span>
-            </div>
-        </div>
+<section class="hero-v2" aria-label="Hero Banner" style="background:#000000 !important; padding: 0 !important; min-height: auto !important; display: block !important; overflow: hidden !important;">
+    <div class="w-100 text-center">
+        <img src="/images/hero-banner.png" alt="CA &amp; Legal Compliance Platform" style="width: 100%; max-width: 1920px; height: auto; display: block; margin: 0 auto;" />
     </div>
 </section>
 
@@ -92,7 +29,8 @@
             @foreach (var svc in Model.Services)
             {
                 <div class="col-6 col-md-4 col-lg-3">
-                    <div class="service-card reveal">
+                    <a href="/service/@svc.Id"
+                       class="service-card reveal text-decoration-none d-block">
                         <div class="service-icon">
                             @if (!string.IsNullOrEmpty(svc.ImagePath))
                             {
@@ -105,12 +43,240 @@
                         </div>
                         <div class="service-title">@svc.Title</div>
                         <div class="service-desc">@svc.Description</div>
-                    </div>
+                    </a>
                 </div>
             }
         </div>
     </div>
 </section>
+
+<!-- ═══════════════════════════════════════
+     WHY CHOOSE US
+════════════════════════════════════════ -->
+<section class="why-choose-section" aria-labelledby="wcu-heading">
+    <div class="container">
+        <div class="text-center wcu-header">
+            <div class="wcu-badge-container">
+                <div class="wcu-line"></div>
+                <span class="wcu-badge-main">@settings.WhyChooseUsBadge</span>
+                <div class="wcu-line"></div>
+            </div>
+            <h2 class="wcu-title" id="wcu-heading">@settings.WhyChooseUsTitle</h2>
+            <div class="wcu-header-icon">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+            </div>
+            <p class="wcu-subtitle">@settings.WhyChooseUsSub</p>
+        </div>
+
+        <div class="wcu-grid">
+            @foreach (var item in Model.WhyChooseUsItems)
+            {
+                <div class="wcu-card text-center">
+                    <div class="wcu-card-icon-wrap">
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" alt="@item.Title" class="wcu-custom-icon" />
+                        }
+                        else
+                        {
+                            <i class="@item.Icon" aria-hidden="true"></i>
+                        }
+                    </div>
+                    <h5 class="wcu-card-title">@item.Title</h5>
+                    <p class="wcu-card-desc">@item.Description</p>
+                </div>
+            }
+        </div>
+
+       
+    </div>
+</section>
+
+<style>
+/* Why Choose Us Section Styling */
+.why-choose-section {
+    background: #060606;
+    color: #ffffff;
+    padding: 80px 0;
+    font-family: 'Calibri', 'Inter', sans-serif;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    border-bottom: 1px solid rgba(212,175,55,0.1);
+}
+.wcu-header {
+    margin-bottom: 50px;
+}
+.wcu-badge-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+.wcu-line {
+    width: 30px;
+    height: 1px;
+    background: #d4a017;
+}
+.wcu-badge-main {
+    color: #d4a017;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.wcu-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+.wcu-header-icon {
+    font-size: 1.2rem;
+    color: #d4a017;
+    margin-bottom: 15px;
+}
+.wcu-subtitle {
+    color: #bdbdbd;
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+.wcu-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+}
+@@media (max-width: 1200px) {
+    .wcu-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@@media (max-width: 768px) {
+    .wcu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@@media (max-width: 480px) {
+    .wcu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.wcu-card {
+    background: #111111;
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 12px;
+    padding: 24px 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+.wcu-card:hover {
+    transform: translateY(-5px);
+    border-color: #d4a017;
+    box-shadow: 0 8px 24px rgba(212,175,55,0.15);
+}
+.wcu-card-icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid #d4a017;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #d4a017;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+.wcu-card:hover .wcu-card-icon-wrap {
+    background: #d4a017;
+    color: #111111;
+}
+.wcu-custom-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+.wcu-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+.wcu-card-desc {
+    font-size: 0.8rem;
+    color: #bdbdbd;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* Bottom Stats Bar */
+.wcu-stats-bar {
+    background: #0a0a0a;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 14px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.wcu-badge-shield {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #d4a017, #f0c040);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #111111;
+    font-size: 1.4rem;
+}
+.wcu-badge-subtitle {
+    font-size: 0.7rem;
+    color: #bdbdbd;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+.wcu-badge-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #d4a017;
+    text-transform: uppercase;
+}
+.wcu-stat-item {
+    border-left: 1px solid rgba(212,175,55,0.15);
+    padding-left: 20px;
+}
+@@media (max-width: 991px) {
+    .wcu-stat-item {
+        border-left: none;
+        padding-left: 0;
+    }
+}
+.wcu-stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(212,175,55,0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #d4a017;
+    font-size: 0.95rem;
+}
+.wcu-stat-num {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+.wcu-stat-lbl {
+    font-size: 0.72rem;
+    color: #bdbdbd;
+}
+</style>
+
 
 <!-- ═══════════════════════════════════════
      EXPERT CONNECT BAND
@@ -176,9 +342,9 @@
 <section class="professionals-section" id="professionals" aria-labelledby="prof-heading">
     <div class="container">
         <div class="text-center mb-5">
-            <span class="section-badge">Top Talent</span>
-            <h2 class="section-title" id="prof-heading">Trusted Chartered Accountants <span>Across India</span></h2>
-            <p class="section-desc mx-auto">Handpicked CAs with proven track records, top ratings, and deep domain expertise.</p>
+            <span class="section-badge">@settings.FeaturedCAsBadge</span>
+            <h2 class="section-title" id="prof-heading">@Html.Raw(settings.FeaturedCAsTitle)</h2>
+            <p class="section-desc mx-auto">@settings.FeaturedCAsSubtitle</p>
         </div>
         <div class="row g-4">
             @{ int delay = 0; }
@@ -333,7 +499,8 @@
 ════════════════════════════════════════ -->
 <footer class="ca-footer" id="contact" role="contentinfo">
     <div class="container">
-        <div class="row g-5">
+        <div class="row g-4">
+            <!-- Column 1: Brand Info -->
             <div class="col-lg-3 col-md-6">
                 @{
                     var ftSvc = ViewContext.HttpContext.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
@@ -351,85 +518,134 @@
                         <span class="brand-name"><span>CA</span>Campus</span>
                     }
                 </div>
-                <p class="footer-about">India's premier platform connecting businesses with ICAI-verified Chartered Accountants.</p>
+                <p class="footer-about">CA Chartered Campus is your trusted partner for all CA, Tax, Compliance, Audit and Legal services. We help businesses stay compliant and achieve growth with confidence.</p>
                 <div class="footer-socials" aria-label="Social media links">
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="Facebook" title="Facebook">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn" title="LinkedIn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram" title="Instagram">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a>
+                    <a href="#" aria-label="YouTube" title="YouTube">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+                    </a>
+                    <a href="#" aria-label="WhatsApp" title="WhatsApp">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </a>
                 </div>
             </div>
+
+            <!-- Column 2: Quick Links -->
             <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Registration</h6>
+                <h6 class="footer-heading">QUICK LINKS</h6>
                 <ul class="footer-links">
-                    <li><a href="#">Proprietorship</a></li>
-                    <li><a href="#">LLP Registration</a></li>
-                    <li><a href="#">Private Limited Co.</a></li>
-                    <li><a href="#">OPC Registration</a></li>
-                    <li><a href="#">Section 8 Company</a></li>
-                    <li><a href="#">Indian Subsidiary</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#features">Services</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Careers</a></li>
                 </ul>
             </div>
+
+            <!-- Column 3: Our Services -->
             <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Tax &amp; GST</h6>
+                <h6 class="footer-heading">OUR SERVICES</h6>
                 <ul class="footer-links">
-                    <li><a href="#">GST Registration</a></li>
-                    <li><a href="#">GST Return Filing</a></li>
-                    <li><a href="#">Income Tax Filing</a></li>
-                    <li><a href="#">TDS / TCS Filing</a></li>
-                    <li><a href="#">GST Notice Reply</a></li>
-                    <li><a href="#">NRI ITR Filing</a></li>
+                    <li><a href="/services/startup-registration">Business Registration</a></li>
+                    <li><a href="/services/gst-registration">GST &amp; Tax Services</a></li>
+                    <li><a href="/services/trademark-registration">Trademark Services</a></li>
+                    <li><a href="/services/annual-compliance">MCA Compliance</a></li>
+                    <li><a href="/services/statutory-audit">Audit &amp; Assurance</a></li>
+                    <li><a href="/services/accounting">Accounting &amp; Bookkeeping</a></li>
+                    <li><a href="/services/itr-filing">Income Tax Filing</a></li>
+                    <li><a href="#features">All Services</a></li>
                 </ul>
             </div>
+
+            <!-- Column 4: Popular Services -->
             <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Licences &amp; IPR</h6>
+                <h6 class="footer-heading">POPULAR SERVICES</h6>
                 <ul class="footer-links">
-                    <li><a href="#">FSSAI Licence</a></li>
-                    <li><a href="#">Trade Licence</a></li>
-                    <li><a href="#">IEC Registration</a></li>
-                    <li><a href="#">Trademark Registration</a></li>
-                    <li><a href="#">Copyright Registration</a></li>
-                    <li><a href="#">ISO Certification</a></li>
+                    <li><a href="/services/private-limited-company">Private Limited Company</a></li>
+                    <li><a href="/services/gst-registration">GST Registration</a></li>
+                    <li><a href="/services/trademark-registration">Trademark Registration</a></li>
+                    <li><a href="/services/gst-return-filing">Income Tax Return Filing</a></li>
+                    <li><a href="/services/roc-filing">ROC Compliance</a></li>
+                    <li><a href="/services/statutory-audit">Audit &amp; Assurance</a></li>
+                    <li><a href="/services/fssai-licence">FSSAI License</a></li>
+                    <li><a href="/services/msme-registration">MSME Registration</a></li>
                 </ul>
             </div>
-            <div class="col-lg-2 col-md-6">
-                <h6 class="footer-heading">Compliance &amp; Audit</h6>
-                <ul class="footer-links">
-                    <li><a href="#">ROC / MCA Filing</a></li>
-                    <li><a href="#">Annual Compliance</a></li>
-                    <li><a href="#">Statutory Audit</a></li>
-                    <li><a href="#">EPF / ESIC</a></li>
-                    <li><a href="#">FEMA / Transfer Pricing</a></li>
-                    <li><a href="#">NGO / Trust Reg.</a></li>
-                </ul>
-            </div>
+
+            <!-- Column 5: Get In Touch -->
             <div class="col-lg-3 col-md-6">
-                <h6 class="footer-heading">Contact Us</h6>
-                <address class="footer-links" style="font-style:normal;" itemscope itemtype="https://schema.org/Organization">
-                    <meta itemprop="name" content="CACampus" />
-                    @{
-                        var ftEmail = ftSvc?.Get().SiteEmail ?? "";
-                        var ftPhone = ftSvc?.Get().SitePhone ?? "";
-                    }
-                    @if (!string.IsNullOrEmpty(ftEmail))
-                    {
-                        <li><i class="fas fa-envelope me-2" aria-hidden="true"></i><a href="mailto:@ftEmail" itemprop="email" class="text-decoration-none">@ftEmail</a></li>
-                    }
-                    @if (!string.IsNullOrEmpty(ftPhone))
-                    {
-                        <li><i class="fas fa-phone me-2" aria-hidden="true"></i><a href="tel:@ftPhone.Replace(" ","")" itemprop="telephone" class="text-decoration-none">@ftPhone</a></li>
-                    }
-                    <li itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                        <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
-                        <span itemprop="addressLocality">New Delhi</span>, <span itemprop="addressCountry">India</span>
+                <h6 class="footer-heading">GET IN TOUCH</h6>
+                <ul class="footer-contact-list">
+                    <li>
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                        <span>123, Business Bay, Sector 1, Noida, Uttar Pradesh - 201301</span>
                     </li>
-                </address>
+                    <li>
+                        <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                        <span>+91 98765 43210</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <span>support@cacharteredcampus.com</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        <span>Mon - Sat: 9:00 AM - 8:00 PM</span>
+                    </li>
+                </ul>
             </div>
         </div>
-        <hr class="footer-divider" />
-        <div class="footer-bottom">
-            <span>&copy; 2026 CACampus. All rights reserved.</span>
-            <span>Made with <i class="fas fa-heart" style="color:#d4a017;"></i> for CA Professionals across India</span>
+
+        <!-- Newsletter Subscription Row -->
+        <div class="footer-newsletter-row">
+            <div class="newsletter-left">
+                <div class="newsletter-icon-circle">
+                  <i style="font-size: 104px;color: gold !important;background: rgba(255, 215, 0, 0.1);padding: 10px;border-radius: 50%;" class="fas fa-mail-bulk"></i>
+                </div>
+                <div class="newsletter-text-wrap">
+                    <h5 class="newsletter-title">SUBSCRIBE TO OUR NEWSLETTER</h5>
+                    <p class="newsletter-desc">Get the latest updates, tips and offers straight to your inbox.</p>
+                </div>
+            </div>
+            <div class="newsletter-right">
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!'); this.reset();">
+                    <input type="email" placeholder="Enter your email address" class="newsletter-input" required />
+                    <button type="submit" class="newsletter-btn">Subscribe Now <i class="fas fa-paper-plane ms-2" aria-hidden="true"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom copyright / policy strip -->
+    <div class="footer-bottom-strip">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <span class="link-sep">|</span>
+                    <a href="#">Terms &amp; Conditions</a>
+                    <span class="link-sep">|</span>
+                    <a href="#">Refund Policy</a>
+                    <span class="link-sep">|</span>
+                    <a href="#">Shipping Policy</a>
+                    <span class="link-sep">|</span>
+                    <a href="#">Disclaimer</a>
+                </div>
+                <div class="footer-copyright">
+                    &copy; 2025 CA Chartered Campus. All Rights Reserved.
+                </div>
+            </div>
         </div>
     </div>
 </footer>

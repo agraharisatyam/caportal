@@ -44,6 +44,31 @@ namespace caportal.Areas.Admin.Controllers
             ViewBag.SuspendedCAs  = cas.Count(c => c.Status == "Suspended");
             ViewBag.AvgRating     = cas.Average(c => c.Rating).ToString("F1");
             ViewBag.RecentCAs     = cas.OrderByDescending(c => c.JoinedOn).Take(10).ToList();
+
+            // Rich Dashboard KPIs matching reference mockup
+            ViewBag.TodayRevenue = "₹ 24,58,760";
+            ViewBag.TodaySales = "₹ 1,25,430";
+            ViewBag.TotalLeads = "1,258";
+            ViewBag.TotalOrders = "856";
+            ViewBag.TotalCustomers = "3,452";
+            ViewBag.PendingDocuments = "320";
+            ViewBag.TodayAppointments = "28";
+
+            // Rich Bottom metrics
+            ViewBag.ConversionRate = "24.6%";
+            ViewBag.AvgOrderValue = "₹ 6,782";
+            ViewBag.CustomerSatisfaction = "4.8/5";
+            ViewBag.RepeatCustomers = "68.4%";
+
+            // Mock Recent Orders
+            ViewBag.RecentOrders = new List<DashboardOrder>
+            {
+                new() { OrderId = "ORD-2505101", Customer = "Ravi Sharma", Service = "GST Registration", Amount = "₹ 2,499", Status = "Processing", ColorClass = "bg-warning" },
+                new() { OrderId = "ORD-2501783", Customer = "ABC Pvt. Ltd.", Service = "Private Limited Co.", Amount = "₹ 12,999", Status = "Processing", ColorClass = "bg-warning" },
+                new() { OrderId = "ORD-2501556", Customer = "Sneha Verma", Service = "Trademark Registration", Amount = "₹ 1,999", Status = "Document Pending", ColorClass = "bg-info" },
+                new() { OrderId = "ORD-2501518", Customer = "Sunrise Enterprises", Service = "GST Return Filing", Amount = "₹ 1,999", Status = "Completed", ColorClass = "bg-success" },
+                new() { OrderId = "ORD-2501157", Customer = "Karan Mehta", Service = "LLP Registration", Amount = "₹ 5,999", Status = "Processing", ColorClass = "bg-warning" }
+            };
             return View();
         }
 

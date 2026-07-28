@@ -1,7 +1,7 @@
 @using caportal.Models
 @{
     ViewData["Title"] = "Clients";
-    var clients = ViewBag.Clients as List<Client> ?? [];
+    var clients = ViewBag.Clients as List<Client> ?? new List<Client>();
 }
 
 <!-- Page Header -->

@@ -108,6 +108,20 @@ h3 {{ font-size: {s.H3Size}px; }}
   color: {s.AccentColor} !important;
   background: rgba(212,175,55,0.08) !important;
 }}
+/* Mega menu links must NOT inherit navbar link color */
+.nav-mega-menu--full .mega-list li a,
+.nav-mega-menu--full .mega-list li a:link,
+.nav-mega-menu--full .mega-list li a:visited {{
+  color: #1a1a1a !important;
+  font-size: 0.83rem !important;
+  font-family: 'Inter', sans-serif !important;
+  -webkit-text-fill-color: #1a1a1a !important;
+}}
+.nav-mega-menu--full .mega-list li a:hover {{
+  color: {s.AccentColor} !important;
+  -webkit-text-fill-color: {s.AccentColor} !important;
+  background: transparent !important;
+}}
 .brand-name {{ color: {s.HeaderFontColor} !important; }}
 .brand-ca   {{ color: {s.AccentColor} !important; }}
 .nav-mega-menu {{
@@ -115,7 +129,7 @@ h3 {{ font-size: {s.H3Size}px; }}
   border-color: rgba(212,175,55,0.2) !important;
 }}
 .nav-mega-menu::before {{ background: #fff !important; border-color: rgba(212,175,55,0.2) !important; }}
-.nav-mega-menu--full {{ background: #0d1f33 !important; }}
+.nav-mega-menu--full {{ background: #ffffff !important; }}
 .mega-item {{ color: #1a3c5e !important; }}
 .mega-item:hover {{ background: rgba(212,175,55,0.1) !important; color: {s.AccentColor} !important; }}
 .mega-section-title {{ color: {s.AccentColor} !important; border-color: rgba(212,175,55,0.15) !important; }}
@@ -208,6 +222,24 @@ h3 {{ font-size: {s.H3Size}px; }}
         BtnPrimaryBg     = r.BtnPrimaryBg,     BtnPrimaryColor  = r.BtnPrimaryColor,
         BtnBorderRadius  = r.BtnBorderRadius,
         ServicesBadge    = r.ServicesBadge,    ServicesTitle    = r.ServicesTitle,
+        WhyChooseUsBadge      = r.WhyChooseUsBadge,
+        WhyChooseUsTitle      = r.WhyChooseUsTitle,
+        WhyChooseUsSub        = r.WhyChooseUsSub,
+        WhyChooseUsStatsTitle = r.WhyChooseUsStatsTitle,
+        WhyChooseUsStat1Val   = r.WhyChooseUsStat1Val,
+        WhyChooseUsStat1Lbl   = r.WhyChooseUsStat1Lbl,
+        WhyChooseUsStat2Val   = r.WhyChooseUsStat2Val,
+        WhyChooseUsStat2Lbl   = r.WhyChooseUsStat2Lbl,
+        WhyChooseUsStat3Val   = r.WhyChooseUsStat3Val,
+        WhyChooseUsStat3Lbl   = r.WhyChooseUsStat3Lbl,
+        WhyChooseUsStat4Val   = r.WhyChooseUsStat4Val,
+        WhyChooseUsStat4Lbl   = r.WhyChooseUsStat4Lbl,
+        FeaturedCAsBadge      = r.FeaturedCAsBadge,
+        FeaturedCAsTitle      = r.FeaturedCAsTitle,
+        FeaturedCAsSubtitle   = r.FeaturedCAsSubtitle,
+        SocialFacebook  = r.SocialFacebook,  SocialInstagram = r.SocialInstagram,
+        SocialLinkedIn  = r.SocialLinkedIn,  SocialTwitter   = r.SocialTwitter,
+        SocialYouTube   = r.SocialYouTube,   SocialWhatsApp  = r.SocialWhatsApp,
     };
 
     private static void MapToRecord(SiteSettings s, SiteSettingsRecord r)
@@ -236,5 +268,23 @@ h3 {{ font-size: {s.H3Size}px; }}
         r.BtnPrimaryBg     = s.BtnPrimaryBg;     r.BtnPrimaryColor  = s.BtnPrimaryColor;
         r.BtnBorderRadius  = s.BtnBorderRadius;
         r.ServicesBadge    = s.ServicesBadge;    r.ServicesTitle    = s.ServicesTitle;
+        r.WhyChooseUsBadge      = s.WhyChooseUsBadge;
+        r.WhyChooseUsTitle      = s.WhyChooseUsTitle;
+        r.WhyChooseUsSub        = s.WhyChooseUsSub;
+        r.WhyChooseUsStatsTitle = s.WhyChooseUsStatsTitle;
+        r.WhyChooseUsStat1Val   = s.WhyChooseUsStat1Val;
+        r.WhyChooseUsStat1Lbl   = s.WhyChooseUsStat1Lbl;
+        r.WhyChooseUsStat2Val   = s.WhyChooseUsStat2Val;
+        r.WhyChooseUsStat2Lbl   = s.WhyChooseUsStat2Lbl;
+        r.WhyChooseUsStat3Val   = s.WhyChooseUsStat3Val;
+        r.WhyChooseUsStat3Lbl   = s.WhyChooseUsStat3Lbl;
+        r.WhyChooseUsStat4Val   = s.WhyChooseUsStat4Val;
+        r.WhyChooseUsStat4Lbl   = s.WhyChooseUsStat4Lbl;
+        r.FeaturedCAsBadge      = s.FeaturedCAsBadge;
+        r.FeaturedCAsTitle      = s.FeaturedCAsTitle;
+        r.FeaturedCAsSubtitle   = s.FeaturedCAsSubtitle;
+        r.SocialFacebook  = s.SocialFacebook;  r.SocialInstagram = s.SocialInstagram;
+        r.SocialLinkedIn  = s.SocialLinkedIn;  r.SocialTwitter   = s.SocialTwitter;
+        r.SocialYouTube   = s.SocialYouTube;   r.SocialWhatsApp  = s.SocialWhatsApp;
     }
 }

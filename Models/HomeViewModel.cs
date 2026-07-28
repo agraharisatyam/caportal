@@ -7,6 +7,7 @@ public class HomeViewModel
     public List<Testimonial> Testimonials { get; set; } = [];
     public List<FaqItem> Faqs { get; set; } = [];
     public List<CoveredService> Services { get; set; } = [];
+    public List<WhyChooseUsItem> WhyChooseUsItems { get; set; } = [];
 }
 
 public class SiteStats
