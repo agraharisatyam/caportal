@@ -5,16 +5,16 @@
 
 <div class="page-header mb-4">
     <div class="page-block">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="flex items-start justify-between flex-wrap gap-3 mb-2">
             <div>
-                <h4 class="mb-0 font-weight-bold text-white"><i data-feather="plus-circle" class="me-2 text-gold"></i> Create New Service</h4>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center"><i data-feather="plus-circle" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> <span>Create New Service</span></h4>
                 <span class="text-muted small">Add a new service offering to CACampus homepage and directory</span>
             </div>
-            <a href="/Admin/Services" class="btn btn-outline-secondary btn-sm">
-                <i data-feather="arrow-left" class="me-1"></i> Back to Services List
+            <a href="/Admin/Services" class="btn btn-outline-secondary btn-sm flex items-center gap-1">
+                <i data-feather="arrow-left" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Back to Services List
             </a>
         </div>
-        <ul class="breadcrumb mt-2 mb-0">
+        <ul class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
             <li class="breadcrumb-item"><a href="/Admin/Services">Services</a></li>
             <li class="breadcrumb-item active" aria-current="page">Create Service</li>
@@ -22,11 +22,11 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-lg-8 mx-auto">
+<div class="grid grid-cols-12 gap-x-6 gap-y-4">
+    <div class="col-span-12 lg:col-span-8 lg:col-start-3">
         <div class="card" style="border-top: 4px solid #d4a017;">
             <div class="card-header">
-                <h5 class="mb-0 text-gold"><i data-feather="grid" class="me-1"></i> Service Information</h5>
+                <h5 class="mb-0 text-gold flex items-center"><i data-feather="grid" class="me-2" style="display: inline-block !important; vertical-align: middle;"></i> <span>Service Information</span></h5>
             </div>
             <div class="card-body">
                 <form method="post" action="/Admin/Services/Save" enctype="multipart/form-data">
@@ -34,39 +34,39 @@
                     <input type="hidden" name="id" value="0" />
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold text-white">Service Title <span class="text-danger">*</span></label>
+                        <label class="form-label font-weight-bold">Service Title <span class="text-danger">*</span></label>
                         <input type="text" name="title" class="form-control" placeholder="e.g. GST & Indirect Tax Advisory" required />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold text-white">Short Description <span class="text-danger">*</span></label>
+                        <label class="form-label font-weight-bold">Short Description <span class="text-danger">*</span></label>
                         <textarea name="description" class="form-control" rows="3" placeholder="Describe key service features and deliverables..." required></textarea>
                     </div>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label font-weight-bold text-white">Display Order</label>
+                    <div class="grid grid-cols-12 gap-x-6 gap-y-4 mb-3">
+                        <div class="col-span-12 md:col-span-6">
+                            <label class="form-label font-weight-bold">Display Order</label>
                             <input type="number" name="displayOrder" class="form-control" value="1" min="1" max="999" />
-                            <small class="text-muted">Controls card ordering position on homepage</small>
+                            <small class="text-muted text-xs">Controls card ordering position on homepage</small>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label font-weight-bold text-white">Page URL / Target Link</label>
+                        <div class="col-span-12 md:col-span-6">
+                            <label class="form-label font-weight-bold">Page URL / Target Link</label>
                             <input type="text" name="pageUrl" class="form-control" value="#professionals" placeholder="e.g. #professionals or /services/gst" />
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label font-weight-bold text-white">Upload Service Graphic / Icon <small class="text-muted">(Optional)</small></label>
+                        <label class="form-label font-weight-bold">Upload Service Graphic / Icon <small class="text-muted">(Optional)</small></label>
                         <input type="file" name="imageFile" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp" />
-                        <small class="text-muted">PNG, JPG, SVG or WebP. High definition vector SVGs recommended.</small>
+                        <small class="text-muted text-xs d-block mt-1">PNG, JPG, SVG or WebP. High definition vector SVGs recommended.</small>
                     </div>
 
-                    <hr class="my-4" />
+                    <hr class="my-4" style="border-top: 1px solid var(--pc-border-color, #e5e7eb);" />
 
-                    <div class="d-flex align-items-center justify-content-end gap-2">
+                    <div class="flex items-center justify-end gap-2">
                         <a href="/Admin/Services" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-5">
-                            <i data-feather="check" class="me-1"></i> Save Service
+                        <button type="submit" class="btn btn-primary px-5 flex items-center gap-1">
+                            <i data-feather="check" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Save Service
                         </button>
                     </div>
                 </form>

@@ -4,42 +4,34 @@
     ViewData["Title"] = "Client Requests & Enquiries";
 }
 
-<div class="row">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
     <!-- Stat Cards -->
-    <div class="col-md-3">
-        <div class="card bg-c-blue text-white widget-visitor-card">
-            <div class="card-body text-center">
-                <h2 class="text-white">@ViewBag.TotalCount</h2>
-                <h6 class="text-white">Total Requests</h6>
-                <i class="feather icon-file-text"></i>
-            </div>
+    <div class="card widget-visitor-card">
+        <div class="card-body text-center">
+            <h2 style="color: var(--text-primary, #1e293b);" class="font-bold mb-1">@ViewBag.TotalCount</h2>
+            <h6 class="text-muted font-medium mb-0">Total Requests</h6>
+            <i class="feather icon-file-text" style="color: var(--text-primary, #1e293b); opacity: 0.15;"></i>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-c-yellow text-white widget-visitor-card">
-            <div class="card-body text-center">
-                <h2 class="text-white">@ViewBag.PendingCount</h2>
-                <h6 class="text-white">Pending Requests</h6>
-                <i class="feather icon-clock"></i>
-            </div>
+    <div class="card widget-visitor-card">
+        <div class="card-body text-center">
+            <h2 style="color: var(--text-primary, #1e293b);" class="font-bold mb-1">@ViewBag.PendingCount</h2>
+            <h6 class="text-muted font-medium mb-0">Pending Requests</h6>
+            <i class="feather icon-clock" style="color: var(--text-primary, #1e293b); opacity: 0.15;"></i>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-c-green text-white widget-visitor-card">
-            <div class="card-body text-center">
-                <h2 class="text-white">@ViewBag.AssignedCount</h2>
-                <h6 class="text-white">Assigned to CA</h6>
-                <i class="feather icon-user-check"></i>
-            </div>
+    <div class="card widget-visitor-card">
+        <div class="card-body text-center">
+            <h2 style="color: var(--text-primary, #1e293b);" class="font-bold mb-1">@ViewBag.AssignedCount</h2>
+            <h6 class="text-muted font-medium mb-0">Assigned to CA</h6>
+            <i class="feather icon-user-check" style="color: var(--text-primary, #1e293b); opacity: 0.15;"></i>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-c-purple text-white widget-visitor-card">
-            <div class="card-body text-center">
-                <h2 class="text-white">@ViewBag.CompletedCount</h2>
-                <h6 class="text-white">Completed</h6>
-                <i class="feather icon-check-circle"></i>
-            </div>
+    <div class="card widget-visitor-card">
+        <div class="card-body text-center">
+            <h2 style="color: var(--text-primary, #1e293b);" class="font-bold mb-1">@ViewBag.CompletedCount</h2>
+            <h6 class="text-muted font-medium mb-0">Completed</h6>
+            <i class="feather icon-check-circle" style="color: var(--text-primary, #1e293b); opacity: 0.15;"></i>
         </div>
     </div>
 </div>

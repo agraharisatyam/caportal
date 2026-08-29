@@ -16,22 +16,22 @@
     .prof-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #111827;
+        color: var(--text-primary, #111827);
         margin: 0;
     }
     .prof-breadcrumb {
         font-size: 0.85rem;
-        color: #6b7280;
+        color: var(--text-secondary, #6b7280);
         margin-top: 4px;
     }
     .prof-breadcrumb a {
-        color: #3b82f6;
+        color: #2563eb;
         text-decoration: none;
     }
     .prof-nav-tabs {
         display: flex;
         gap: 20px;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--pc-border-color, #e5e7eb);
         margin-bottom: 24px;
         overflow-x: auto;
     }
@@ -42,7 +42,7 @@
         padding: 12px 4px;
         font-size: 0.9rem;
         font-weight: 600;
-        color: #6b7280;
+        color: var(--text-secondary, #6b7280);
         text-decoration: none;
         border-bottom: 2px solid transparent;
         transition: all 0.2s;
@@ -53,9 +53,9 @@
         border-bottom-color: #2563eb;
     }
     .prof-card {
-        background: #ffffff;
+        background: var(--pc-card-bg, #ffffff);
         border-radius: 12px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--pc-border-color, #e5e7eb);
         padding: 24px;
         margin-bottom: 24px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -63,24 +63,25 @@
     .prof-card-title {
         font-size: 1.05rem;
         font-weight: 700;
-        color: #111827;
+        color: var(--text-primary, #111827);
         margin-bottom: 18px;
     }
     .prof-form-label {
         font-size: 0.82rem;
         font-weight: 600;
-        color: #374151;
+        color: var(--text-secondary, #374151);
         margin-bottom: 6px;
     }
     .prof-form-label span.req {
         color: #ef4444;
     }
     .prof-input {
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--pc-border-color, #d1d5db);
+        background-color: var(--pc-input-bg, #ffffff);
         border-radius: 8px;
         padding: 9px 13px;
         font-size: 0.9rem;
-        color: #1f2937;
+        color: var(--text-primary, #1f2937);
         width: 100%;
         transition: border 0.2s;
     }
@@ -93,16 +94,16 @@
         display: flex;
         align-items: center;
         gap: 16px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
+        background: var(--pc-bg-body, #f9fafb);
+        border: 1px solid var(--pc-border-color, #e5e7eb);
         border-radius: 10px;
         padding: 16px;
     }
     .prof-logo-preview {
         width: 90px;
         height: 60px;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
+        background: var(--pc-card-bg, #ffffff);
+        border: 1px solid var(--pc-border-color, #e5e7eb);
         border-radius: 6px;
         display: flex;
         align-items: center;
@@ -129,9 +130,9 @@
     
     /* Profile Preview Card */
     .preview-card {
-        background: #ffffff;
+        background: var(--pc-card-bg, #ffffff);
         border-radius: 14px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--pc-border-color, #e5e7eb);
         overflow: hidden;
         margin-bottom: 24px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -151,9 +152,9 @@
     .preview-logo-avatar {
         width: 68px;
         height: 68px;
-        background: #ffffff;
+        background: var(--pc-card-bg, #ffffff);
         border-radius: 12px;
-        border: 3px solid #ffffff;
+        border: 3px solid var(--pc-card-bg, #ffffff);
         box-shadow: 0 4px 10px rgba(0,0,0,0.12);
         position: absolute;
         top: -34px;
@@ -162,7 +163,7 @@
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        color: #1e3a8a;
+        color: #2563eb;
         font-size: 0.9rem;
     }
     .preview-verified-badge {
@@ -178,12 +179,17 @@
         border-radius: 50px;
         float: right;
     }
+    html[data-pc-theme="dark"] .preview-verified-badge {
+        background: #064e3b;
+        color: #34d399;
+        border-color: #047857;
+    }
     .preview-stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
-        background: #f9fafb;
-        border: 1px solid #f3f4f6;
+        background: var(--pc-bg-body, #f9fafb);
+        border: 1px solid var(--pc-border-color, #f3f4f6);
         border-radius: 10px;
         padding: 12px;
         margin-top: 16px;
@@ -192,11 +198,11 @@
     .preview-stat-val {
         font-size: 1.1rem;
         font-weight: 800;
-        color: #111827;
+        color: var(--text-primary, #111827);
     }
     .preview-stat-lbl {
         font-size: 0.68rem;
-        color: #6b7280;
+        color: var(--text-secondary, #6b7280);
         margin-top: 2px;
     }
 
@@ -206,7 +212,7 @@
         align-items: center;
         gap: 10px;
         font-size: 0.88rem;
-        color: #374151;
+        color: var(--text-secondary, #374151);
         margin-bottom: 10px;
     }
     .checklist-icon-done {
@@ -214,66 +220,72 @@
         font-size: 1.1rem;
     }
     .checklist-icon-todo {
-        color: #d1d5db;
+        color: var(--text-muted, #d1d5db);
         font-size: 1.1rem;
     }
 </style>
 
-<!-- ═══ Page Header ═══ -->
-<div class="prof-header-bar">
-    <div>
-        <h1 class="prof-title">Business Profile Management</h1>
-        <div class="prof-breadcrumb">
-            <a href="/ajs">Dashboard</a> &rsaquo; <span>Business Profiles</span> &rsaquo; <strong>Manage Profile</strong>
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="page-block">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center"><i data-feather="user" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> <span>Business Profile Management</span></h4>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Notification Bell -->
+                <button class="btn btn-light rounded-circle position-relative p-2" title="Notifications">
+                    <i data-feather="bell" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;padding:0.25em 0.4em;">5</span>
+                </button>
+                <!-- Add New Business -->
+                <button class="btn btn-primary btn-sm fw-bold" onclick="alert('Add Business Modal');">
+                    <i data-feather="plus" class="me-1"></i> Add New Business
+                </button>
+            </div>
         </div>
-    </div>
-    <div class="d-flex align-items-center gap-3">
-        <!-- Notification Bell -->
-        <button class="btn btn-light rounded-circle position-relative p-2" title="Notifications">
-            <i class="feather icon-bell fs-5"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;">5</span>
-        </button>
-        <!-- Add New Business -->
-        <button class="btn btn-primary fw-bold" onclick="alert('Add Business Modal');">
-            <i class="feather icon-plus me-1"></i> Add New Business
-        </button>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item"><a href="/Admin/Profile">Business Profiles</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Manage Profile</li>
+        </ul>
     </div>
 </div>
 
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="feather icon-check-circle me-2"></i>@TempData["Success"]
+        <i data-feather="check-circle" class="me-2" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>@TempData["Success"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<!-- ═══ Navigation Tabs ═══ -->
+<!-- Navigation Tabs -->
 <div class="prof-nav-tabs">
     <a href="/Admin/Profile?tab=details" class="prof-tab-link @(activeTab == "details" ? "active" : "")">
-        <i class="feather icon-user"></i> Profile Details
+        <i data-feather="user" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Profile Details
     </a>
     <a href="/Admin/Profile?tab=services" class="prof-tab-link @(activeTab == "services" ? "active" : "")">
-        <i class="feather icon-grid"></i> Services
+        <i data-feather="grid" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Services
     </a>
     <a href="/Admin/Profile?tab=documents" class="prof-tab-link @(activeTab == "documents" ? "active" : "")">
-        <i class="feather icon-file-text"></i> Documents
+        <i data-feather="file-text" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Documents
     </a>
     <a href="/Admin/Profile?tab=team" class="prof-tab-link @(activeTab == "team" ? "active" : "")">
-        <i class="feather icon-users"></i> Team Members
+        <i data-feather="users" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Team Members
     </a>
     <a href="/Admin/Profile?tab=settings" class="prof-tab-link @(activeTab == "settings" ? "active" : "")">
-        <i class="feather icon-settings"></i> Settings &amp; Preferences
+        <i data-feather="settings" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Settings &amp; Preferences
     </a>
     <a href="/Admin/Profile?tab=activity" class="prof-tab-link @(activeTab == "activity" ? "active" : "")">
-        <i class="feather icon-clock"></i> Activity Log
+        <i data-feather="clock" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Activity Log
     </a>
 </div>
 
-<!-- ═══ Main Content Grid ═══ -->
-<div class="row">
+<!-- Main Content Grid -->
+<div class="grid grid-cols-12 gap-x-6 gap-y-4">
     <!-- Left Column: Basic Info & Social Links -->
-    <div class="col-lg-8">
+    <div class="col-span-12 lg:col-span-8">
         <form method="post" action="/Admin/Profile/Save">
             @Html.AntiForgeryToken()
 
@@ -281,20 +293,20 @@
             <div class="prof-card">
                 <h2 class="prof-card-title">Basic Information</h2>
 
-                <div class="row g-3">
+                <div class="grid grid-cols-12 gap-x-6 gap-y-4">
                     <!-- Business Name -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Business Name <span class="req">*</span></label>
                         <input type="text" name="BusinessName" class="prof-input" value="@Model.BusinessName" required />
                     </div>
                     <!-- Email -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Email <span class="req">*</span></label>
                         <input type="email" name="Email" class="prof-input" value="@Model.Email" required />
                     </div>
 
                     <!-- Business Type -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Business Type <span class="req">*</span></label>
                         <select name="BusinessType" class="prof-input">
                             <option selected>Private Limited Company</option>
@@ -305,7 +317,7 @@
                         </select>
                     </div>
                     <!-- Phone Number -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Phone Number <span class="req">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><span class="me-1">🇮🇳</span> +91</span>
@@ -314,7 +326,7 @@
                     </div>
 
                     <!-- Industry -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Industry</label>
                         <select name="Industry" class="prof-input">
                             <option selected>Finance &amp; Accounting</option>
@@ -325,32 +337,32 @@
                         </select>
                     </div>
                     <!-- Website -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Website</label>
                         <input type="url" name="Website" class="prof-input" value="@Model.Website" />
                     </div>
 
                     <!-- Year Established -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Year Established</label>
                         <div class="position-relative">
                             <input type="number" name="YearEstablished" class="prof-input" value="@Model.YearEstablished" />
-                            <i class="feather icon-calendar position-absolute end-0 top-50 translate-middle-y me-3 text-muted"></i>
+                            <i data-feather="calendar" class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted" style="width:16px;height:16px;display:inline-block;"></i>
                         </div>
                     </div>
                     <!-- Registration Number -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Registration Number</label>
                         <input type="text" name="RegistrationNumber" class="prof-input" value="@Model.RegistrationNumber" />
                     </div>
 
                     <!-- GST Number -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">GST Number</label>
                         <input type="text" name="GstNumber" class="prof-input text-uppercase" value="@Model.GstNumber" />
                     </div>
                     <!-- Business Logo -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">Business Logo</label>
                         <div class="prof-logo-box">
                             <div class="prof-logo-preview">
@@ -368,12 +380,12 @@
                     </div>
 
                     <!-- PAN Number -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <label class="prof-form-label">PAN Number</label>
                         <input type="text" name="PanNumber" class="prof-input text-uppercase" value="@Model.PanNumber" />
                     </div>
                     <!-- Business Address -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label class="prof-form-label mb-0">Business Address <span class="req">*</span></label>
                             <span class="text-muted" style="font-size:0.72rem;">51/200</span>
@@ -382,7 +394,7 @@
                     </div>
 
                     <!-- Tagline / Short Description -->
-                    <div class="col-12">
+                    <div class="col-span-12">
                         <label class="prof-form-label">Tagline / Short Description</label>
                         <textarea name="Tagline" class="prof-input" rows="2">@Model.Tagline</textarea>
                     </div>
@@ -399,48 +411,48 @@
             <div class="prof-card">
                 <h2 class="prof-card-title">Social Media Links</h2>
 
-                <div class="row g-3">
+                <div class="grid grid-cols-12 gap-x-6 gap-y-4">
                     <!-- LinkedIn -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="prof-social-icon bg-linkedin"><i class="feather icon-linkedin"></i></div>
+                            <div class="prof-social-icon bg-linkedin"><i data-feather="linkedin" style="width:16px;height:16px;"></i></div>
                             <input type="url" name="LinkedIn" class="prof-input" value="@Model.LinkedIn" placeholder="LinkedIn URL" />
                         </div>
                     </div>
                     <!-- Twitter -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="prof-social-icon bg-twitter"><i class="feather icon-twitter"></i></div>
+                            <div class="prof-social-icon bg-twitter"><i data-feather="twitter" style="width:16px;height:16px;"></i></div>
                             <input type="url" name="Twitter" class="prof-input" value="@Model.Twitter" placeholder="Twitter URL" />
                         </div>
                     </div>
 
                     <!-- Facebook -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="prof-social-icon bg-facebook"><i class="feather icon-facebook"></i></div>
+                            <div class="prof-social-icon bg-facebook"><i data-feather="facebook" style="width:16px;height:16px;"></i></div>
                             <input type="url" name="Facebook" class="prof-input" value="@Model.Facebook" placeholder="Facebook URL" />
                         </div>
                     </div>
                     <!-- YouTube -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="prof-social-icon bg-youtube"><i class="feather icon-youtube"></i></div>
+                            <div class="prof-social-icon bg-youtube"><i data-feather="youtube" style="width:16px;height:16px;"></i></div>
                             <input type="url" name="YouTube" class="prof-input" value="@Model.YouTube" placeholder="YouTube URL" />
                         </div>
                     </div>
 
                     <!-- Instagram -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="prof-social-icon bg-instagram"><i class="feather icon-instagram"></i></div>
+                            <div class="prof-social-icon bg-instagram"><i data-feather="instagram" style="width:16px;height:16px;"></i></div>
                             <input type="url" name="Instagram" class="prof-input" value="@Model.Instagram" placeholder="Instagram URL" />
                         </div>
                     </div>
                     <!-- Blog / Link -->
-                    <div class="col-md-6">
+                    <div class="col-span-12 md:col-span-6">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="prof-social-icon bg-blog"><i class="feather icon-link"></i></div>
+                            <div class="prof-social-icon bg-blog"><i data-feather="link" style="width:16px;height:16px;"></i></div>
                             <input type="url" name="BlogUrl" class="prof-input" value="@Model.BlogUrl" placeholder="Blog / Website Link" />
                         </div>
                     </div>
@@ -450,7 +462,7 @@
     </div>
 
     <!-- Right Column: Preview, Status & Completion -->
-    <div class="col-lg-4">
+    <div class="col-span-12 lg:col-span-4">
         <!-- Live Profile Preview Card -->
         <div class="preview-card">
             <div class="preview-banner"></div>
@@ -459,17 +471,17 @@
                     <div class="preview-logo-avatar">
                         <span style="color:#059669;">ABC</span>
                     </div>
-                    <a href="/" target="_blank" class="text-primary text-decoration-none fw-bold small me-1 ms-auto">
-                        View Public Profile <i class="feather icon-external-link"></i>
+                    <a href="/" target="_blank" class="text-primary text-decoration-none fw-bold small me-1 ms-auto flex items-center gap-1">
+                        View Public Profile <i data-feather="external-link" style="width:12px;height:12px;display:inline-block;"></i>
                     </a>
                 </div>
 
                 <div class="mt-4">
-                    <span class="preview-verified-badge"><i class="feather icon-check-circle"></i> Verified Business</span>
+                    <span class="preview-verified-badge"><i data-feather="check-circle" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:2px;"></i> Verified Business</span>
                     <h3 class="fw-bold fs-5 text-dark mb-1" style="clear:both;">@Model.BusinessName</h3>
                     <div class="text-muted small mb-2">@Model.Industry &bull; Established in @Model.YearEstablished</div>
-                    <div class="small text-secondary mb-2"><i class="feather icon-map-pin me-1 text-danger"></i>@Model.City</div>
-                    <div class="small text-warning fw-bold mb-2"><i class="feather icon-star fill-warning"></i> @Model.Rating (@Model.ReviewCount Reviews)</div>
+                    <div class="small text-secondary mb-2"><i data-feather="map-pin" class="text-danger" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;"></i>@Model.City</div>
+                    <div class="small text-warning fw-bold mb-2"><i data-feather="star" class="fill-warning text-warning" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> @Model.Rating (@Model.ReviewCount Reviews)</div>
                     <p class="small text-muted mb-0" style="line-height:1.4;">@Model.Tagline</p>
 
                     <!-- Stats Row -->
@@ -501,7 +513,7 @@
 
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="feather icon-check-circle text-success fs-4"></i>
+                    <i data-feather="check-circle" class="text-success" style="width:20px;height:20px;display:inline-block;vertical-align:middle;"></i>
                     <div>
                         <strong class="text-success d-block" style="font-size:0.92rem;">Profile is Active</strong>
                         <span class="text-muted" style="font-size:0.75rem;">Your business profile is visible to all users.</span>
@@ -532,23 +544,23 @@
             <!-- Checklist -->
             <div class="mb-4">
                 <div class="checklist-item">
-                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <i data-feather="check-circle" class="checklist-icon-done" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>
                     <span>Basic Information</span>
                 </div>
                 <div class="checklist-item">
-                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <i data-feather="check-circle" class="checklist-icon-done" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>
                     <span>Business Address</span>
                 </div>
                 <div class="checklist-item">
-                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <i data-feather="check-circle" class="checklist-icon-done" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>
                     <span>Services Added</span>
                 </div>
                 <div class="checklist-item">
-                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <i data-feather="check-circle" class="checklist-icon-done" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>
                     <span>Documents Uploaded</span>
                 </div>
                 <div class="checklist-item">
-                    <i class="feather icon-circle checklist-icon-todo"></i>
+                    <i data-feather="circle" class="checklist-icon-todo" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>
                     <span>Team Members Added</span>
                 </div>
             </div>

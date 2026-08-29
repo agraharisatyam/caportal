@@ -7,16 +7,15 @@
 
 <div class="page-header mb-4">
     <div class="page-block">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
             <div>
-                <h4 class="mb-0 font-weight-bold text-white"><i data-feather="grid" class="me-2 text-gold"></i> Manage Services</h4>
-                <span class="text-muted small">Configure services listed on CACampus platform</span>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center"><i data-feather="grid" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> <span>Manage Services</span></h4>
             </div>
-            <a href="/Admin/Services/Create" class="btn btn-primary">
+            <a href="/Admin/Services/Create" class="btn btn-primary btn-sm">
                 <i data-feather="plus" class="me-1"></i> Add Service
             </a>
         </div>
-        <ul class="breadcrumb mt-2 mb-0">
+        <ul class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
             <li class="breadcrumb-item active" aria-current="page">Services</li>
         </ul>
@@ -44,16 +43,16 @@
     <div class="card-body">
         <form method="post" action="/Admin/Services/SaveSection">
             @Html.AntiForgeryToken()
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
+            <div class="grid grid-cols-12 gap-x-6 gap-y-4 items-end">
+                <div class="col-span-12 md:col-span-3">
                     <label class="form-label font-weight-bold">Badge Text</label>
                     <input type="text" name="servicesBadge" class="form-control" value="@settings.ServicesBadge" />
                 </div>
-                <div class="col-md-7">
+                <div class="col-span-12 md:col-span-7">
                     <label class="form-label font-weight-bold">Title <small class="text-muted">(HTML tags allowed)</small></label>
                     <input type="text" name="servicesTitle" class="form-control" value="@settings.ServicesTitle" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-span-12 md:col-span-2">
                     <button type="submit" class="btn btn-primary w-100"><i data-feather="save" class="me-1"></i> Save Heading</button>
                 </div>
             </div>

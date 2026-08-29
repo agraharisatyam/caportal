@@ -114,12 +114,7 @@
               <span class="pc-mtext">Pages</span>
             </a>
           </li>
-          <li class="pc-item">
-            <a href="/Admin/Homepage" class="pc-link">
-              <span class="pc-micon"><i data-feather="layout"></i></span>
-              <span class="pc-mtext">Homepage</span>
-            </a>
-          </li>
+
           <li class="pc-item">
             <a href="/Admin/Settings" class="pc-link">
               <span class="pc-micon"><i data-feather="edit-3"></i></span>
@@ -185,6 +180,24 @@
           <li class="pc-h-item pc-sidebar-popup lg:hidden">
             <a href="#" class="pc-head-link ltr:!ml-0 rtl:!mr-0" id="mobile-collapse">
               <i data-feather="menu"></i>
+            </a>
+          </li>
+          <!-- Welcome back message next to the menu icon -->
+          <li class="pc-h-item ms-3 inline-flex items-center text-muted font-weight-bold" style="font-size: 0.78rem;">
+            Welcome back, <strong class="ms-1 font-bold" style="color: var(--text-primary, #1e293b);">@(ViewBag.Username ?? "ajs")</strong> 👋
+          </li>
+          <!-- Current Date badge shown to the right of the menu toggle icon -->
+          <li class="pc-h-item ms-3 inline-flex items-center">
+            <span class="badge flex items-center gap-1 font-semibold" style="background: rgba(212, 175, 55, 0.15); color: #f0c040; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 6px; padding: 6px 12px; font-size: 0.75rem;">
+              <i data-feather="calendar" style="width: 14px; height: 14px; display: inline-block; margin-right: 4px;"></i>
+              @DateTime.Now.ToString("dd MMM yyyy")
+            </span>
+          </li>
+          <!-- Visit Website button -->
+          <li class="pc-h-item ms-3 inline-flex items-center">
+            <a href="/" target="_blank" class="btn btn-sm flex items-center gap-1 font-semibold hover:opacity-80" style="background: rgba(212, 175, 55, 0.1); color: #f0c040; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 6px; padding: 6px 12px; font-size: 0.75rem; transition: opacity 0.2s;">
+              <i data-feather="external-link" style="width: 13px; height: 13px; display: inline-block; margin-right: 4px; vertical-align: middle;"></i>
+              Visit Website
             </a>
           </li>
         </ul>

@@ -4,71 +4,117 @@
     ViewData["Title"] = "Manage FAQs";
 }
 
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="page-block">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center"><i data-feather="help-circle" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> <span>Manage FAQs</span></h4>
+                <span class="text-muted small">Configure frequently asked questions shown on the platform</span>
+            </div>
+        </div>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">FAQs</li>
+        </ul>
+    </div>
+</div>
+
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success">@TempData["Success"]</div>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="check-circle" class="me-1"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="alert-circle" class="me-1"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 
-<div class="row">
+<div class="grid grid-cols-12 gap-x-6 gap-y-4">
     <!-- Add FAQ Form -->
-    <div class="col-md-4">
+    <div class="col-span-12 lg:col-span-4">
         <div class="card">
             <div class="card-header">
-                <h5>Add New FAQ</h5>
+                <h5 class="mb-0 text-gold">Add New FAQ</h5>
             </div>
             <div class="card-body">
                 <form method="post" action="/Admin/Faqs/Save">
                     @Html.AntiForgeryToken()
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Question *</label>
+                        <label class="form-label font-weight-bold">Question *</label>
                         <input type="text" name="question" class="form-control" placeholder="e.g. How are CAs verified?" required />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Answer *</label>
+                        <label class="form-label font-weight-bold">Answer *</label>
                         <textarea name="answer" class="form-control" rows="5" placeholder="Enter detailed answer..." required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100"><i class="feather icon-plus me-1"></i>Add FAQ Item</button>
+                    <button type="submit" class="btn btn-primary w-100"><i data-feather="plus" class="me-1"></i> Add FAQ Item</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- FAQ Accordion List -->
-    <div class="col-md-8">
+    <!-- FAQ List -->
+    <div class="col-span-12 lg:col-span-8">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5>Frequently Asked Questions</h5>
+                <h5 class="mb-0 text-white">Frequently Asked Questions</h5>
                 <span class="badge bg-primary">@Model.Count Items</span>
             </div>
-            <div class="card-body">
-                <div class="accordion" id="adminFaqAccordion">
-                    @for (int i = 0; i < Model.Count; i++)
-                    {
-                        var faq = Model[i];
-                        var headId = $"adminFaqH{i}";
-                        var collId = $"adminFaqC{i}";
-                        <div class="accordion-item mb-2 border rounded">
-                            <h2 class="accordion-header" id="@headId">
-                                <button class="accordion-button @(i > 0 ? "collapsed" : "")" type="button" data-bs-toggle="collapse" data-bs-target="#@collId">
-                                    <strong>Q: @faq.Question</strong>
-                                </button>
-                            </h2>
-                            <div id="@collId" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#adminFaqAccordion">
-                                <div class="accordion-body">
-                                    <p class="mb-3">@faq.Answer</p>
-                                    <form method="post" action="/Admin/Faqs/Delete" onsubmit="return confirm('Delete this FAQ item?');">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="index" value="@i" />
-                                        <button type="submit" class="btn btn-xs btn-outline-danger"><i class="feather icon-trash-2 me-1"></i>Delete FAQ</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
+            <div class="card-body p-0">
+                @if (Model.Count == 0)
+                {
+                    <div class="text-center py-5 text-muted">
+                        <p class="mb-0">No FAQs added yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:50px;">#</th>
+                                    <th style="width:250px;">Question</th>
+                                    <th>Answer</th>
+                                    <th style="width:100px;" class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Count; i++)
+                                {
+                                    var faq = Model[i];
+                                    <tr>
+                                        <td class="text-muted small">#@(i + 1)</td>
+                                        <td>
+                                            <strong class="text-white">Q: @faq.Question</strong>
+                                        </td>
+                                        <td class="small text-secondary" style="white-space: normal; word-break: break-word;">
+                                            @faq.Answer
+                                        </td>
+                                        <td class="text-center">
+                                            <form method="post" action="/Admin/Faqs/Delete" onsubmit="return confirm('Delete this FAQ item?');" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="index" value="@i" />
+                                                <button type="submit" class="btn btn-xs btn-outline-danger">
+                                                    <i data-feather="trash-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
     </div>
