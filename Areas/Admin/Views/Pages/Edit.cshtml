@@ -1,0 +1,46 @@
+@model caportal.Areas.Admin.Controllers.ContentPageItem
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = $"Edit Page — {Model.Title}";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Edit Page: @Model.Title</h5>
+        <a href="/Admin/Pages" class="btn btn-sm btn-outline-secondary"><i class="feather icon-arrow-left me-1"></i>Back to Pages</a>
+    </div>
+    <div class="card-body">
+        <form method="post" action="/Admin/Pages/Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Page Title *</label>
+                    <input type="text" name="title" class="form-control" value="@Model.Title" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">URL Slug *</label>
+                    <input type="text" name="slug" class="form-control" value="@Model.Slug" required />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Meta Description (SEO)</label>
+                <textarea name="metaDescription" class="form-control" rows="2">@Model.MetaDescription</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Page HTML Content</label>
+                <textarea name="htmlContent" class="form-control font-monospace" rows="10">@Model.HtmlContent</textarea>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="isPublished" class="form-check-input" id="isPublished" value="true" @(Model.IsPublished ? "checked" : "") />
+                <label class="form-check-label fw-bold" for="isPublished">Publish Page Live</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary"><i class="feather icon-save me-1"></i>Save Page</button>
+        </form>
+    </div>
+</div>

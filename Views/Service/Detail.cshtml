@@ -1,5 +1,5 @@
-@using caportal.Models
-@model caportal.Models.CoveredService
+@using caportal.Models.Entities
+@model caportal.Models.Entities.CoveredService
 @{
     ViewData["Title"] = Model.Title + " — CACampus";
     ViewData["Description"] = Model.Description + ". Find verified Chartered Accountants for " + Model.Title + " on CACampus India.";
@@ -65,7 +65,7 @@
             <div class="col-lg-6">
                 <div style="background:linear-gradient(135deg,#0d1f33,#1a3c5e);border-radius:20px;padding:36px;">
                     <div class="row g-4 text-center">
-                        @foreach (var stat in new[]{("12K+","Verified CAs"),("50K+","Cases Resolved"),("200+","Cities"),("98%","Satisfaction")})
+                        @foreach (var stat in new[]{("Active","Verified CAs"),("Verified","Cases Resolved"),("Pan-India","Network"),("98%","Satisfaction")})
                         {
                             <div class="col-6">
                                 <div style="font-size:2rem;font-weight:800;color:#d4a017;">@stat.Item1</div>

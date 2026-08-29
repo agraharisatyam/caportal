@@ -1,6 +1,9 @@
 using caportal.Data;
 using caportal.Models;
+using caportal.Models.Entities;
+using caportal.Models.ViewModels;
 using caportal.Services;
+using caportal.Services.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -68,18 +71,46 @@ namespace caportal.Controllers
             {
                 var defaults = new List<CoveredService>
                 {
-                    new() { Icon="fas fa-file-invoice-dollar", Title="GST & Indirect Tax",    Description="Registration, returns, audits & litigation",         DisplayOrder=1 },
-                    new() { Icon="fas fa-landmark",            Title="Income Tax",             Description="ITR filing, assessments & appeals",                  DisplayOrder=2 },
-                    new() { Icon="fas fa-building",            Title="Corporate Compliance",   Description="ROC filings, MCA & company law",                     DisplayOrder=3 },
-                    new() { Icon="fas fa-balance-scale",       Title="Tax Litigation",         Description="ITAT, HC & SC representations",                     DisplayOrder=4 },
-                    new() { Icon="fas fa-chart-line",          Title="Audit & Assurance",      Description="Statutory, internal & forensic audit",               DisplayOrder=5 },
-                    new() { Icon="fas fa-rocket",              Title="Startup Finance",         Description="Fundraising, ESOP & equity structuring",             DisplayOrder=6 },
-                    new() { Icon="fas fa-globe",               Title="FEMA & RBI",             Description="Cross-border transactions & NRI taxation",           DisplayOrder=7 },
-                    new() { Icon="fas fa-handshake",           Title="Transfer Pricing",        Description="International transactions & documentation",         DisplayOrder=8 },
+                    new() { Icon="fas fa-file-invoice-dollar", Title="GST & Indirect Tax",    Description="Registration, returns, audits & litigation",         DisplayOrder=1, ImagePath="/images/services/gst-tax.svg" },
+                    new() { Icon="fas fa-landmark",            Title="Income Tax",             Description="ITR filing, assessments & appeals",                  DisplayOrder=2, ImagePath="/images/services/income-tax.svg" },
+                    new() { Icon="fas fa-building",            Title="Corporate Compliance",   Description="ROC filings, MCA & company law",                     DisplayOrder=3, ImagePath="/images/services/corporate-compliance.svg" },
+                    new() { Icon="fas fa-balance-scale",       Title="Tax Litigation",         Description="ITAT, HC & SC representations",                     DisplayOrder=4, ImagePath="/images/services/tax-litigation.svg" },
+                    new() { Icon="fas fa-chart-line",          Title="Audit & Assurance",      Description="Statutory, internal & forensic audit",               DisplayOrder=5, ImagePath="/images/services/audit-assurance.svg" },
+                    new() { Icon="fas fa-rocket",              Title="Startup Finance",         Description="Fundraising, ESOP & equity structuring",             DisplayOrder=6, ImagePath="/images/services/startup-finance.svg" },
+                    new() { Icon="fas fa-globe",               Title="FEMA & RBI",             Description="Cross-border transactions & NRI taxation",           DisplayOrder=7, ImagePath="/images/services/fema-rbi.svg" },
+                    new() { Icon="fas fa-handshake",           Title="Transfer Pricing",        Description="International transactions & documentation",         DisplayOrder=8, ImagePath="/images/services/transfer-pricing.svg" },
                 };
                 db.CoveredServices.AddRange(defaults);
                 await db.SaveChangesAsync();
                 services = defaults;
+            }
+
+            // Ensure all services have high quality images assigned if currently empty
+            var defaultImgMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "GST & Indirect Tax",    "/images/services/gst-tax.svg" },
+                { "Income Tax",             "/images/services/income-tax.svg" },
+                { "Corporate Compliance",   "/images/services/corporate-compliance.svg" },
+                { "Tax Litigation",         "/images/services/tax-litigation.svg" },
+                { "Audit & Assurance",      "/images/services/audit-assurance.svg" },
+                { "Startup Finance",         "/images/services/startup-finance.svg" },
+                { "FEMA & RBI",             "/images/services/fema-rbi.svg" },
+                { "Transfer Pricing",        "/images/services/transfer-pricing.svg" }
+            };
+
+            bool servicesUpdated = false;
+            foreach (var s in services)
+            {
+                if (string.IsNullOrEmpty(s.ImagePath) && defaultImgMap.TryGetValue(s.Title, out var path))
+                {
+                    s.ImagePath = path;
+                    servicesUpdated = true;
+                }
+            }
+
+            if (servicesUpdated)
+            {
+                await db.SaveChangesAsync();
             }
 
             // Load Why Choose Us items from DB, seed defaults if empty
@@ -88,20 +119,50 @@ namespace caportal.Controllers
             {
                 var defaults = new List<WhyChooseUsItem>
                 {
-                    new() { Title = "EXPERT CA TEAM",            Description = "Qualified & experienced CAs and professionals with in-depth knowledge.", Icon = "fas fa-user-graduate", DisplayOrder = 1 },
-                    new() { Title = "100% RELIABLE",             Description = "Accurate, transparent and dependable services you can trust.",           Icon = "fas fa-shield-alt",    DisplayOrder = 2 },
-                    new() { Title = "ON-TIME DELIVERY",          Description = "We value your time and ensure timely delivery of all services.",          Icon = "fas fa-clock",         DisplayOrder = 3 },
-                    new() { Title = "AFFORDABLE PRICING",         Description = "Transparent pricing with no hidden charges and best value for money.",   Icon = "fas fa-rupee-sign",    DisplayOrder = 4 },
-                    new() { Title = "END-TO-END SUPPORT",        Description = "From consultation to completion, we provide complete support.",          Icon = "fas fa-thumbs-up",     DisplayOrder = 5 },
-                    new() { Title = "100% ONLINE PROCESS",       Description = "Paperless, hassle-free and fully online service experience.",             Icon = "fas fa-desktop",       DisplayOrder = 6 },
-                    new() { Title = "SECURE & CONFIDENTIAL",     Description = "Your data and documents are safe with us at every step.",                 Icon = "fas fa-lock",          DisplayOrder = 7 },
-                    new() { Title = "GOVERNMENT APPROVED",       Description = "All services are as per government norms and regulations.",               Icon = "fas fa-landmark",      DisplayOrder = 8 },
-                    new() { Title = "WIDE RANGE OF SERVICES",     Description = "One-stop solution for CA, tax, legal, compliance and business needs.",   Icon = "fas fa-award",         DisplayOrder = 9 },
-                    new() { Title = "DEDICATED SUPPORT",         Description = "Our support team is always available to assist you.",                     Icon = "fas fa-headset",       DisplayOrder = 10 }
+                    new() { Title = "EXPERT CA TEAM",            Description = "Qualified & experienced CAs and professionals with in-depth knowledge.", Icon = "fas fa-user-graduate", ImagePath="/images/wcu/wcu-team.svg",     DisplayOrder = 1 },
+                    new() { Title = "100% RELIABLE",             Description = "Accurate, transparent and dependable services you can trust.",           Icon = "fas fa-shield-alt",    ImagePath="/images/wcu/wcu-reliable.svg", DisplayOrder = 2 },
+                    new() { Title = "ON-TIME DELIVERY",          Description = "We value your time and ensure timely delivery of all services.",          Icon = "fas fa-clock",         ImagePath="/images/wcu/wcu-ontime.svg",   DisplayOrder = 3 },
+                    new() { Title = "AFFORDABLE PRICING",         Description = "Transparent pricing with no hidden charges and best value for money.",   Icon = "fas fa-rupee-sign",    ImagePath="/images/wcu/wcu-pricing.svg",  DisplayOrder = 4 },
+                    new() { Title = "END-TO-END SUPPORT",        Description = "From consultation to completion, we provide complete support.",          Icon = "fas fa-thumbs-up",     ImagePath="/images/wcu/wcu-support.svg",  DisplayOrder = 5 },
+                    new() { Title = "100% ONLINE PROCESS",       Description = "Paperless, hassle-free and fully online service experience.",             Icon = "fas fa-desktop",       ImagePath="/images/wcu/wcu-online.svg",   DisplayOrder = 6 },
+                    new() { Title = "SECURE & CONFIDENTIAL",     Description = "Your data and documents are safe with us at every step.",                 Icon = "fas fa-lock",          ImagePath="/images/wcu/wcu-secure.svg",   DisplayOrder = 7 },
+                    new() { Title = "GOVERNMENT APPROVED",       Description = "All services are as per government norms and regulations.",               Icon = "fas fa-landmark",      ImagePath="/images/wcu/wcu-approved.svg", DisplayOrder = 8 },
+                    new() { Title = "WIDE RANGE OF SERVICES",     Description = "One-stop solution for CA, tax, legal, compliance and business needs.",   Icon = "fas fa-award",         ImagePath="/images/wcu/wcu-range.svg",    DisplayOrder = 9 },
+                    new() { Title = "DEDICATED SUPPORT",         Description = "Our support team is always available to assist you.",                     Icon = "fas fa-headset",       ImagePath="/images/wcu/wcu-headset.svg",  DisplayOrder = 10 }
                 };
                 db.WhyChooseUsItems.AddRange(defaults);
                 await db.SaveChangesAsync();
                 whyChooseUsItems = defaults;
+            }
+
+            // Ensure all Why Choose Us items have high quality images assigned if currently empty
+            var wcuImgMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "EXPERT CA TEAM",        "/images/wcu/wcu-team.svg" },
+                { "100% RELIABLE",         "/images/wcu/wcu-reliable.svg" },
+                { "ON-TIME DELIVERY",      "/images/wcu/wcu-ontime.svg" },
+                { "AFFORDABLE PRICING",     "/images/wcu/wcu-pricing.svg" },
+                { "END-TO-END SUPPORT",    "/images/wcu/wcu-support.svg" },
+                { "100% ONLINE PROCESS",   "/images/wcu/wcu-online.svg" },
+                { "SECURE & CONFIDENTIAL", "/images/wcu/wcu-secure.svg" },
+                { "GOVERNMENT APPROVED",   "/images/wcu/wcu-approved.svg" },
+                { "WIDE RANGE OF SERVICES", "/images/wcu/wcu-range.svg" },
+                { "DEDICATED SUPPORT",     "/images/wcu/wcu-headset.svg" }
+            };
+
+            bool wcuUpdated = false;
+            foreach (var item in whyChooseUsItems)
+            {
+                if (string.IsNullOrEmpty(item.ImagePath) && wcuImgMap.TryGetValue(item.Title, out var path))
+                {
+                    item.ImagePath = path;
+                    wcuUpdated = true;
+                }
+            }
+
+            if (wcuUpdated)
+            {
+                await db.SaveChangesAsync();
             }
 
             var vm = new HomeViewModel
@@ -110,37 +171,37 @@ namespace caportal.Controllers
                 WhyChooseUsItems = whyChooseUsItems,
                 Stats = new SiteStats
                 {
-                    TotalCAs          = "12K+",
+                    TotalCAs          = "Active",
                     ClientSatisfaction = "98%",
-                    CasesHandled      = "50K+",
-                    Cities            = "200+"
+                    CasesHandled      = "Verified",
+                    Cities            = "Pan-India"
                 },
                 FeaturedProfessionals =
                 [
-                    new CaProfessional { Id=1,  Name="CA Priya Mehta",    Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit"],          Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsFeatured=true,  JoinedOn=new DateTime(2026,6,1),  Status="Active"  },
-                    new CaProfessional { Id=2,  Name="CA Rajesh Sharma",  Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA"],           Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsFeatured=true,  JoinedOn=new DateTime(2026,6,5),  Status="Active"  },
-                    new CaProfessional { Id=3,  Name="CA Anita Krishnan", Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC"],              Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsFeatured=true,  JoinedOn=new DateTime(2026,6,10), Status="Active"  },
-                    new CaProfessional { Id=4,  Name="CA Vikram Joshi",   Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA"],             Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsFeatured=true,  JoinedOn=new DateTime(2026,6,12), Status="Pending" },
-                    new CaProfessional { Id=5,  Name="CA Sunita Patel",   Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST"],                   Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsFeatured=false, JoinedOn=new DateTime(2026,6,15), Status="Active"  },
-                    new CaProfessional { Id=6,  Name="CA Mohit Agarwal",  Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing"],  Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsFeatured=false, JoinedOn=new DateTime(2026,6,18), Status="Active"  },
-                    new CaProfessional { Id=7,  Name="CA Deepa Nair",     Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance"],             Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsFeatured=false, JoinedOn=new DateTime(2026,6,20), Status="Suspended"},
-                    new CaProfessional { Id=8,  Name="CA Arjun Singh",    Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax"],          Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsFeatured=false, JoinedOn=new DateTime(2026,6,25), Status="Active"  },
-                    new CaProfessional { Id=9,  Name="CA Kavita Rao",     Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax"],       Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsFeatured=false, JoinedOn=new DateTime(2026,6,28), Status="Pending" },
-                    new CaProfessional { Id=10, Name="CA Nitin Gupta",    Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA"],              Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsFeatured=false, JoinedOn=new DateTime(2026,6,30), Status="Active"  },
+                    new CaProfessional { Id=1,  Name="CA Priya Mehta",    Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit"],          Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsFeatured=true,  JoinedOn=new DateTime(2026,6,1),  Status="Active",  ImagePath="/images/ca/ca-priya-mehta.svg" },
+                    new CaProfessional { Id=2,  Name="CA Rajesh Sharma",  Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA"],           Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsFeatured=true,  JoinedOn=new DateTime(2026,6,5),  Status="Active",  ImagePath="/images/ca/ca-rajesh-sharma.svg" },
+                    new CaProfessional { Id=3,  Name="CA Anita Krishnan", Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC"],              Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsFeatured=true,  JoinedOn=new DateTime(2026,6,10), Status="Active",  ImagePath="/images/ca/ca-anita-krishnan.svg" },
+                    new CaProfessional { Id=4,  Name="CA Vikram Joshi",   Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA"],             Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsFeatured=true,  JoinedOn=new DateTime(2026,6,12), Status="Pending", ImagePath="/images/ca/ca-vikram-joshi.svg" },
+                    new CaProfessional { Id=5,  Name="CA Sunita Patel",   Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST"],                   Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsFeatured=false, JoinedOn=new DateTime(2026,6,15), Status="Active",  ImagePath="/images/ca/ca-priya-mehta.svg" },
+                    new CaProfessional { Id=6,  Name="CA Mohit Agarwal",  Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing"],  Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsFeatured=false, JoinedOn=new DateTime(2026,6,18), Status="Active",  ImagePath="/images/ca/ca-rajesh-sharma.svg" },
+                    new CaProfessional { Id=7,  Name="CA Deepa Nair",     Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance"],             Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsFeatured=false, JoinedOn=new DateTime(2026,6,20), Status="Suspended", ImagePath="/images/ca/ca-anita-krishnan.svg"},
+                    new CaProfessional { Id=8,  Name="CA Arjun Singh",    Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax"],          Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsFeatured=false, JoinedOn=new DateTime(2026,6,25), Status="Active",  ImagePath="/images/ca/ca-vikram-joshi.svg" },
+                    new CaProfessional { Id=9,  Name="CA Kavita Rao",     Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax"],       Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsFeatured=false, JoinedOn=new DateTime(2026,6,28), Status="Pending", ImagePath="/images/ca/ca-priya-mehta.svg" },
+                    new CaProfessional { Id=10, Name="CA Nitin Gupta",    Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA"],              Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsFeatured=false, JoinedOn=new DateTime(2026,6,30), Status="Active",  ImagePath="/images/ca/ca-rajesh-sharma.svg" },
                 ],
                 Testimonials =
                 [
-                    new Testimonial { Text="Found a GST specialist within 20 minutes of posting. The CA resolved our entire compliance backlog in a week. Absolutely outstanding platform.", AuthorName="Suresh Gupta",  AuthorRole="CEO, TechVentures Pvt. Ltd.", Initials="SG", Rating=5 },
-                    new Testimonial { Text="As a startup, we needed someone who understood equity structuring. CACampus matched us with an expert who guided us through our seed round flawlessly.", AuthorName="Nisha Rao",    AuthorRole="Co-Founder, GreenLeaf Foods",  Initials="NR", Rating=5 },
-                    new Testimonial { Text="The compliance reminder feature alone saves us from costly penalties every quarter. The CA professionals here are thorough, prompt, and highly professional.", AuthorName="Mohan Kumar", AuthorRole="Finance Head, Apex Exports",    Initials="MK", Rating=5 },
+                    new Testimonial { Text="Found a GST specialist quickly after posting. The CA resolved our entire compliance backlog seamlessly. Outstanding experience.", AuthorName="Suresh G.",  AuthorRole="Business Owner", Initials="SG", Rating=5 },
+                    new Testimonial { Text="As a startup, we needed specialized guidance on equity structuring. CACampus connected us with an expert who guided us through our seed round.", AuthorName="Nisha R.",    AuthorRole="Startup Founder",  Initials="NR", Rating=5 },
+                    new Testimonial { Text="The compliance management process saves us from costly delays every quarter. The CA professionals here are thorough, prompt, and professional.", AuthorName="Mohan K.", AuthorRole="Finance Manager",    Initials="MK", Rating=5 },
                 ],
                 Faqs =
                 [
-                    new FaqItem { Question="How are CA professionals verified on CACampus?",         Answer="Every CA listed is cross-verified against the ICAI member register. We check membership number, practising certificate validity, and disciplinary history before approving any profile." },
-                    new FaqItem { Question="Is CACampus free to use for clients?",                   Answer="Yes. Our Starter plan is completely free — browse and contact up to 3 CA professionals per month at no cost. Upgrade to Professional for unlimited access." },
-                    new FaqItem { Question="How long does it take to find a CA for my requirement?", Answer="Most clients receive responses from matched CA professionals within 1–2 hours of posting their requirement." },
-                    new FaqItem { Question="Are payments secure on the platform?",                   Answer="Absolutely. We use milestone-based escrow payments. Your payment is held securely and released to the CA only after you confirm the deliverable has been met." },
-                    new FaqItem { Question="Can CAs from any city join CACampus?",                   Answer="Yes. CACampus is a pan-India platform. We currently have verified professionals from over 200 cities." },
+                    new FaqItem { Question="How are CA professionals verified on CACampus?",         Answer="Every CA listed undergoes identity and membership verification before approving their profile." },
+                    new FaqItem { Question="Is CACampus free to use for clients?",                   Answer="Yes. Our Starter plan is free — browse and contact CA professionals at no cost. Upgrade for premium features." },
+                    new FaqItem { Question="How long does it take to find a CA for my requirement?", Answer="Clients receive prompt direct responses from empaneled CA professionals based on project requirements." },
+                    new FaqItem { Question="Are payments secure on the platform?",                   Answer="Absolutely. We support transparent, milestone-based billing for clear deliverable tracking." },
+                    new FaqItem { Question="Can CAs from any city join CACampus?",                   Answer="Yes. CACampus is a pan-India platform with empaneled professionals across major business hubs." },
                 ]
             };
             return View(vm);
@@ -262,6 +323,29 @@ namespace caportal.Controllers
 
             var professional = allProfessionals.FirstOrDefault(p => p.Id == expertId)
                                ?? allProfessionals.First();
+
+            var imgMap = new Dictionary<int, string>
+            {
+                { 1, "/images/ca/ca-priya-mehta.svg" },
+                { 2, "/images/ca/ca-rajesh-sharma.svg" },
+                { 3, "/images/ca/ca-anita-krishnan.svg" },
+                { 4, "/images/ca/ca-vikram-joshi.svg" },
+                { 5, "/images/ca/ca-priya-mehta.svg" },
+                { 6, "/images/ca/ca-rajesh-sharma.svg" },
+                { 7, "/images/ca/ca-anita-krishnan.svg" },
+                { 8, "/images/ca/ca-vikram-joshi.svg" },
+                { 9, "/images/ca/ca-priya-mehta.svg" },
+                { 10, "/images/ca/ca-rajesh-sharma.svg" },
+                { 11, "/images/ca/ca-rajesh-sharma.svg" },
+                { 12, "/images/ca/ca-rajesh-sharma.svg" },
+                { 13, "/images/ca/ca-vikram-joshi.svg" },
+                { 14, "/images/ca/ca-anita-krishnan.svg" },
+                { 15, "/images/ca/ca-vikram-joshi.svg" },
+            };
+            if (imgMap.TryGetValue(professional.Id, out var imgPath))
+            {
+                professional.ImagePath = imgPath;
+            }
 
             return View(professional);
         }

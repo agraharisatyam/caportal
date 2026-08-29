@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgCorp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a192f"/>
+      <stop offset="50%" stop-color="#112240"/>
+      <stop offset="100%" stop-color="#0a192f"/>
+    </linearGradient>
+    <linearGradient id="goldCorp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#f0c040"/>
+    </linearGradient>
+    <linearGradient id="blueCorp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <filter id="shadowCorp" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="280" rx="20" fill="url(#bgCorp)"/>
+  <circle cx="330" cy="70" r="100" fill="#0284c7" opacity="0.08"/>
+
+  <!-- Corporate Building Graphic -->
+  <g filter="url(#shadowCorp)" transform="translate(70, 40)">
+    <!-- Main Tower -->
+    <rect x="70" y="20" width="110" height="190" rx="10" fill="#1e293b"/>
+    <rect x="70" y="20" width="110" height="24" fill="url(#blueCorp)"/>
+    <text x="125" y="37" font-family="'Inter', sans-serif" font-weight="800" font-size="11" fill="#ffffff" text-anchor="middle">MCA COMPLIANCE</text>
+
+    <!-- Windows Grid -->
+    <rect x="85" y="60" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="116" y="60" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="147" y="60" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+
+    <rect x="85" y="90" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="116" y="90" width="18" height="18" rx="3" fill="url(#goldCorp)"/>
+    <rect x="147" y="90" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+
+    <rect x="85" y="120" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="116" y="120" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="147" y="120" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+
+    <rect x="85" y="150" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="116" y="150" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+    <rect x="147" y="150" width="18" height="18" rx="3" fill="#38bdf8" opacity="0.8"/>
+
+    <!-- Door -->
+    <rect x="115" y="180" width="20" height="30" rx="3" fill="url(#goldCorp)"/>
+
+    <!-- Side Building -->
+    <rect x="190" y="80" width="70" height="130" rx="8" fill="#0f172a"/>
+    <rect x="202" y="100" width="14" height="14" rx="2" fill="#38bdf8" opacity="0.6"/>
+    <rect x="230" y="100" width="14" height="14" rx="2" fill="#38bdf8" opacity="0.6"/>
+    <rect x="202" y="125" width="14" height="14" rx="2" fill="#38bdf8" opacity="0.6"/>
+    <rect x="230" y="125" width="14" height="14" rx="2" fill="#38bdf8" opacity="0.6"/>
+    <rect x="202" y="150" width="14" height="14" rx="2" fill="#38bdf8" opacity="0.6"/>
+    <rect x="230" y="150" width="14" height="14" rx="2" fill="#38bdf8" opacity="0.6"/>
+  </g>
+
+  <!-- Approved Gold Seal Floating -->
+  <g filter="url(#shadowCorp)" transform="translate(45, 110)">
+    <circle cx="36" cy="36" r="36" fill="url(#goldCorp)"/>
+    <circle cx="36" cy="36" r="30" fill="#0a192f"/>
+    <path d="M26 36 L33 43 L47 28" fill="none" stroke="#f0c040" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="36" y="56" font-family="'Inter', sans-serif" font-weight="800" font-size="8" fill="#d4a017" text-anchor="middle" letter-spacing="1">ROC APPROVED</text>
+  </g>
+</svg>

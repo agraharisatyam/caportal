@@ -1,5 +1,7 @@
 using caportal.Data;
+using caportal.Filters;
 using caportal.Models;
+using caportal.Models.Entities;
 using caportal.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace caportal.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [AdminAuthorize]
     public class ServicesController : Controller
     {
-        private const string SessionKey = "AdminLoggedIn";
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
         private readonly SiteSettingsService _settingsService;
         private readonly IWebHostEnvironment _env;
@@ -24,18 +26,10 @@ namespace caportal.Areas.Admin.Controllers
             _env             = env;
         }
 
-        private IActionResult? Auth()
-        {
-            if (HttpContext.Session.GetString(SessionKey) != "true")
-                return RedirectToAction("Login", "Auth", new { area = "Admin" });
-            return null;
-        }
-
         // GET /Admin/Services
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var g = Auth(); if (g != null) return g;
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
             ViewBag.Settings = _settingsService.Get();
             ViewBag.Services = new List<CoveredService>();
@@ -54,9 +48,9 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/Services/SaveSection
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SaveSection(string servicesBadge, string servicesTitle)
         {
-            var g = Auth(); if (g != null) return g;
             var settings = _settingsService.Get();
             settings.ServicesBadge = servicesBadge ?? settings.ServicesBadge;
             settings.ServicesTitle = servicesTitle ?? settings.ServicesTitle;
@@ -67,12 +61,11 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/Services/Save — add or update with optional image upload
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(
             int id, string title, string description, int displayOrder,
             string? pageUrl, IFormFile? imageFile, string? existingImagePath)
         {
-            var g = Auth(); if (g != null) return g;
-
             // Handle image upload
             string imagePath = existingImagePath ?? "";
             if (imageFile is { Length: > 0 })
@@ -127,9 +120,9 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/Services/Delete
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var g = Auth(); if (g != null) return g;
             using var db = _dbFactory.CreateDbContext();
             var svc = await db.CoveredServices.FindAsync(id);
             if (svc != null)
@@ -154,11 +147,18 @@ namespace caportal.Areas.Admin.Controllers
             });
         }
 
+        // GET /Admin/Services/Create
+        [HttpGet("Admin/Services/Create")]
+        public IActionResult Create()
+        {
+            ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
+            return View("Create", new CoveredService { DisplayOrder = 1 });
+        }
+
         // GET /Admin/Services/Edit/5
         [HttpGet("Admin/Services/Edit/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var g = Auth(); if (g != null) return g;
             using var db = _dbFactory.CreateDbContext();
             var service = await db.CoveredServices.FindAsync(id);
             if (service == null) return RedirectToAction("Index");
@@ -168,12 +168,11 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/Services/Edit/5
         [HttpPost("Admin/Services/Edit/{id:int}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id, string title, string description, int displayOrder,
             string? pageUrl, IFormFile? imageFile, string? existingImagePath)
         {
-            var g = Auth(); if (g != null) return g;
-
             string imagePath = existingImagePath ?? "";
             if (imageFile is { Length: > 0 })
             {

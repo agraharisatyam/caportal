@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGst" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f2027"/>
+      <stop offset="50%" stop-color="#203a43"/>
+      <stop offset="100%" stop-color="#2c5364"/>
+    </linearGradient>
+    <linearGradient id="goldGst" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#f0c040"/>
+    </linearGradient>
+    <linearGradient id="accentBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <filter id="shadowGst" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background Card -->
+  <rect width="400" height="280" rx="20" fill="url(#bgGst)"/>
+  <circle cx="340" cy="50" r="120" fill="#d4a017" opacity="0.05"/>
+  <circle cx="60" cy="230" r="90" fill="#2563eb" opacity="0.08"/>
+
+  <!-- Main Invoice / Tax Graphic Group -->
+  <g filter="url(#shadowGst)" transform="translate(110, 35)">
+    <!-- Document Body -->
+    <rect x="0" y="0" width="180" height="210" rx="14" fill="#ffffff"/>
+    <!-- Top Header Strip -->
+    <rect x="0" y="0" width="180" height="48" rx="14" fill="url(#accentBlue)"/>
+    <rect x="0" y="34" width="180" height="14" fill="url(#accentBlue)"/>
+    <text x="20" y="30" font-family="'Inter', sans-serif" font-weight="800" font-size="16" fill="#ffffff" letter-spacing="1">GST INVOICE</text>
+
+    <!-- Lines -->
+    <rect x="20" y="68" width="80" height="8" rx="4" fill="#e2e8f0"/>
+    <rect x="110" y="68" width="50" height="8" rx="4" fill="#3b82f6"/>
+
+    <rect x="20" y="90" width="100" height="6" rx="3" fill="#f1f5f9"/>
+    <rect x="20" y="104" width="120" height="6" rx="3" fill="#f1f5f9"/>
+    <rect x="20" y="118" width="90" height="6" rx="3" fill="#f1f5f9"/>
+
+    <line x1="20" y1="138" x2="160" y2="138" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+    <!-- Total Row -->
+    <text x="20" y="165" font-family="'Inter', sans-serif" font-weight="700" font-size="13" fill="#64748b">TAX SAVINGS</text>
+    <text x="20" y="190" font-family="'Inter', sans-serif" font-weight="800" font-size="18" fill="#1e3a8a">18% GST APPROVED</text>
+  </g>
+
+  <!-- Floating Gold Shield Badge -->
+  <g filter="url(#shadowGst)" transform="translate(60, 110)">
+    <circle cx="35" cy="35" r="35" fill="url(#goldGst)"/>
+    <path d="M35 18 L50 25 V40 C50 50 35 57 35 57 C35 57 20 50 20 40 V25 Z" fill="#0d1f33"/>
+    <polyline points="29,37 34,42 42,32" fill="none" stroke="#f0c040" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Coin Stack Graphic -->
+  <g transform="translate(265, 140)">
+    <ellipse cx="25" cy="40" rx="22" ry="8" fill="#b45309"/>
+    <ellipse cx="25" cy="36" rx="22" ry="8" fill="url(#goldGst)"/>
+    <ellipse cx="25" cy="24" rx="22" ry="8" fill="#b45309"/>
+    <ellipse cx="25" cy="20" rx="22" ry="8" fill="url(#goldGst)"/>
+    <ellipse cx="25" cy="8" rx="22" ry="8" fill="#b45309"/>
+    <ellipse cx="25" cy="4" rx="22" ry="8" fill="url(#goldGst)"/>
+    <text x="25" y="8" font-family="'Inter', sans-serif" font-weight="900" font-size="11" fill="#0d1f33" text-anchor="middle">₹</text>
+  </g>
+</svg>

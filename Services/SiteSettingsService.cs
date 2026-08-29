@@ -1,5 +1,6 @@
 using caportal.Data;
 using caportal.Models;
+using caportal.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace caportal.Services;
@@ -54,6 +55,7 @@ public class SiteSettingsService
 :root {{
   --primary:          {s.PrimaryColor};
   --primary-light:    {s.PrimaryLight};
+  --secondary:        {s.SecondaryColor};
   --accent:           {s.AccentColor};
   --accent-light:     {s.AccentColorLight};
   --body-bg:          {s.BodyBgColor};
@@ -176,16 +178,71 @@ h3 {{ font-size: {s.H3Size}px; }}
     }
 
     // ── Private helpers ───────────────────────────────────────────────────
+    private static bool _columnsChecked = false;
+    private static readonly object _columnLock = new();
+
+    private static void EnsureColumnsExist(ApplicationDbContext db)
+    {
+        if (_columnsChecked) return;
+        lock (_columnLock)
+        {
+            if (_columnsChecked) return;
+            try
+            {
+                var cols = new[]
+                {
+                    ("SecondaryColor", "nvarchar(max) NOT NULL DEFAULT '#10B981'"),
+                    ("ShowHeader", "bit NOT NULL DEFAULT 1"),
+                    ("ShowHeroSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowAboutUsSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowServicesSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowFeaturedCAsSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowTestimonialsSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowBlogSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowCtaSection", "bit NOT NULL DEFAULT 1"),
+                    ("ShowFooter", "bit NOT NULL DEFAULT 1")
+                };
+
+                foreach (var (colName, colDef) in cols)
+                {
+                    var sql = $@"
+                        IF NOT EXISTS (
+                            SELECT 1 FROM sys.columns 
+                            WHERE object_id = OBJECT_ID(N'SiteSettings') AND name = N'{colName}'
+                        )
+                        BEGIN
+                            ALTER TABLE [SiteSettings] ADD [{colName}] {colDef};
+                        END";
+                    db.Database.ExecuteSqlRaw(sql);
+                }
+                _columnsChecked = true;
+            }
+            catch
+            {
+                // Fallback catch if columns exist or permissions differ
+            }
+        }
+    }
+
     private SiteSettings LoadFromDb()
     {
         using var db = _factory.CreateDbContext();
-        var rec = db.SiteSettings.AsNoTracking().FirstOrDefault(r => r.Id == 1);
-        return rec == null ? new SiteSettings() : MapToModel(rec);
+        EnsureColumnsExist(db);
+        try
+        {
+            var rec = db.SiteSettings.AsNoTracking().FirstOrDefault(r => r.Id == 1);
+            return rec == null ? new SiteSettings() : MapToModel(rec);
+        }
+        catch
+        {
+            return new SiteSettings();
+        }
     }
 
     private void PersistToDb(SiteSettings s)
     {
         using var db = _factory.CreateDbContext();
+        EnsureColumnsExist(db);
         var rec = db.SiteSettings.Find(1);
         if (rec == null)
         {
@@ -214,6 +271,16 @@ h3 {{ font-size: {s.H3Size}px; }}
         HeroSubtitle     = r.HeroSubtitle,
         AccentColor      = r.AccentColor,      AccentColorLight = r.AccentColorLight,
         PrimaryColor     = r.PrimaryColor,     PrimaryLight     = r.PrimaryLight,
+        SecondaryColor   = r.SecondaryColor,
+        ShowHeader             = r.ShowHeader,
+        ShowHeroSection        = r.ShowHeroSection,
+        ShowAboutUsSection     = r.ShowAboutUsSection,
+        ShowServicesSection    = r.ShowServicesSection,
+        ShowFeaturedCAsSection = r.ShowFeaturedCAsSection,
+        ShowTestimonialsSection = r.ShowTestimonialsSection,
+        ShowBlogSection        = r.ShowBlogSection,
+        ShowCtaSection         = r.ShowCtaSection,
+        ShowFooter             = r.ShowFooter,
         FooterBgColor    = r.FooterBgColor,    FooterFontColor  = r.FooterFontColor,
         FooterText       = r.FooterText,
         HeadingFont      = r.HeadingFont,      HeadingColor     = r.HeadingColor,
@@ -260,6 +327,16 @@ h3 {{ font-size: {s.H3Size}px; }}
         r.HeroSubtitle     = s.HeroSubtitle;
         r.AccentColor      = s.AccentColor;      r.AccentColorLight = s.AccentColorLight;
         r.PrimaryColor     = s.PrimaryColor;     r.PrimaryLight     = s.PrimaryLight;
+        r.SecondaryColor   = s.SecondaryColor;
+        r.ShowHeader             = s.ShowHeader;
+        r.ShowHeroSection        = s.ShowHeroSection;
+        r.ShowAboutUsSection     = s.ShowAboutUsSection;
+        r.ShowServicesSection    = s.ShowServicesSection;
+        r.ShowFeaturedCAsSection = s.ShowFeaturedCAsSection;
+        r.ShowTestimonialsSection = s.ShowTestimonialsSection;
+        r.ShowBlogSection        = s.ShowBlogSection;
+        r.ShowCtaSection         = s.ShowCtaSection;
+        r.ShowFooter             = s.ShowFooter;
         r.FooterBgColor    = s.FooterBgColor;    r.FooterFontColor  = s.FooterFontColor;
         r.FooterText       = s.FooterText;
         r.HeadingFont      = s.HeadingFont;      r.HeadingColor     = s.HeadingColor;

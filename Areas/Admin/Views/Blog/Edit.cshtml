@@ -1,0 +1,73 @@
+@model caportal.Models.Entities.BlogPost
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = $"Edit Article — {Model.Title}";
+    var tagsStr = Model.Tags != null ? string.Join(", ", Model.Tags) : "";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Edit Article: @Model.Title</h5>
+        <a href="/Admin/Blog" class="btn btn-sm btn-outline-secondary"><i class="feather icon-arrow-left me-1"></i>Back to Articles</a>
+    </div>
+    <div class="card-body">
+        <form method="post" action="/Admin/Blog/Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label fw-bold">Article Title *</label>
+                    <input type="text" name="Title" class="form-control" value="@Model.Title" required />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Category *</label>
+                    <select name="Category" class="form-select">
+                        <option selected="@(Model.Category == "GST & Tax")">GST &amp; Tax</option>
+                        <option selected="@(Model.Category == "Income Tax")">Income Tax</option>
+                        <option selected="@(Model.Category == "Corporate Law")">Corporate Law</option>
+                        <option selected="@(Model.Category == "Startup Advisory")">Startup Advisory</option>
+                        <option selected="@(Model.Category == "Audit & Assurance")">Audit &amp; Assurance</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">URL Slug *</label>
+                    <input type="text" name="Slug" class="form-control" value="@Model.Slug" required />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Author Name</label>
+                    <input type="text" name="AuthorName" class="form-control" value="@Model.AuthorName" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Read Time (Mins)</label>
+                    <input type="number" name="ReadTimeMinutes" class="form-control" value="@Model.ReadTimeMinutes" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Short Excerpt / Summary *</label>
+                <textarea name="Excerpt" class="form-control" rows="2" required>@Model.Excerpt</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">HTML Article Body Content *</label>
+                <textarea name="Content" class="form-control font-monospace" rows="12" required>@Model.Content</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tags (Comma-separated)</label>
+                <input type="text" name="tagsText" class="form-control" value="@tagsStr" />
+            </div>
+
+            <div class="mb-4 form-check">
+                <input type="checkbox" name="IsPublished" class="form-check-input" id="isPublished" value="true" @(Model.IsPublished ? "checked" : "") />
+                <label class="form-check-label fw-bold" for="isPublished">Article Live Status</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary"><i class="feather icon-save me-1"></i>Save Changes</button>
+        </form>
+    </div>
+</div>

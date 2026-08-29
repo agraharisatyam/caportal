@@ -1,4 +1,4 @@
-@model caportal.Models.CaProfessional
+@model caportal.Models.Entities.CaProfessional
 @{
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
     ViewData["Title"] = $"{Model.Name} — CA Profile";
@@ -323,8 +323,16 @@
         </nav>
 
         <div class="expert-profile-card">
-            <div class="d-flex align-items-start gap-3 flex-wrap">
-                <div class="expert-avatar-large">@Model.Initials</div>
+                <div class="expert-avatar-large">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="@Model.ImagePath" alt="@Model.Name" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" />
+                    }
+                    else
+                    {
+                        <span>@Model.Initials</span>
+                    }
+                </div>
                 <div class="expert-name-block">
                     <h1 class="expert-name">
                         @Model.Name
@@ -476,9 +484,9 @@
                     <div class="detail-card-title"><i class="fas fa-star"></i> Client Reviews</div>
                     @{
                         var reviews = new[]{
-                            ("Ramesh Agarwal","CEO, Agarwal Exports","★★★★★", "Exceptional expertise in GST compliance. @Model.Name resolved our multi-state registration issue in record time. Highly recommended!"),
-                            ("Nisha Patel","Co-Founder, GreenTech","★★★★★", "Extremely thorough and professional. Our audit was completed ahead of schedule with zero complications. Will definitely hire again."),
-                            ("Vikram Sinha","Director, Sinha Industries","★★★★☆", "Very knowledgeable and responsive. Made a complex tax litigation case look straightforward. Great communicator too."),
+                            ("Ramesh A.","Business Owner","★★★★★", "Exceptional expertise in GST compliance. @Model.Name resolved our multi-state registration issue in record time. Highly recommended!"),
+                            ("Nisha P.","Managing Director","★★★★★", "Extremely thorough and professional. Our audit was completed ahead of schedule with zero complications. Will definitely hire again."),
+                            ("Vikram S.","Enterprise Client","★★★★☆", "Very knowledgeable and responsive. Made a complex tax litigation case look straightforward. Great communicator too."),
                         };
                     }
                     @foreach (var (name, role, stars2, text) in reviews)
@@ -538,7 +546,7 @@
                         </div>
                         <div>
                             <label>Mobile Number *</label>
-                            <input type="tel" placeholder="+91 98765 43210" id="bookPhone" />
+                            <input type="tel" placeholder="Your Phone Number" id="bookPhone" />
                         </div>
                         <div>
                             <label>Email Address</label>
@@ -565,7 +573,7 @@
                     </div>
                     <div class="booking-guarantees">
                         <div class="guarantee-item"><i class="fas fa-check-circle"></i> Free cancellation within 24 hours</div>
-                        <div class="guarantee-item"><i class="fas fa-check-circle"></i> Secure payment via escrow</div>
+                        <div class="guarantee-item"><i class="fas fa-check-circle"></i> Secure transparent billing</div>
                         <div class="guarantee-item"><i class="fas fa-check-circle"></i> Verified ICAI member</div>
                         <div class="guarantee-item"><i class="fas fa-check-circle"></i> Satisfaction guarantee</div>
                     </div>

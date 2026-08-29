@@ -1,0 +1,96 @@
+@model List<caportal.Areas.Admin.Controllers.PricingPlanItem>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Manage Pricing Plans";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="row">
+    <!-- Add Pricing Plan Form -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add New Pricing Plan</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/Pricing/Save">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Plan Name *</label>
+                        <input type="text" name="planName" class="form-control" placeholder="e.g. Professional" required />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Price Display *</label>
+                            <input type="text" name="priceDisplay" class="form-control" placeholder="e.g. ₹ 1,499" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Billing Cycle</label>
+                            <input type="text" name="billingCycle" class="form-control" placeholder="e.g. /month" value="/month" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <input type="text" name="description" class="form-control" placeholder="Short summary" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Features (One per line) *</label>
+                        <textarea name="featuresText" class="form-control" rows="4" placeholder="Feature 1&#10;Feature 2&#10;Feature 3" required></textarea>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="isPopular" class="form-check-input" id="isPopular" value="true" />
+                        <label class="form-check-label fw-bold" for="isPopular">Highlight as Popular Plan</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100"><i class="feather icon-plus me-1"></i>Add Plan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Cards Grid -->
+    <div class="col-md-8">
+        <div class="row g-3">
+            @foreach (var plan in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card h-100 @(plan.IsPopular ? "border-primary shadow" : "")">
+                        <div class="card-header text-center">
+                            @if (plan.IsPopular)
+                            {
+                                <span class="badge bg-primary mb-2">Most Popular</span>
+                            }
+                            <h5>@plan.PlanName</h5>
+                            <h2 class="mt-2 mb-0 text-primary">@plan.PriceDisplay <small class="fs-6 text-muted">@plan.BillingCycle</small></h2>
+                            <small class="text-muted">@plan.Description</small>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                @foreach (var f in plan.Features)
+                                {
+                                    <li class="mb-2"><i class="feather icon-check text-success me-2"></i>@f</li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer text-center">
+                            <form method="post" action="/Admin/Pricing/Delete" onsubmit="return confirm('Delete plan @plan.PlanName?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@plan.Id" />
+                                <button type="submit" class="btn btn-xs btn-outline-danger w-100"><i class="feather icon-trash-2 me-1"></i>Delete Plan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

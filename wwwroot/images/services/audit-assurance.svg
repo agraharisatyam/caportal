@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgAudit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="goldAudit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#f0c040"/>
+    </linearGradient>
+    <linearGradient id="purpleAudit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="shadowAudit" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="280" rx="20" fill="url(#bgAudit)"/>
+  <circle cx="340" cy="50" r="100" fill="#8b5cf6" opacity="0.08"/>
+
+  <!-- Audit Clipboard & Chart Graphic -->
+  <g filter="url(#shadowAudit)" transform="translate(100, 30)">
+    <rect x="0" y="0" width="200" height="220" rx="16" fill="#ffffff"/>
+    <rect x="0" y="0" width="200" height="48" rx="16" fill="url(#purpleAudit)"/>
+    <rect x="0" y="34" width="200" height="14" fill="url(#purpleAudit)"/>
+    <text x="24" y="30" font-family="'Inter', sans-serif" font-weight="800" font-size="15" fill="#ffffff">AUDIT REPORT 2025</text>
+
+    <!-- Bar Chart Graphic inside Audit Report -->
+    <rect x="30" y="145" width="20" height="35" rx="4" fill="#cbd5e1"/>
+    <rect x="60" y="125" width="20" height="55" rx="4" fill="#a78bfa"/>
+    <rect x="90" y="105" width="20" height="75" rx="4" fill="#8b5cf6"/>
+    <rect x="120" y="85" width="20" height="95" rx="4" fill="url(#goldAudit)"/>
+    <rect x="150" y="65" width="20" height="115" rx="4" fill="#10b981"/>
+
+    <!-- Audit Verified Line -->
+    <line x1="24" y1="192" x2="176" y2="192" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="100" y="210" font-family="'Inter', sans-serif" font-weight="800" font-size="12" fill="#10b981" text-anchor="middle">✓ STATUTORY AUDIT COMPLETED</text>
+  </g>
+
+  <!-- Magnifying Glass Floating -->
+  <g filter="url(#shadowAudit)" transform="translate(40, 100)">
+    <circle cx="45" cy="45" r="32" fill="none" stroke="url(#goldAudit)" stroke-width="8"/>
+    <circle cx="45" cy="45" r="26" fill="rgba(212,160,23,0.15)"/>
+    <line x1="68" y1="68" x2="95" y2="95" stroke="url(#goldAudit)" stroke-width="9" stroke-linecap="round"/>
+    <polyline points="36,45 42,51 55,37" fill="none" stroke="#f0c040" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

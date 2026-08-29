@@ -1,0 +1,75 @@
+@model List<caportal.Models.ViewModels.FaqItem>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Manage FAQs";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="row">
+    <!-- Add FAQ Form -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add New FAQ</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/Faqs/Save">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Question *</label>
+                        <input type="text" name="question" class="form-control" placeholder="e.g. How are CAs verified?" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Answer *</label>
+                        <textarea name="answer" class="form-control" rows="5" placeholder="Enter detailed answer..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100"><i class="feather icon-plus me-1"></i>Add FAQ Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Frequently Asked Questions</h5>
+                <span class="badge bg-primary">@Model.Count Items</span>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="adminFaqAccordion">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var faq = Model[i];
+                        var headId = $"adminFaqH{i}";
+                        var collId = $"adminFaqC{i}";
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header" id="@headId">
+                                <button class="accordion-button @(i > 0 ? "collapsed" : "")" type="button" data-bs-toggle="collapse" data-bs-target="#@collId">
+                                    <strong>Q: @faq.Question</strong>
+                                </button>
+                            </h2>
+                            <div id="@collId" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#adminFaqAccordion">
+                                <div class="accordion-body">
+                                    <p class="mb-3">@faq.Answer</p>
+                                    <form method="post" action="/Admin/Faqs/Delete" onsubmit="return confirm('Delete this FAQ item?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="index" value="@i" />
+                                        <button type="submit" class="btn btn-xs btn-outline-danger"><i class="feather icon-trash-2 me-1"></i>Delete FAQ</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

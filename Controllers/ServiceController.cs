@@ -1,4 +1,6 @@
 using caportal.Data;
+using caportal.Models;
+using caportal.Models.Entities;
 using caportal.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

@@ -1,0 +1,320 @@
+@model List<caportal.Models.Entities.BlogPost>
+@{
+    ViewData["Title"] = "CA Insights & Tax Blog — CACampus";
+    ViewData["Description"] = "Latest expert insights on GST compliance, Income Tax filing, Corporate Law, and Startup finance in India.";
+    Layout = "~/Views/Shared/_LandingLayout.cshtml";
+
+    var categories = ViewBag.Categories as string[] ?? new[] { "All", "GST & Tax", "Income Tax", "Corporate Law", "Startup Advisory" };
+    var selectedCat = ViewBag.SelectedCategory as string ?? "All";
+    var searchQ = ViewBag.SearchQuery as string ?? "";
+    var featuredPost = ViewBag.FeaturedPost as caportal.Models.Entities.BlogPost;
+    var gridPosts = ViewBag.GridPosts as List<caportal.Models.Entities.BlogPost> ?? new();
+}
+
+<!-- ═══ Hero Header ═══ -->
+<section class="blog-hero">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <span class="blog-badge">INSIGHTS &amp; KNOWLEDGE BASE</span>
+        <h1 class="blog-hero-title">Expert CA Insights &amp; Tax Guides</h1>
+        <p class="blog-hero-sub">Stay compliant and informed with authoritative articles written by India's top Chartered Accountants.</p>
+
+        <!-- Search Bar -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-7">
+                <form method="get" action="/blog" class="blog-search-form">
+                    <input type="hidden" name="category" value="@selectedCat" />
+                    <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden bg-white">
+                        <span class="input-group-text border-0 bg-transparent ps-4"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-0 shadow-none ps-2" placeholder="Search GST, ITR, ROC compliance, ESOPs..." value="@searchQ" />
+                        <button type="submit" class="btn btn-gold px-4 font-bold">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="blog-cat-pills mt-4">
+            @foreach (var cat in categories)
+            {
+                var isActive = selectedCat.Equals(cat, StringComparison.OrdinalIgnoreCase);
+                <a href="/blog?category=@cat&search=@searchQ" class="cat-pill @(isActive ? "active" : "")">
+                    @cat
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Main Blog Container ═══ -->
+<div class="container py-5">
+    @if (featuredPost != null && string.IsNullOrEmpty(searchQ) && selectedCat == "All")
+    {
+        <!-- Featured Top Story Card -->
+        <div class="featured-story-card mb-5">
+            <div class="row g-0 align-items-center">
+                <div class="col-lg-6">
+                    <div class="featured-img-wrap">
+                        <img src="@featuredPost.FeaturedImagePath" alt="@featuredPost.Title" />
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="featured-content p-4 p-lg-5">
+                        <span class="badge bg-gold text-dark font-bold mb-2">FEATURED STORY</span>
+                        <span class="badge bg-light text-primary font-bold mb-2 ms-1">@featuredPost.Category</span>
+                        <h2 class="featured-title">
+                            <a href="/blog/@featuredPost.Slug">@featuredPost.Title</a>
+                        </h2>
+                        <p class="featured-excerpt">@featuredPost.Excerpt</p>
+
+                        <div class="d-flex align-items-center gap-3 mt-4 pt-3 border-top">
+                            <img src="@featuredPost.AuthorAvatar" class="author-avatar" alt="@featuredPost.AuthorName" />
+                            <div>
+                                <strong class="d-block text-dark small">@featuredPost.AuthorName</strong>
+                                <span class="text-muted extra-small">@featuredPost.AuthorRole &bull; @featuredPost.PublishedDate.ToString("dd MMM yyyy")</span>
+                            </div>
+                            <div class="ms-auto text-end">
+                                <span class="badge bg-light text-muted"><i class="far fa-clock me-1"></i>@featuredPost.ReadTimeMinutes min read</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Articles Roster Grid -->
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="far fa-newspaper fa-3x text-muted mb-3"></i>
+                <h3>No articles found</h3>
+                <p class="text-muted">Try adjusting your search query or category filter.</p>
+                <a href="/blog" class="btn btn-outline-primary mt-2">Reset Filters</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var post in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="article-card h-100">
+                        <div class="article-thumb">
+                            <img src="@post.FeaturedImagePath" alt="@post.Title" />
+                            <span class="article-cat-badge">@post.Category</span>
+                        </div>
+                        <div class="article-body">
+                            <h3 class="article-title">
+                                <a href="/blog/@post.Slug">@post.Title</a>
+                            </h3>
+                            <p class="article-excerpt">@post.Excerpt</p>
+                            <div class="article-footer">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@post.AuthorAvatar" class="author-avatar-sm" alt="@post.AuthorName" />
+                                    <div>
+                                        <div class="author-name-sm">@post.AuthorName</div>
+                                        <div class="article-date">@post.PublishedDate.ToString("dd MMM yyyy")</div>
+                                    </div>
+                                </div>
+                                <a href="/blog/@post.Slug" class="btn-read-more">Read <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Custom Blog CSS -->
+<style>
+    .blog-hero {
+        background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 100%);
+        padding: 70px 0 50px;
+        color: #ffffff;
+        border-bottom: 3px solid #d4a017;
+    }
+    .blog-badge {
+        background: rgba(212, 160, 23, 0.15);
+        color: #d4a017;
+        border: 1px solid rgba(212, 160, 23, 0.3);
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    .blog-hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.6rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+    .blog-hero-sub {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .btn-gold {
+        background: #d4a017;
+        color: #0d1f33;
+        font-weight: 800;
+    }
+    .btn-gold:hover {
+        background: #f0c040;
+        color: #0d1f33;
+    }
+    .blog-cat-pills {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .cat-pill {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.85);
+        padding: 8px 18px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .cat-pill:hover, .cat-pill.active {
+        background: #d4a017;
+        color: #0d1f33;
+        border-color: #d4a017;
+    }
+    .featured-story-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }
+    .featured-img-wrap {
+        height: 100%;
+        min-height: 280px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+    }
+    .featured-img-wrap img {
+        max-height: 220px;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    .featured-title a {
+        color: #0d1f33;
+        text-decoration: none;
+    }
+    .featured-title a:hover {
+        color: #d4a017;
+    }
+    .featured-excerpt {
+        color: #4b5563;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    .author-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #d4a017;
+    }
+    .article-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .article-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+    .article-thumb {
+        height: 160px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+    }
+    .article-thumb img {
+        max-height: 120px;
+        object-fit: contain;
+    }
+    .article-cat-badge {
+        position: absolute;
+        top: 12px; left: 12px;
+        background: #0d1f33;
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+    .article-body {
+        padding: 20px;
+    }
+    .article-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 10px;
+    }
+    .article-title a {
+        color: #111827;
+        text-decoration: none;
+    }
+    .article-title a:hover {
+        color: #2563eb;
+    }
+    .article-excerpt {
+        color: #6b7280;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin-bottom: 16px;
+    }
+    .article-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 14px;
+    }
+    .author-avatar-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .author-name-sm {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+    .article-date {
+        font-size: 0.72rem;
+        color: #9ca3af;
+    }
+    .btn-read-more {
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+    }
+    .btn-read-more:hover {
+        color: #1d4ed8;
+    }
+</style>

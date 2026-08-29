@@ -1,0 +1,561 @@
+@model caportal.Areas.Admin.Controllers.BusinessProfileViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Business Profile Management";
+    var activeTab = ViewBag.ActiveTab as string ?? "details";
+}
+
+<!-- Custom Styles for Business Profile UI -->
+<style>
+    .prof-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .prof-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+    .prof-breadcrumb {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+    .prof-breadcrumb a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+    .prof-nav-tabs {
+        display: flex;
+        gap: 20px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 24px;
+        overflow-x: auto;
+    }
+    .prof-tab-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .prof-tab-link:hover, .prof-tab-link.active {
+        color: #2563eb;
+        border-bottom-color: #2563eb;
+    }
+    .prof-card {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .prof-card-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 18px;
+    }
+    .prof-form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+    .prof-form-label span.req {
+        color: #ef4444;
+    }
+    .prof-input {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 13px;
+        font-size: 0.9rem;
+        color: #1f2937;
+        width: 100%;
+        transition: border 0.2s;
+    }
+    .prof-input:focus {
+        border-color: #2563eb;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    .prof-logo-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 16px;
+    }
+    .prof-logo-preview {
+        width: 90px;
+        height: 60px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+    }
+    .prof-social-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+    .bg-linkedin { background: #0077b5; }
+    .bg-twitter { background: #1da1f2; }
+    .bg-facebook { background: #1877f2; }
+    .bg-youtube { background: #ff0000; }
+    .bg-instagram { background: #e4405f; }
+    .bg-blog { background: #6b7280; }
+    
+    /* Profile Preview Card */
+    .preview-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .preview-banner {
+        height: 110px;
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    .preview-body {
+        padding: 20px;
+        position: relative;
+    }
+    .preview-logo-avatar {
+        width: 68px;
+        height: 68px;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 3px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        position: absolute;
+        top: -34px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #1e3a8a;
+        font-size: 0.9rem;
+    }
+    .preview-verified-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 50px;
+        float: right;
+    }
+    .preview-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        background: #f9fafb;
+        border: 1px solid #f3f4f6;
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 16px;
+        text-align: center;
+    }
+    .preview-stat-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #111827;
+    }
+    .preview-stat-lbl {
+        font-size: 0.68rem;
+        color: #6b7280;
+        margin-top: 2px;
+    }
+
+    /* Checklist */
+    .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.88rem;
+        color: #374151;
+        margin-bottom: 10px;
+    }
+    .checklist-icon-done {
+        color: #10b981;
+        font-size: 1.1rem;
+    }
+    .checklist-icon-todo {
+        color: #d1d5db;
+        font-size: 1.1rem;
+    }
+</style>
+
+<!-- ═══ Page Header ═══ -->
+<div class="prof-header-bar">
+    <div>
+        <h1 class="prof-title">Business Profile Management</h1>
+        <div class="prof-breadcrumb">
+            <a href="/ajs">Dashboard</a> &rsaquo; <span>Business Profiles</span> &rsaquo; <strong>Manage Profile</strong>
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <!-- Notification Bell -->
+        <button class="btn btn-light rounded-circle position-relative p-2" title="Notifications">
+            <i class="feather icon-bell fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;">5</span>
+        </button>
+        <!-- Add New Business -->
+        <button class="btn btn-primary fw-bold" onclick="alert('Add Business Modal');">
+            <i class="feather icon-plus me-1"></i> Add New Business
+        </button>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="feather icon-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- ═══ Navigation Tabs ═══ -->
+<div class="prof-nav-tabs">
+    <a href="/Admin/Profile?tab=details" class="prof-tab-link @(activeTab == "details" ? "active" : "")">
+        <i class="feather icon-user"></i> Profile Details
+    </a>
+    <a href="/Admin/Profile?tab=services" class="prof-tab-link @(activeTab == "services" ? "active" : "")">
+        <i class="feather icon-grid"></i> Services
+    </a>
+    <a href="/Admin/Profile?tab=documents" class="prof-tab-link @(activeTab == "documents" ? "active" : "")">
+        <i class="feather icon-file-text"></i> Documents
+    </a>
+    <a href="/Admin/Profile?tab=team" class="prof-tab-link @(activeTab == "team" ? "active" : "")">
+        <i class="feather icon-users"></i> Team Members
+    </a>
+    <a href="/Admin/Profile?tab=settings" class="prof-tab-link @(activeTab == "settings" ? "active" : "")">
+        <i class="feather icon-settings"></i> Settings &amp; Preferences
+    </a>
+    <a href="/Admin/Profile?tab=activity" class="prof-tab-link @(activeTab == "activity" ? "active" : "")">
+        <i class="feather icon-clock"></i> Activity Log
+    </a>
+</div>
+
+<!-- ═══ Main Content Grid ═══ -->
+<div class="row">
+    <!-- Left Column: Basic Info & Social Links -->
+    <div class="col-lg-8">
+        <form method="post" action="/Admin/Profile/Save">
+            @Html.AntiForgeryToken()
+
+            <!-- Basic Information Card -->
+            <div class="prof-card">
+                <h2 class="prof-card-title">Basic Information</h2>
+
+                <div class="row g-3">
+                    <!-- Business Name -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Business Name <span class="req">*</span></label>
+                        <input type="text" name="BusinessName" class="prof-input" value="@Model.BusinessName" required />
+                    </div>
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Email <span class="req">*</span></label>
+                        <input type="email" name="Email" class="prof-input" value="@Model.Email" required />
+                    </div>
+
+                    <!-- Business Type -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Business Type <span class="req">*</span></label>
+                        <select name="BusinessType" class="prof-input">
+                            <option selected>Private Limited Company</option>
+                            <option>Limited Liability Partnership (LLP)</option>
+                            <option>Partnership Firm</option>
+                            <option>Sole Proprietorship</option>
+                            <option>One Person Company (OPC)</option>
+                        </select>
+                    </div>
+                    <!-- Phone Number -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Phone Number <span class="req">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><span class="me-1">🇮🇳</span> +91</span>
+                            <input type="tel" name="PhoneNumber" class="prof-input" style="border-radius: 0 8px 8px 0;" value="98765 43210" required />
+                        </div>
+                    </div>
+
+                    <!-- Industry -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Industry</label>
+                        <select name="Industry" class="prof-input">
+                            <option selected>Finance &amp; Accounting</option>
+                            <option>Taxation &amp; Legal Compliance</option>
+                            <option>Information Technology</option>
+                            <option>Healthcare &amp; Pharma</option>
+                            <option>Manufacturing &amp; Trade</option>
+                        </select>
+                    </div>
+                    <!-- Website -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Website</label>
+                        <input type="url" name="Website" class="prof-input" value="@Model.Website" />
+                    </div>
+
+                    <!-- Year Established -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Year Established</label>
+                        <div class="position-relative">
+                            <input type="number" name="YearEstablished" class="prof-input" value="@Model.YearEstablished" />
+                            <i class="feather icon-calendar position-absolute end-0 top-50 translate-middle-y me-3 text-muted"></i>
+                        </div>
+                    </div>
+                    <!-- Registration Number -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Registration Number</label>
+                        <input type="text" name="RegistrationNumber" class="prof-input" value="@Model.RegistrationNumber" />
+                    </div>
+
+                    <!-- GST Number -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">GST Number</label>
+                        <input type="text" name="GstNumber" class="prof-input text-uppercase" value="@Model.GstNumber" />
+                    </div>
+                    <!-- Business Logo -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">Business Logo</label>
+                        <div class="prof-logo-box">
+                            <div class="prof-logo-preview">
+                                <div class="text-center fw-extrabold text-primary" style="font-size:0.75rem; line-height:1.2;">
+                                    <span style="font-size:1.1rem; color:#059669;">ABC</span><br />CONSULTANCY
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary fw-bold px-3 mb-1" onclick="alert('Change logo dialog');">
+                                    Change Logo
+                                </button>
+                                <div class="text-muted" style="font-size:0.72rem;">JPG, PNG or SVG. Max size 2MB</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAN Number -->
+                    <div class="col-md-6">
+                        <label class="prof-form-label">PAN Number</label>
+                        <input type="text" name="PanNumber" class="prof-input text-uppercase" value="@Model.PanNumber" />
+                    </div>
+                    <!-- Business Address -->
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="prof-form-label mb-0">Business Address <span class="req">*</span></label>
+                            <span class="text-muted" style="font-size:0.72rem;">51/200</span>
+                        </div>
+                        <textarea name="BusinessAddress" class="prof-input" rows="3" required>@Model.BusinessAddress</textarea>
+                    </div>
+
+                    <!-- Tagline / Short Description -->
+                    <div class="col-12">
+                        <label class="prof-form-label">Tagline / Short Description</label>
+                        <textarea name="Tagline" class="prof-input" rows="2">@Model.Tagline</textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2" style="background:#2563eb; border:none; border-radius:8px;">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Social Media Links Card -->
+            <div class="prof-card">
+                <h2 class="prof-card-title">Social Media Links</h2>
+
+                <div class="row g-3">
+                    <!-- LinkedIn -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="prof-social-icon bg-linkedin"><i class="feather icon-linkedin"></i></div>
+                            <input type="url" name="LinkedIn" class="prof-input" value="@Model.LinkedIn" placeholder="LinkedIn URL" />
+                        </div>
+                    </div>
+                    <!-- Twitter -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="prof-social-icon bg-twitter"><i class="feather icon-twitter"></i></div>
+                            <input type="url" name="Twitter" class="prof-input" value="@Model.Twitter" placeholder="Twitter URL" />
+                        </div>
+                    </div>
+
+                    <!-- Facebook -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="prof-social-icon bg-facebook"><i class="feather icon-facebook"></i></div>
+                            <input type="url" name="Facebook" class="prof-input" value="@Model.Facebook" placeholder="Facebook URL" />
+                        </div>
+                    </div>
+                    <!-- YouTube -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="prof-social-icon bg-youtube"><i class="feather icon-youtube"></i></div>
+                            <input type="url" name="YouTube" class="prof-input" value="@Model.YouTube" placeholder="YouTube URL" />
+                        </div>
+                    </div>
+
+                    <!-- Instagram -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="prof-social-icon bg-instagram"><i class="feather icon-instagram"></i></div>
+                            <input type="url" name="Instagram" class="prof-input" value="@Model.Instagram" placeholder="Instagram URL" />
+                        </div>
+                    </div>
+                    <!-- Blog / Link -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="prof-social-icon bg-blog"><i class="feather icon-link"></i></div>
+                            <input type="url" name="BlogUrl" class="prof-input" value="@Model.BlogUrl" placeholder="Blog / Website Link" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Right Column: Preview, Status & Completion -->
+    <div class="col-lg-4">
+        <!-- Live Profile Preview Card -->
+        <div class="preview-card">
+            <div class="preview-banner"></div>
+            <div class="preview-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="preview-logo-avatar">
+                        <span style="color:#059669;">ABC</span>
+                    </div>
+                    <a href="/" target="_blank" class="text-primary text-decoration-none fw-bold small me-1 ms-auto">
+                        View Public Profile <i class="feather icon-external-link"></i>
+                    </a>
+                </div>
+
+                <div class="mt-4">
+                    <span class="preview-verified-badge"><i class="feather icon-check-circle"></i> Verified Business</span>
+                    <h3 class="fw-bold fs-5 text-dark mb-1" style="clear:both;">@Model.BusinessName</h3>
+                    <div class="text-muted small mb-2">@Model.Industry &bull; Established in @Model.YearEstablished</div>
+                    <div class="small text-secondary mb-2"><i class="feather icon-map-pin me-1 text-danger"></i>@Model.City</div>
+                    <div class="small text-warning fw-bold mb-2"><i class="feather icon-star fill-warning"></i> @Model.Rating (@Model.ReviewCount Reviews)</div>
+                    <p class="small text-muted mb-0" style="line-height:1.4;">@Model.Tagline</p>
+
+                    <!-- Stats Row -->
+                    <div class="preview-stats-grid">
+                        <div>
+                            <div class="preview-stat-val">@Model.ProjectsCompleted</div>
+                            <div class="preview-stat-lbl">Projects Completed</div>
+                        </div>
+                        <div>
+                            <div class="preview-stat-val">@Model.HappyClients</div>
+                            <div class="preview-stat-lbl">Happy Clients</div>
+                        </div>
+                        <div>
+                            <div class="preview-stat-val">@Model.TeamMembersCount</div>
+                            <div class="preview-stat-lbl">Team Members</div>
+                        </div>
+                        <div>
+                            <div class="preview-stat-val">@Model.YearsExperience</div>
+                            <div class="preview-stat-lbl">Experience</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Status Card -->
+        <div class="prof-card">
+            <h2 class="prof-card-title">Profile Status</h2>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="feather icon-check-circle text-success fs-4"></i>
+                    <div>
+                        <strong class="text-success d-block" style="font-size:0.92rem;">Profile is Active</strong>
+                        <span class="text-muted" style="font-size:0.75rem;">Your business profile is visible to all users.</span>
+                    </div>
+                </div>
+                <form method="post" action="/Admin/Profile/ToggleStatus">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-danger fw-bold" style="border-radius:6px;">
+                        Deactivate Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile Completion Card -->
+        <div class="prof-card">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <h2 class="prof-card-title mb-0">Profile Completion</h2>
+                <strong class="text-dark fs-6">@Model.CompletionPercentage%</strong>
+            </div>
+            <div class="text-muted small mb-3">Complete your profile to get more visibility</div>
+
+            <!-- Progress bar -->
+            <div class="progress mb-4" style="height:8px; border-radius:10px; background:#e5e7eb;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: @Model.CompletionPercentage%; border-radius:10px;" aria-valuenow="@Model.CompletionPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+            <!-- Checklist -->
+            <div class="mb-4">
+                <div class="checklist-item">
+                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <span>Basic Information</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <span>Business Address</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <span>Services Added</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="feather icon-check-circle checklist-icon-done"></i>
+                    <span>Documents Uploaded</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="feather icon-circle checklist-icon-todo"></i>
+                    <span>Team Members Added</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary w-100 fw-bold py-2" style="background:#2563eb; border:none; border-radius:8px;" onclick="alert('Improve Profile guide');">
+                Improve Profile
+            </button>
+        </div>
+    </div>
+</div>

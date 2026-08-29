@@ -1,0 +1,109 @@
+@model caportal.Models.Entities.SiteSettings
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Homepage Manager";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="row">
+    <!-- Hero Banner Content Form -->
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <h5>Hero Banner Customizer</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/Homepage/SaveHero">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hero Title *</label>
+                        <input type="text" name="heroTitle" class="form-control" value="@Model.HeroTitle" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hero Subtitle / Description *</label>
+                        <textarea name="heroSubtitle" class="form-control" rows="3" required>@Model.HeroSubtitle</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Accent Color</label>
+                            <input type="color" name="heroAccentColor" class="form-control form-control-color w-100" value="@Model.HeroAccentColor" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Background From</label>
+                            <input type="color" name="heroBgFrom" class="form-control form-control-color w-100" value="@Model.HeroBgFrom" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Background To</label>
+                            <input type="color" name="heroBgTo" class="form-control form-control-color w-100" value="@Model.HeroBgTo" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"><i class="feather icon-save me-1"></i>Save Hero Banner</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Visibility Manager -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h5>Section Visibility Toggles</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/Homepage/ToggleSections">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showHeroSection" id="secHero" value="true" @(Model.ShowHeroSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secHero">Hero Banner Section</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showServicesSection" id="secSvc" value="true" @(Model.ShowServicesSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secSvc">Covered Services Grid</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showAboutUsSection" id="secAbt" value="true" @(Model.ShowAboutUsSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secAbt">Why Choose Us Section</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showFeaturedCAsSection" id="secCAs" value="true" @(Model.ShowFeaturedCAsSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secCAs">Featured CAs Roster</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showTestimonialsSection" id="secTesti" value="true" @(Model.ShowTestimonialsSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secTesti">Testimonials Section</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showBlogSection" id="secFaq" value="true" @(Model.ShowBlogSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secFaq">FAQ Accordion Section</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showCtaSection" id="secCta" value="true" @(Model.ShowCtaSection ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secCta">Bottom CTA Band</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="showFooter" id="secFtr" value="true" @(Model.ShowFooter ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="secFtr">Footer Section</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100"><i class="feather icon-check me-1"></i>Apply Section Toggles</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using caportal.Models;
+using caportal.Models.Entities;
 
 namespace caportal.Data;
 

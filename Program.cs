@@ -18,17 +18,20 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 builder.Services.AddScoped<ApplicationDbContext>(sp =>
     sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
-// ── Site Settings (DB-backed singleton cache) ─────────────────────────────
+// ── Security & Auth Services ──────────────────────────────────────────────
+builder.Services.AddSingleton<caportal.Services.Security.AdminAuthService>();
+builder.Services.AddSingleton<caportal.Services.Security.LoginRateLimiter>();
 builder.Services.AddSingleton<SiteSettingsService>();
 
-// ── Session (for simple admin auth) ──────────────────────────────────────
+// ── Session & Authentication Cookie Security ──────────────────────────────
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout        = TimeSpan.FromHours(8);
-    options.Cookie.HttpOnly    = true;
-    options.Cookie.IsEssential = true;
-    options.Cookie.SameSite    = SameSiteMode.Strict;
+    options.IdleTimeout         = TimeSpan.FromMinutes(60);
+    options.Cookie.Name         = ".CACampus.AdminSec.Session";
+    options.Cookie.HttpOnly     = true;
+    options.Cookie.IsEssential  = true;
+    options.Cookie.SameSite     = SameSiteMode.Strict;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 

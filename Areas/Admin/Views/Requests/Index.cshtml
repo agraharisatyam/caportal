@@ -1,0 +1,126 @@
+@model List<caportal.Areas.Admin.Controllers.ClientRequestItem>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Client Requests & Enquiries";
+}
+
+<div class="row">
+    <!-- Stat Cards -->
+    <div class="col-md-3">
+        <div class="card bg-c-blue text-white widget-visitor-card">
+            <div class="card-body text-center">
+                <h2 class="text-white">@ViewBag.TotalCount</h2>
+                <h6 class="text-white">Total Requests</h6>
+                <i class="feather icon-file-text"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-c-yellow text-white widget-visitor-card">
+            <div class="card-body text-center">
+                <h2 class="text-white">@ViewBag.PendingCount</h2>
+                <h6 class="text-white">Pending Requests</h6>
+                <i class="feather icon-clock"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-c-green text-white widget-visitor-card">
+            <div class="card-body text-center">
+                <h2 class="text-white">@ViewBag.AssignedCount</h2>
+                <h6 class="text-white">Assigned to CA</h6>
+                <i class="feather icon-user-check"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-c-purple text-white widget-visitor-card">
+            <div class="card-body text-center">
+                <h2 class="text-white">@ViewBag.CompletedCount</h2>
+                <h6 class="text-white">Completed</h6>
+                <i class="feather icon-check-circle"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Client Service Requests</h5>
+        <div class="btn-group">
+            <a href="/Admin/Requests?status=All" class="btn btn-sm @(ViewBag.CurrentStatus == "All" ? "btn-primary" : "btn-outline-secondary")">All</a>
+            <a href="/Admin/Requests?status=Pending" class="btn btn-sm @(ViewBag.CurrentStatus == "Pending" ? "btn-warning" : "btn-outline-secondary")">Pending</a>
+            <a href="/Admin/Requests?status=Assigned" class="btn btn-sm @(ViewBag.CurrentStatus == "Assigned" ? "btn-info" : "btn-outline-secondary")">Assigned</a>
+            <a href="/Admin/Requests?status=Completed" class="btn btn-sm @(ViewBag.CurrentStatus == "Completed" ? "btn-success" : "btn-outline-secondary")">Completed</a>
+        </div>
+    </div>
+    <div class="card-body table-responsive">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#ID</th>
+                    <th>Client Name</th>
+                    <th>Contact Info</th>
+                    <th>Service Required</th>
+                    <th>Assigned CA</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var statusBadge = item.Status switch
+                    {
+                        "Pending" => "bg-warning text-dark",
+                        "Assigned" => "bg-info text-white",
+                        "Completed" => "bg-success text-white",
+                        _ => "bg-secondary text-white"
+                    };
+                    <tr>
+                        <td><strong>#@item.Id</strong></td>
+                        <td>
+                            <strong>@item.ClientName</strong><br />
+                            <small class="text-muted"><i class="feather icon-map-pin me-1"></i>@item.City</small>
+                        </td>
+                        <td>
+                            <div><i class="feather icon-phone me-1"></i>@item.ClientPhone</div>
+                            <small class="text-muted"><i class="feather icon-mail me-1"></i>@item.ClientEmail</small>
+                        </td>
+                        <td><span class="badge bg-light-primary text-primary fw-bold">@item.ServiceRequired</span></td>
+                        <td>@item.AssignedCA</td>
+                        <td><span class="badge @statusBadge">@item.Status</span></td>
+                        <td><small>@item.RequestedOn.ToString("dd MMM yyyy, hh:mm tt")</small></td>
+                        <td>
+                            <form method="post" action="/Admin/Requests/UpdateStatus" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                @if (item.Status == "Pending")
+                                {
+                                    <input type="hidden" name="status" value="Assigned" />
+                                    <input type="hidden" name="assignedCa" value="CA Priya Mehta" />
+                                    <button type="submit" class="btn btn-xs btn-info" title="Assign CA"><i class="feather icon-user-plus me-1"></i>Assign</button>
+                                }
+                                else if (item.Status == "Assigned")
+                                {
+                                    <input type="hidden" name="status" value="Completed" />
+                                    <button type="submit" class="btn btn-xs btn-success" title="Mark Completed"><i class="feather icon-check me-1"></i>Complete</button>
+                                }
+                            </form>
+                            <form method="post" action="/Admin/Requests/Delete" class="d-inline" onsubmit="return confirm('Delete request #@item.Id?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn btn-xs btn-danger"><i class="feather icon-trash-2"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

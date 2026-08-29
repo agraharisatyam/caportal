@@ -1,20 +1,15 @@
+using caportal.Filters;
 using caportal.Models;
+using caportal.Models.Entities;
+using caportal.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace caportal.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [AdminAuthorize]
     public class DashboardController : Controller
     {
-        private const string SessionKey = "AdminLoggedIn";
-
-        private IActionResult? RequireAuth()
-        {
-            if (HttpContext.Session.GetString(SessionKey) != "true")
-                return RedirectToAction("Login", "Auth", new { area = "Admin" });
-            return null;
-        }
-
         // Shared seed data used across all dashboard views
         private static List<CaProfessional> GetAllCAs() =>
         [
@@ -33,9 +28,6 @@ namespace caportal.Areas.Admin.Controllers
         // GET /ajs  or  /Admin/Dashboard
         public IActionResult Index()
         {
-            var guard = RequireAuth();
-            if (guard != null) return guard;
-
             var cas = GetAllCAs();
             ViewBag.Username      = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
             ViewBag.TotalCAs      = cas.Count;
@@ -75,9 +67,6 @@ namespace caportal.Areas.Admin.Controllers
         // GET /Admin/Dashboard/CaList
         public IActionResult CaList()
         {
-            var guard = RequireAuth();
-            if (guard != null) return guard;
-
             var cas = GetAllCAs();
             ViewBag.CAs           = cas;
             ViewBag.TotalCAs      = cas.Count;
@@ -90,8 +79,6 @@ namespace caportal.Areas.Admin.Controllers
         // GET /Admin/Dashboard/Clients
         public IActionResult Clients()
         {
-            var guard = RequireAuth();
-            if (guard != null) return guard;
 
             var clients = new List<Client>
             {

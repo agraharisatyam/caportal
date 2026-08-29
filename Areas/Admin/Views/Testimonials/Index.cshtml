@@ -1,0 +1,87 @@
+@model List<caportal.Models.ViewModels.Testimonial>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Manage Testimonials";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="row">
+    <!-- Add Testimonial Form -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add New Testimonial</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/Testimonials/Save">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Author / Client Name *</label>
+                        <input type="text" name="authorName" class="form-control" placeholder="e.g. Suresh G." required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Role / Designation *</label>
+                        <input type="text" name="authorRole" class="form-control" placeholder="e.g. Business Owner" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Rating (Stars) *</label>
+                        <select name="rating" class="form-select">
+                            <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                            <option value="3">⭐⭐⭐ (3 Stars)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Review Text *</label>
+                        <textarea name="text" class="form-control" rows="4" placeholder="Enter client testimonial text..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100"><i class="feather icon-plus me-1"></i>Add Testimonial</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials List -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Client Review Testimonials</h5>
+                <span class="badge bg-primary">@Model.Count Testimonials</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var t = Model[i];
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded h-100 bg-light position-relative">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@t.AuthorName</h6>
+                                        <small class="text-muted">@t.AuthorRole</small>
+                                    </div>
+                                    <span class="text-warning">@(string.Concat(Enumerable.Repeat("★", t.Rating)))</span>
+                                </div>
+                                <p class="small text-secondary mb-3">"@t.Text"</p>
+                                <form method="post" action="/Admin/Testimonials/Delete" onsubmit="return confirm('Remove testimonial by @t.AuthorName?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="index" value="@i" />
+                                    <button type="submit" class="btn btn-xs btn-outline-danger"><i class="feather icon-trash-2 me-1"></i>Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

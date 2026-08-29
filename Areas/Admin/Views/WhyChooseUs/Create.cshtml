@@ -1,0 +1,75 @@
+@model caportal.Models.Entities.WhyChooseUsItem
+@{
+    ViewData["Title"] = "Create Feature Card";
+}
+
+<div class="page-header mb-4">
+    <div class="page-block">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-white"><i data-feather="plus-circle" class="me-2 text-gold"></i> Add Why Choose Us Card</h4>
+                <span class="text-muted small">Create a new feature card for the Why Choose Us section</span>
+            </div>
+            <a href="/Admin/WhyChooseUs" class="btn btn-outline-secondary btn-sm">
+                <i data-feather="arrow-left" class="me-1"></i> Back to Cards List
+            </a>
+        </div>
+        <ul class="breadcrumb mt-2 mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item"><a href="/Admin/WhyChooseUs">Why Choose Us</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Card</li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card" style="border-top: 4px solid #d4a017;">
+            <div class="card-header">
+                <h5 class="mb-0 text-gold"><i data-feather="check-square" class="me-1"></i> Card Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/WhyChooseUs/Save" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="0" />
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold text-white">Card Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. EXPERT CA TEAM" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold text-white">Description <span class="text-danger">*</span></label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Describe the feature benefit..." required></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold text-white">FontAwesome Icon Class</label>
+                            <input type="text" name="icon" class="form-control" value="fas fa-star" placeholder="e.g. fas fa-user-graduate" />
+                            <small class="text-muted">Used if no custom icon image is uploaded</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold text-white">Display Order</label>
+                            <input type="number" name="displayOrder" class="form-control" value="1" min="1" max="999" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label font-weight-bold text-white">Custom Upload Icon Graphic <small class="text-muted">(Optional SVG/PNG)</small></label>
+                        <input type="file" name="imageFile" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp" />
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                        <a href="/Admin/WhyChooseUs" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5">
+                            <i data-feather="check" class="me-1"></i> Save Card
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

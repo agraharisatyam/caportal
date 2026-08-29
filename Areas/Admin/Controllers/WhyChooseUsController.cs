@@ -1,5 +1,7 @@
 using caportal.Data;
+using caportal.Filters;
 using caportal.Models;
+using caportal.Models.Entities;
 using caportal.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace caportal.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [AdminAuthorize]
     public class WhyChooseUsController : Controller
     {
-        private const string SessionKey = "AdminLoggedIn";
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
         private readonly SiteSettingsService _settingsService;
         private readonly IWebHostEnvironment _env;
@@ -24,18 +26,10 @@ namespace caportal.Areas.Admin.Controllers
             _env             = env;
         }
 
-        private IActionResult? Auth()
-        {
-            if (HttpContext.Session.GetString(SessionKey) != "true")
-                return RedirectToAction("Login", "Auth", new { area = "Admin" });
-            return null;
-        }
-
         // GET /Admin/WhyChooseUs
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var g = Auth(); if (g != null) return g;
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
             ViewBag.Settings = _settingsService.Get();
             ViewBag.Items = new List<WhyChooseUsItem>();
@@ -54,6 +48,7 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/WhyChooseUs/SaveSection
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SaveSection(
             string whyChooseUsBadge, string whyChooseUsTitle, string whyChooseUsSub,
             string whyChooseUsStatsTitle,
@@ -62,7 +57,6 @@ namespace caportal.Areas.Admin.Controllers
             string whyChooseUsStat3Val, string whyChooseUsStat3Lbl,
             string whyChooseUsStat4Val, string whyChooseUsStat4Lbl)
         {
-            var g = Auth(); if (g != null) return g;
             var settings = _settingsService.Get();
             settings.WhyChooseUsBadge      = whyChooseUsBadge ?? settings.WhyChooseUsBadge;
             settings.WhyChooseUsTitle      = whyChooseUsTitle ?? settings.WhyChooseUsTitle;
@@ -84,12 +78,11 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/WhyChooseUs/Save
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(
             int id, string title, string description, int displayOrder, string icon,
             IFormFile? imageFile, string? existingImagePath)
         {
-            var g = Auth(); if (g != null) return g;
-
             // Handle icon upload if any
             string imagePath = existingImagePath ?? "";
             if (imageFile is { Length: > 0 })
@@ -143,9 +136,9 @@ namespace caportal.Areas.Admin.Controllers
 
         // POST /Admin/WhyChooseUs/Delete
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var g = Auth(); if (g != null) return g;
             using var db = _dbFactory.CreateDbContext();
             var item = await db.WhyChooseUsItems.FindAsync(id);
             if (item != null)
@@ -168,6 +161,25 @@ namespace caportal.Areas.Admin.Controllers
                 item.Id, item.Title, item.Description,
                 item.DisplayOrder, item.ImagePath, item.Icon
             });
+        }
+
+        // GET /Admin/WhyChooseUs/Create
+        [HttpGet("Admin/WhyChooseUs/Create")]
+        public IActionResult Create()
+        {
+            ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
+            return View("Create", new WhyChooseUsItem { DisplayOrder = 1, Icon = "fas fa-star" });
+        }
+
+        // GET /Admin/WhyChooseUs/Edit/5
+        [HttpGet("Admin/WhyChooseUs/Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            using var db = _dbFactory.CreateDbContext();
+            var item = await db.WhyChooseUsItems.FindAsync(id);
+            if (item == null) return RedirectToAction("Index");
+            ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
+            return View("Edit", item);
         }
     }
 }

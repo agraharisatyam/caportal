@@ -2,207 +2,219 @@
 @{
     ViewData["Title"] = "Dashboard";
     var recentCAs = (ViewBag.RecentCAs as List<CaProfessional>) ?? new List<CaProfessional>();
+    var recentOrders = (ViewBag.RecentOrders as List<caportal.Models.Entities.DashboardOrder>) ?? new List<caportal.Models.Entities.DashboardOrder>();
 }
 
 <!-- Page Header -->
-<div class="page-header">
+<div class="page-header mb-4">
     <div class="page-block">
-        <div class="flex items-center gap-4 mb-1">
-            @{
-                var dashSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
-                var dashSettings = dashSvc?.Get();
-                var dashLogo = dashSettings?.LogoPath;
-                var dashSiteName = dashSettings?.SiteName ?? "CACampus";
-            }
-            @if (!string.IsNullOrEmpty(dashLogo))
-            {
-                <img src="@dashLogo" alt="@(dashSettings?.LogoAlt ?? dashSiteName)" style="max-height:44px;max-width:140px;object-fit:contain;" />
-            }
-            <div class="page-header-title">
-                <h5 class="mb-0 font-medium">Welcome back, @ViewBag.Username 👋</h5>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-2">
+            <div class="d-flex align-items-center gap-3">
+                @{
+                    var dashSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+                    var dashSettings = dashSvc?.Get();
+                    var dashLogo = dashSettings?.LogoPath;
+                    var dashSiteName = dashSettings?.SiteName ?? "CACampus";
+                }
+                @if (!string.IsNullOrEmpty(dashLogo))
+                {
+                    <img src="@dashLogo" alt="@(dashSettings?.LogoAlt ?? dashSiteName)" style="max-height:42px;max-width:140px;object-fit:contain;" />
+                }
+                <div>
+                    <h4 class="mb-0 font-weight-bold text-white">Dashboard Overview</h4>
+                    <span class="text-muted small">Welcome back, <strong>@ViewBag.Username</strong> 👋</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-outline-gold px-3 py-2"><i data-feather="calendar" class="me-1"></i> @DateTime.Now.ToString("dd MMM yyyy")</span>
+                <a href="/Admin/Services" class="btn btn-primary btn-sm"><i data-feather="plus" class="me-1"></i> Add Service</a>
             </div>
         </div>
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
-            <li class="breadcrumb-item" aria-current="page">Dashboard</li>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
         </ul>
     </div>
 </div>
 
-<!-- ── 8 KPI Cards Grid (3 cards per row) ── -->
-<div class="grid grid-cols-12 gap-x-6 mb-2">
+<!-- ── 8 KPI Cards Grid (Row 1: Primary Metrics) ── -->
+<div class="row g-3 mb-3">
     <!-- Today's Revenue -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
-                        <p class="text-muted text-sm mb-1">Today's Revenue</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.TodayRevenue</h3>
+                        <span class="text-muted small d-block mb-1">Today's Revenue</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.TodayRevenue</h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-success-500 flex items-center justify-center text-white text-xl">
+                    <div class="w-12 h-12 rounded-circle bg-success-500 d-flex align-items-center justify-content-center text-white">
                         <i data-feather="dollar-sign"></i>
                     </div>
                 </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +12.5% <span class="text-muted">from last month</span>
-                </p>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="trending-up" class="me-1" style="width:14px;height:14px;"></i>
+                    +12.5% <span class="text-muted ms-1 font-weight-normal">vs last month</span>
+                </div>
             </div>
         </div>
     </div>
     <!-- Today's Sales -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
-                        <p class="text-muted text-sm mb-1">Today's Sales</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.TodaySales</h3>
+                        <span class="text-muted small d-block mb-1">Today's Sales</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.TodaySales</h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center text-white text-xl">
+                    <div class="w-12 h-12 rounded-circle bg-primary-500 d-flex align-items-center justify-content-center text-white">
                         <i data-feather="shopping-cart"></i>
                     </div>
                 </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +8.3% <span class="text-muted">from yesterday</span>
-                </p>
-            </div>
-        </div>
-    </div>
-    <!-- Total Leads -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
-            <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <p class="text-muted text-sm mb-1">Total Leads</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.TotalLeads</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-info-500 flex items-center justify-center text-white text-xl">
-                        <i data-feather="target"></i>
-                    </div>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="trending-up" class="me-1" style="width:14px;height:14px;"></i>
+                    +8.3% <span class="text-muted ms-1 font-weight-normal">vs yesterday</span>
                 </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +15.7% <span class="text-muted">from last month</span>
-                </p>
-            </div>
-        </div>
-    </div>
-    <!-- Total Orders -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
-            <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <p class="text-muted text-sm mb-1">Total Orders</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.TotalOrders</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-danger-500 flex items-center justify-center text-white text-xl">
-                        <i data-feather="shopping-bag"></i>
-                    </div>
-                </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +10.0% <span class="text-muted">from last month</span>
-                </p>
             </div>
         </div>
     </div>
     <!-- Active CAs -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
-                        <p class="text-muted text-sm mb-1">Active CAs</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.ActiveCAs</h3>
+                        <span class="text-muted small d-block mb-1">Active CAs</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.ActiveCAs <small class="text-muted" style="font-size:.75rem;">/ @ViewBag.TotalCAs Total</small></h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-success-500 flex items-center justify-center text-white text-xl">
+                    <div class="w-12 h-12 rounded-circle bg-warning-500 d-flex align-items-center justify-content-center text-white">
                         <i data-feather="users"></i>
                     </div>
                 </div>
-                <p class="text-danger-500 text-sm mb-0">
-                    <i data-feather="trending-down" class="inline w-4 h-4 me-1"></i>
-                    -4.2% <span class="text-muted">from last month</span>
-                </p>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="user-check" class="me-1" style="width:14px;height:14px;"></i>
+                    @ViewBag.PendingCAs Pending <span class="text-muted ms-1 font-weight-normal">approvals</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Total Orders -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div>
+                        <span class="text-muted small d-block mb-1">Total Orders</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.TotalOrders</h4>
+                    </div>
+                    <div class="w-12 h-12 rounded-circle bg-danger-500 d-flex align-items-center justify-content-center text-white">
+                        <i data-feather="shopping-bag"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="trending-up" class="me-1" style="width:14px;height:14px;"></i>
+                    +10.0% <span class="text-muted ms-1 font-weight-normal">vs last month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Row 2: Secondary Metrics ── -->
+<div class="row g-3 mb-4">
+    <!-- Total Leads -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div>
+                        <span class="text-muted small d-block mb-1">Total Leads</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.TotalLeads</h4>
+                    </div>
+                    <div class="w-12 h-12 rounded-circle bg-primary-500 d-flex align-items-center justify-content-center text-white">
+                        <i data-feather="target"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="trending-up" class="me-1" style="width:14px;height:14px;"></i>
+                    +15.7% <span class="text-muted ms-1 font-weight-normal">conversion growth</span>
+                </div>
             </div>
         </div>
     </div>
     <!-- Total Customers -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
-                        <p class="text-muted text-sm mb-1">Total Customers</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.TotalCustomers</h3>
+                        <span class="text-muted small d-block mb-1">Total Clients</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.TotalCustomers</h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center text-white text-xl">
+                    <div class="w-12 h-12 rounded-circle bg-success-500 d-flex align-items-center justify-content-center text-white">
                         <i data-feather="user-check"></i>
                     </div>
                 </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +11.4% <span class="text-muted">from last month</span>
-                </p>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="trending-up" class="me-1" style="width:14px;height:14px;"></i>
+                    +11.4% <span class="text-muted ms-1 font-weight-normal">registered businesses</span>
+                </div>
             </div>
         </div>
     </div>
     <!-- Pending Documents -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
-                        <p class="text-muted text-sm mb-1">Pending Documents</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.PendingDocuments</h3>
+                        <span class="text-muted small d-block mb-1">Pending Documents</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.PendingDocuments</h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-warning-500 flex items-center justify-center text-white text-xl">
+                    <div class="w-12 h-12 rounded-circle bg-warning-500 d-flex align-items-center justify-content-center text-white">
                         <i data-feather="file-text"></i>
                     </div>
                 </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +8.9% <span class="text-muted">from last month</span>
-                </p>
+                <div class="d-flex align-items-center text-warning small font-weight-bold">
+                    <i data-feather="clock" class="me-1" style="width:14px;height:14px;"></i>
+                    Requires CA review
+                </div>
             </div>
         </div>
     </div>
     <!-- Today's Appointments -->
-    <div class="col-span-12 sm:col-span-6 md:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
                     <div>
-                        <p class="text-muted text-sm mb-1">Today's Appointments</p>
-                        <h3 class="font-semibold mb-0 text-white">@ViewBag.TodayAppointments</h3>
+                        <span class="text-muted small d-block mb-1">Today's Appointments</span>
+                        <h4 class="font-weight-bold mb-0 text-white">@ViewBag.TodayAppointments</h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-danger-500 flex items-center justify-center text-white text-xl">
+                    <div class="w-12 h-12 rounded-circle bg-danger-500 d-flex align-items-center justify-content-center text-white">
                         <i data-feather="calendar"></i>
                     </div>
                 </div>
-                <p class="text-success-500 text-sm mb-0">
-                    <i data-feather="trending-up" class="inline w-4 h-4 me-1"></i>
-                    +3.2% <span class="text-muted">from yesterday</span>
-                </p>
+                <div class="d-flex align-items-center text-success small font-weight-bold">
+                    <i data-feather="check-circle" class="me-1" style="width:14px;height:14px;"></i>
+                    Scheduled consultations
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- ── Charts Row ── -->
-<div class="grid grid-cols-12 gap-x-6 mb-4">
+<div class="row g-3 mb-4">
     <!-- Revenue Overview Line Chart -->
-    <div class="col-span-12 xl:col-span-8 mb-4">
-        <div class="card h-full">
-            <div class="card-header flex items-center justify-between">
-                <h5 class="mb-0">Revenue Overview</h5>
-                <select class="form-select form-select-sm" style="max-width:120px;">
-                    <option>This Year</option>
-                    <option>Last Year</option>
+    <div class="col-xl-8">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 text-gold"><i data-feather="bar-chart-2" class="me-1"></i> Revenue &amp; Growth Overview</h5>
+                <select class="form-select form-select-sm" style="max-width:140px;">
+                    <option>This Year (2026)</option>
+                    <option>Last Year (2025)</option>
                 </select>
             </div>
             <div class="card-body">
@@ -211,52 +223,73 @@
         </div>
     </div>
     <!-- Leads Source Donut Chart -->
-    <div class="col-span-12 xl:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-4">
+        <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0">Leads Source</h5>
+                <h5 class="mb-0 text-gold"><i data-feather="pie-chart" class="me-1"></i> Lead Distribution</h5>
             </div>
-            <div class="card-body flex items-center justify-center">
+            <div class="card-body d-flex align-items-center justify-content-center">
                 <div id="leads-chart" style="width:100%;"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ── Recent Orders & Payments Overview ── -->
-<div class="grid grid-cols-12 gap-x-6 mb-4">
-    <!-- Recent Orders Table -->
-    <div class="col-span-12 xl:col-span-8 mb-4">
-        <div class="card h-full">
-            <div class="card-header flex items-center justify-between">
-                <h5 class="mb-0">Recent Orders</h5>
-                <a href="#!" class="text-primary text-sm font-semibold">View All</a>
+<!-- ── Structured Tables Section (Orders & Payments) ── -->
+<div class="row g-3 mb-4">
+    <!-- Recent Service Orders Table -->
+    <div class="col-xl-8">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 text-white"><i data-feather="list" class="me-1 text-gold"></i> Recent Orders</h5>
+                <a href="#!" class="btn btn-sm btn-outline-primary"><i data-feather="eye" class="me-1"></i> View All Orders</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" style="vertical-align: middle;">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Service</th>
+                                <th style="width:110px;">Order ID</th>
+                                <th>Client Name</th>
+                                <th>Service Requested</th>
                                 <th>Amount</th>
                                 <th>Status</th>
+                                <th class="text-center" style="width:90px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @{
-                                var recentOrders = (ViewBag.RecentOrders as List<caportal.Models.DashboardOrder>) ?? new List<caportal.Models.DashboardOrder>();
-                            }
                             @foreach (var order in recentOrders)
                             {
                                 <tr>
-                                    <td><span class="font-semibold text-white">@order.OrderId</span></td>
-                                    <td>@order.Customer</td>
-                                    <td>@order.Service</td>
-                                    <td class="font-semibold text-white">@order.Amount</td>
+                                    <td><span class="badge bg-dark border text-gold fw-bold">@order.OrderId</span></td>
                                     <td>
-                                        <span class="badge @order.ColorClass-500 text-white">@order.Status</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="w-8 h-8 rounded-circle bg-primary-500 d-flex align-items-center justify-content-center text-gold text-xs font-weight-bold">
+                                                <i data-feather="user" style="width:14px;height:14px;"></i>
+                                            </div>
+                                            <span class="font-weight-semibold text-white">@order.Customer</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark">@order.Service</span></td>
+                                    <td class="font-weight-bold text-success">@order.Amount</td>
+                                    <td>
+                                        @switch (order.Status)
+                                        {
+                                            case "Completed":
+                                                <span class="badge bg-success text-white px-2 py-1"><i data-feather="check" class="me-1" style="width:12px;height:12px;"></i> Completed</span>
+                                                break;
+                                            case "Processing":
+                                                <span class="badge bg-warning text-dark px-2 py-1"><i data-feather="loader" class="me-1" style="width:12px;height:12px;"></i> Processing</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-info text-white px-2 py-1"><i data-feather="file" class="me-1" style="width:12px;height:12px;"></i> @order.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary px-2" title="Order Details">
+                                            <i data-feather="arrow-right" style="width:14px;height:14px;"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -267,118 +300,150 @@
         </div>
     </div>
     <!-- Payments Overview Donut Chart -->
-    <div class="col-span-12 xl:col-span-4 mb-4">
-        <div class="card h-full">
+    <div class="col-xl-4">
+        <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0">Payments Overview</h5>
+                <h5 class="mb-0 text-gold"><i data-feather="credit-card" class="me-1"></i> Payment Settlement Status</h5>
             </div>
-            <div class="card-body flex items-center justify-center">
+            <div class="card-body d-flex align-items-center justify-content-center">
                 <div id="payments-chart" style="width:100%;"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ── Bottom Performance Metrics ── -->
-<div class="grid grid-cols-12 gap-x-6 mb-4">
-    <!-- Conversion Rate -->
-    <div class="col-span-12 md:col-span-3 mb-4">
+<!-- ── Structured Recent CA Registrations Table ── -->
+<div class="row g-3 mb-4">
+    <div class="col-12">
         <div class="card">
-            <div class="card-body text-center py-4">
-                <p class="text-muted text-sm mb-1">Conversion Rate</p>
-                <h3 class="font-semibold mb-1 text-white">@ViewBag.ConversionRate</h3>
-                <span class="text-success-500 text-xs font-semibold"><i data-feather="trending-up" class="inline w-3 h-3 me-0.5"></i> +4.6%</span>
-            </div>
-        </div>
-    </div>
-    <!-- Avg. Order Value -->
-    <div class="col-span-12 md:col-span-3 mb-4">
-        <div class="card">
-            <div class="card-body text-center py-4">
-                <p class="text-muted text-sm mb-1">Avg. Order Value</p>
-                <h3 class="font-semibold mb-1 text-white">@ViewBag.AvgOrderValue</h3>
-                <span class="text-success-500 text-xs font-semibold"><i data-feather="trending-up" class="inline w-3 h-3 me-0.5"></i> +7.3%</span>
-            </div>
-        </div>
-    </div>
-    <!-- Customer Satisfaction -->
-    <div class="col-span-12 md:col-span-3 mb-4">
-        <div class="card">
-            <div class="card-body text-center py-4">
-                <p class="text-muted text-sm mb-1">Customer Satisfaction</p>
-                <h3 class="font-semibold mb-1 text-white">@ViewBag.CustomerSatisfaction</h3>
-                <span class="text-success-500 text-xs font-semibold"><i data-feather="trending-up" class="inline w-3 h-3 me-0.5"></i> +0.2</span>
-            </div>
-        </div>
-    </div>
-    <!-- Repeat Customers -->
-    <div class="col-span-12 md:col-span-3 mb-4">
-        <div class="card">
-            <div class="card-body text-center py-4">
-                <p class="text-muted text-sm mb-1">Repeat Customers</p>
-                <h3 class="font-semibold mb-1 text-white">@ViewBag.RepeatCustomers</h3>
-                <span class="text-success-500 text-xs font-semibold"><i data-feather="trending-up" class="inline w-3 h-3 me-0.5"></i> +6.1%</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ── Recent CA Registrations ── -->
-<div class="grid grid-cols-12 gap-x-6 mt-2">
-    <div class="col-span-12">
-        <div class="card">
-            <div class="card-header flex items-center justify-between">
-                <h5 class="mb-0 text-white">Recent CA Registrations</h5>
-                <a href="/Admin/Dashboard/CaList" class="btn btn-sm btn-primary">View All CAs</a>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-0 text-white"><i data-feather="award" class="me-1 text-gold"></i> Recent CA Professional Registrations</h5>
+                    <span class="text-muted small">Manage ICAI verified Chartered Accountants and approvals</span>
+                </div>
+                <a href="/Admin/Dashboard/CaList" class="btn btn-sm btn-primary"><i data-feather="users" class="me-1"></i> View All CAs</a>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="dashRecentTable" class="table table-hover" style="width:100%">
-                        <thead>
+                    <table id="dashRecentTable" class="table table-hover align-middle mb-0" style="width:100%">
+                        <thead class="table-light">
                             <tr>
-                                <th>#</th>
-                                <th>CA Name</th>
-                                <th>Membership No.</th>
-                                <th>Specialisation</th>
+                                <th style="width:50px;">#</th>
+                                <th>CA Professional</th>
+                                <th>ICAI Reg. No.</th>
+                                <th>Specialisations</th>
                                 <th>City</th>
                                 <th>Rating</th>
-                                <th>Joined</th>
+                                <th>Joined Date</th>
                                 <th>Status</th>
+                                <th class="text-center" style="width:110px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var ca in recentCAs)
                             {
                                 <tr>
-                                    <td>@ca.Id</td>
-                                    <td>@ca.Name</td>
-                                    <td>@ca.MembershipNo</td>
-                                    <td>@string.Join(", ", ca.Specialisations.Take(2))</td>
-                                    <td>@ca.City</td>
-                                    <td>⭐ @ca.Rating</td>
-                                    <td>@ca.JoinedOn.ToString("dd MMM yyyy")</td>
+                                    <td><span class="text-muted">#@ca.Id</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            @if (!string.IsNullOrEmpty(ca.ImagePath))
+                                            {
+                                                <img src="@ca.ImagePath" alt="@ca.Name" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #d4a017;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="w-9 h-9 rounded-circle bg-primary-500 d-flex align-items-center justify-content-center text-gold font-weight-bold text-xs">
+                                                    @ca.Initials
+                                                </div>
+                                            }
+                                            <div>
+                                                <span class="font-weight-bold text-white d-block">@ca.Name</span>
+                                                <span class="text-muted small">@ca.Designation &middot; @ca.YearsExp Yrs Exp</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-dark border text-muted">@ca.MembershipNo</span></td>
+                                    <td>
+                                        @foreach (var tag in ca.Specialisations.Take(2))
+                                        {
+                                            <span class="badge bg-primary-100 text-gold me-1">@tag</span>
+                                        }
+                                    </td>
+                                    <td><span class="text-white"><i data-feather="map-pin" class="me-1 text-muted" style="width:12px;height:12px;"></i> @ca.City</span></td>
+                                    <td><span class="text-warning font-weight-bold">⭐ @ca.Rating</span></td>
+                                    <td><span class="text-muted small">@ca.JoinedOn.ToString("dd MMM yyyy")</span></td>
                                     <td>
                                         @switch (ca.Status)
                                         {
                                             case "Active":
-                                                <span class="badge bg-success-500 text-white">Active</span>
+                                                <span class="badge bg-success text-white">Active</span>
                                                 break;
                                             case "Pending":
-                                                <span class="badge bg-warning-500 text-white">Pending</span>
+                                                <span class="badge bg-warning text-dark">Pending</span>
                                                 break;
                                             case "Suspended":
-                                                <span class="badge bg-danger-500 text-white">Suspended</span>
+                                                <span class="badge bg-danger text-white">Suspended</span>
                                                 break;
                                             default:
                                                 <span class="badge bg-secondary text-white">@ca.Status</span>
                                                 break;
                                         }
                                     </td>
+                                    <td class="text-center">
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            <a href="/expert/@(ca.Name.ToLower().Replace("ca ","").Replace(" ","-") + "-" + ca.Id)" class="btn btn-sm btn-outline-primary px-2" title="View Profile" target="_blank">
+                                                <i data-feather="eye" style="width:14px;height:14px;"></i>
+                                            </a>
+                                            <a href="/Admin/Dashboard/CaList" class="btn btn-sm btn-outline-warning px-2" title="Manage Status">
+                                                <i data-feather="edit-2" style="width:14px;height:14px;"></i>
+                                            </a>
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Bottom Performance Metrics Band ── -->
+<div class="row g-3 mb-2">
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <span class="text-muted small d-block mb-1">Conversion Rate</span>
+                <h4 class="font-weight-bold mb-1 text-white">@ViewBag.ConversionRate</h4>
+                <span class="text-success small font-weight-bold"><i data-feather="trending-up" style="width:12px;height:12px;"></i> +4.6%</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <span class="text-muted small d-block mb-1">Avg. Order Value</span>
+                <h4 class="font-weight-bold mb-1 text-white">@ViewBag.AvgOrderValue</h4>
+                <span class="text-success small font-weight-bold"><i data-feather="trending-up" style="width:12px;height:12px;"></i> +7.3%</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <span class="text-muted small d-block mb-1">Customer Satisfaction</span>
+                <h4 class="font-weight-bold mb-1 text-white">@ViewBag.CustomerSatisfaction</h4>
+                <span class="text-success small font-weight-bold"><i data-feather="star" style="width:12px;height:12px;"></i> Top Rated</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <span class="text-muted small d-block mb-1">Repeat Clients</span>
+                <h4 class="font-weight-bold mb-1 text-white">@ViewBag.RepeatCustomers</h4>
+                <span class="text-success small font-weight-bold"><i data-feather="refresh-cw" style="width:12px;height:12px;"></i> High Loyalty</span>
             </div>
         </div>
     </div>
@@ -397,21 +462,21 @@
         $(function () {
             $('#dashRecentTable').DataTable({ pageLength: 5, lengthMenu: [5,10,25], order: [[6,'desc']], responsive: true });
 
-            // Initialize theme-dependent styling colors
-            var isDark = $('html').attr('data-pc-theme') === 'dark';
-            var textCol = isDark ? '#a0aec0' : '#4a5568';
-            var borderCol = isDark ? 'rgba(212,175,55,0.08)' : 'rgba(0,0,0,0.05)';
+            var isDark = true;
+            var textCol = '#a0aec0';
+            var borderCol = 'rgba(212,175,55,0.12)';
 
             // Apex Line Chart: Revenue Overview
             var optionsRevenue = {
-                chart: { type: 'line', height: 280, toolbar: { show: false }, background: 'transparent' },
+                chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent' },
                 stroke: { curve: 'smooth', width: 3, colors: ['#d4a017'] },
-                series: [{ name: 'Revenue', data: [1000000, 1500000, 1200000, 2200000, 1800000, 2458760] }],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [0, 90, 100], colorStops: [{ offset: 0, color: '#d4a017', opacity: 0.4 }, { offset: 100, color: '#d4a017', opacity: 0.0 }] } },
+                series: [{ name: 'Revenue (₹)', data: [1000000, 1500000, 1200000, 2200000, 1800000, 2458760] }],
                 xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], labels: { style: { colors: textCol } } },
                 yaxis: { labels: { formatter: function(val) { return '₹ ' + (val/100000).toFixed(0) + 'L'; }, style: { colors: textCol } } },
                 grid: { borderColor: borderCol },
-                theme: { mode: isDark ? 'dark' : 'light' },
-                markers: { size: 5, colors: ['#d4a017'], strokeColors: isDark ? '#111216' : '#ffffff', strokeWidth: 2 }
+                theme: { mode: 'dark' },
+                markers: { size: 5, colors: ['#d4a017'], strokeColors: '#111216', strokeWidth: 2 }
             };
             var revChart = new ApexCharts(document.querySelector("#revenue-chart"), optionsRevenue);
             revChart.render();
@@ -428,14 +493,14 @@
                             labels: {
                                 show: true,
                                 name: { show: true, color: textCol },
-                                value: { show: true, color: isDark ? '#ffffff' : '#111111', formatter: function(val) { return val; } },
+                                value: { show: true, color: '#ffffff', formatter: function(val) { return val; } },
                                 total: { show: true, label: 'Total Leads', color: textCol, formatter: function(w) { return '1,258'; } }
                             }
                         }
                     }
                 },
                 legend: { show: true, position: 'bottom', labels: { colors: textCol } },
-                theme: { mode: isDark ? 'dark' : 'light' }
+                theme: { mode: 'dark' }
             };
             var leadsChart = new ApexCharts(document.querySelector("#leads-chart"), optionsLeads);
             leadsChart.render();
@@ -452,45 +517,17 @@
                             labels: {
                                 show: true,
                                 name: { show: true, color: textCol },
-                                value: { show: true, color: isDark ? '#ffffff' : '#111111', formatter: function(val) { return val + '%'; } },
-                                total: { show: true, label: 'Paid', color: '#28a745', formatter: function(w) { return '75%'; } }
+                                value: { show: true, color: '#ffffff', formatter: function(val) { return val + '%'; } },
+                                total: { show: true, label: 'Settled', color: '#28a745', formatter: function(w) { return '75%'; } }
                             }
                         }
                     }
                 },
                 legend: { show: true, position: 'bottom', labels: { colors: textCol } },
-                theme: { mode: isDark ? 'dark' : 'light' }
+                theme: { mode: 'dark' }
             };
             var payChart = new ApexCharts(document.querySelector("#payments-chart"), optionsPayments);
             payChart.render();
-
-            // Event listener to re-render charts nicely when layout change occurs
-            var original_layout_change = window.layout_change;
-            window.layout_change = function(theme) {
-                if (typeof original_layout_change === 'function') {
-                    original_layout_change(theme);
-                }
-                var newIsDark = theme === 'dark';
-                var newTextCol = newIsDark ? '#a0aec0' : '#4a5568';
-                var newBorderCol = newIsDark ? 'rgba(212,175,55,0.08)' : 'rgba(0,0,0,0.05)';
-                
-                revChart.updateOptions({
-                    xaxis: { labels: { style: { colors: newTextCol } } },
-                    yaxis: { labels: { style: { colors: newTextCol } } },
-                    grid: { borderColor: newBorderCol },
-                    theme: { mode: theme }
-                });
-                leadsChart.updateOptions({
-                    theme: { mode: theme },
-                    legend: { labels: { colors: newTextCol } },
-                    plotOptions: { pie: { donut: { labels: { name: { color: newTextCol }, value: { color: newIsDark ? '#ffffff' : '#111111' } } } } }
-                });
-                payChart.updateOptions({
-                    theme: { mode: theme },
-                    legend: { labels: { colors: newTextCol } },
-                    plotOptions: { pie: { donut: { labels: { name: { color: newTextCol }, value: { color: newIsDark ? '#ffffff' : '#111111' } } } } }
-                });
-            };
         });
     </script>
 }

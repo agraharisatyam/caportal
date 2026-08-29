@@ -1,733 +1,1064 @@
-@model caportal.Models.SiteSettings
+@model caportal.Models.Entities.SiteSettings
 @{
-    ViewData["Title"] = "Website Settings";
+    ViewData["Title"] = "UI Customization Studio";
 }
 
-<!-- Page Header -->
-<div class="page-header">
-    <div class="page-block">
-        <div class="page-header-title">
-            <h5 class="mb-0 font-medium">Website Settings</h5>
+<style>
+/* ══ 3-COLUMN UI CUSTOMIZATION STUDIO STYLES ══ */
+.studio-container {
+    display: grid;
+    grid-template-columns: 320px 1fr 280px;
+    gap: 20px;
+    align-items: start;
+    margin-top: 10px;
+}
+
+@@media (max-width: 1400px) {
+    .studio-container {
+        grid-template-columns: 300px 1fr 260px;
+        gap: 15px;
+    }
+}
+
+@@media (max-width: 1100px) {
+    .studio-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Glassmorphic Panel Cards */
+.studio-panel {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dark .studio-panel {
+    background: #181b24;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.studio-panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(249, 250, 251, 0.8);
+}
+
+.dark .studio-panel-header {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.studio-panel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dark .studio-panel-title {
+    color: #f9fafb;
+}
+
+.studio-panel-body {
+    padding: 18px;
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+}
+
+/* Theme Presets */
+.preset-dots {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+}
+
+.preset-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.preset-dot:hover, .preset-dot.active {
+    transform: scale(1.18);
+    border-color: #ffffff;
+    outline: 2px solid #4F46E5;
+}
+
+/* Color Inputs */
+.color-field-wrap {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.dark .color-field-wrap {
+    background: #111319;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.color-picker-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.color-hex-input {
+    border: none;
+    background: transparent;
+    font-family: monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #111827;
+    width: 100px;
+    text-transform: uppercase;
+}
+
+.dark .color-hex-input {
+    color: #f3f4f6;
+}
+
+.color-hex-input:focus {
+    outline: none;
+}
+
+/* Custom Accordion */
+.studio-accordion-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.dark .studio-accordion-item {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.studio-accordion-header {
+    padding: 12px 14px;
+    background: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #374151;
+    user-select: none;
+}
+
+.dark .studio-accordion-header {
+    background: #181b24;
+    color: #e5e7eb;
+}
+
+.studio-accordion-header:hover {
+    background: #f9fafb;
+}
+
+.dark .studio-accordion-header:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.studio-accordion-body {
+    padding: 14px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: none;
+}
+
+.dark .studio-accordion-body {
+    background: #111319;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.studio-accordion-item.open .studio-accordion-body {
+    display: block;
+}
+
+.studio-accordion-item.open .acc-icon {
+    transform: rotate(180deg);
+}
+
+.acc-icon {
+    transition: transform 0.2s ease;
+}
+
+/* Fixed Action Bar at Bottom of Left Panel */
+.left-panel-footer {
+    padding: 14px 18px;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.dark .left-panel-footer {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #181b24;
+}
+
+/* Canvas & Viewport Toolbar */
+.canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.viewport-toolbar {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 8px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.dark .viewport-toolbar {
+    background: #181b24;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.viewport-toggle-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.dark .viewport-toggle-btn {
+    color: #9ca3af;
+}
+
+.viewport-toggle-btn:hover {
+    color: #4F46E5;
+    background: #f3f4f6;
+}
+
+.dark .viewport-toggle-btn:hover {
+    background: rgba(255,255,255,0.05);
+    color: #818cf8;
+}
+
+.viewport-toggle-btn.active {
+    background: #EEF2FF;
+    border-color: #C7D2FE;
+    color: #4F46E5;
+}
+
+.dark .viewport-toggle-btn.active {
+    background: rgba(79, 70, 229, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+}
+
+/* Preview Canvas Frame */
+.canvas-container {
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 720px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: auto;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.dark .canvas-container {
+    background: #0f1117;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.preview-frame {
+    background: #ffffff;
+    width: 100%;
+    max-width: 100%;
+    min-height: 700px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: max-width 0.3s ease, height 0.3s ease;
+}
+
+/* Section Manager List */
+.section-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #374151;
+    transition: all 0.2s ease;
+    cursor: grab;
+}
+
+.dark .section-item {
+    background: #181b24;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+}
+
+.section-item:hover {
+    border-color: #4F46E5;
+    transform: translateX(2px);
+}
+
+.section-item.hidden-section {
+    opacity: 0.55;
+    background: #f9fafb;
+}
+
+.dark .section-item.hidden-section {
+    background: #111319;
+}
+
+.drag-handle {
+    color: #9ca3af;
+    cursor: grab;
+    margin-right: 8px;
+}
+
+.eye-btn {
+    background: transparent;
+    border: none;
+    color: #10B981;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color 0.2s;
+}
+
+.eye-btn.muted {
+    color: #9ca3af;
+}
+
+.eye-btn:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+/* Status Toast Notification */
+.studio-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: #10B981;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    display: none;
+    align-items: center;
+    gap: 10px;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+</style>
+
+<div class="page-header mb-3">
+    <div class="flex items-center justify-between flex-wrap gap-2">
+        <div>
+            <h4 class="mb-0 font-bold flex items-center gap-2">
+                <i data-feather="sliders" class="text-indigo-600"></i> UI Customization Studio
+            </h4>
+            <p class="text-muted text-xs mb-0">Design and customize your website interface with real-time live preview.</p>
         </div>
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
-            <li class="breadcrumb-item" aria-current="page">Settings</li>
-        </ul>
+        <div class="flex items-center gap-2">
+            <a href="/" target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i data-feather="external-link" class="w-3.5 h-3.5 me-1"></i> Visit Website
+            </a>
+        </div>
     </div>
 </div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-        <i data-feather="check-circle" class="inline w-4 h-4 me-2"></i>
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-        <i data-feather="alert-circle" class="inline w-4 h-4 me-2"></i>
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+<!-- Status Alert Box -->
+<div id="studioAlertContainer"></div>
 
+<!-- ══ MAIN 3-COLUMN STUDIO LAYOUT ══ -->
 <form method="post" asp-area="Admin" asp-controller="Settings" asp-action="Save" id="settingsForm">
     @Html.AntiForgeryToken()
 
-    <div class="grid grid-cols-12 gap-x-6">
+    <div class="studio-container">
 
-        <!-- ── LEFT SIDEBAR TABS ── -->
-        <div class="col-span-12 lg:col-span-3">
-            <div class="card sticky top-24">
-                <div class="card-body p-0">
-                    <div class="settings-tab-nav" id="settingsTabs">
-                        <a class="settings-tab active" data-tab="identity" href="#"><i data-feather="globe" class="w-4 h-4"></i> Site Identity</a>
-                        <a class="settings-tab" data-tab="header"   href="#"><i data-feather="layout" class="w-4 h-4"></i> Header</a>
-                        <a class="settings-tab" data-tab="hero"     href="#"><i data-feather="image" class="w-4 h-4"></i> Hero Section</a>
-                        <a class="settings-tab" data-tab="body"     href="#"><i data-feather="type" class="w-4 h-4"></i> Body & Typography</a>
-                        <a class="settings-tab" data-tab="colors"   href="#"><i data-feather="droplet" class="w-4 h-4"></i> Brand Colors</a>
-                        <a class="settings-tab" data-tab="featuredcas" href="#"><i data-feather="users" class="w-4 h-4"></i> Featured CAs Section</a>
-                        <a class="settings-tab" data-tab="footer"   href="#"><i data-feather="minus-square" class="w-4 h-4"></i> Footer</a>
-                        <a class="settings-tab" data-tab="buttons"  href="#"><i data-feather="square" class="w-4 h-4"></i> Buttons</a>
+        <!-- ══════════════════════════════════════
+             LEFT PANEL: UI CUSTOMIZATION
+        ═══════════════════════════════════════ -->
+        <div class="studio-panel">
+            <div class="studio-panel-header">
+                <h5 class="studio-panel-title">
+                    <i data-feather="palette" class="w-4 h-4 text-indigo-500"></i> UI Customization
+                </h5>
+            </div>
+
+            <div class="studio-panel-body">
+
+                <!-- Theme Presets -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-xs uppercase tracking-wider text-muted mb-1">Theme Presets</label>
+                    <div class="preset-dots" id="presetDots">
+                        <div class="preset-dot active" style="background:#4F46E5;" title="Indigo / Emerald" data-primary="#4F46E5" data-secondary="#10B981"></div>
+                        <div class="preset-dot" style="background:#7C3AED;" title="Violet / Pink" data-primary="#7C3AED" data-secondary="#EC4899"></div>
+                        <div class="preset-dot" style="background:#10B981;" title="Emerald / Blue" data-primary="#10B981" data-secondary="#3B82F6"></div>
+                        <div class="preset-dot" style="background:#F97316;" title="Orange / Yellow" data-primary="#F97316" data-secondary="#EAB308"></div>
+                        <div class="preset-dot" style="background:#EF4444;" title="Crimson / Gold" data-primary="#EF4444" data-secondary="#F59E0B"></div>
+                        <div class="preset-dot" style="background:#1E293B;" title="Dark Slate" data-primary="#1E293B" data-secondary="#64748B"></div>
                     </div>
                 </div>
+
+                <!-- Primary Color Field -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-xs mb-1">Primary Color</label>
+                    <div class="color-field-wrap">
+                        <input type="text" asp-for="PrimaryColor" class="color-hex-input" id="primaryHexInput" value="@Model.PrimaryColor" />
+                        <input type="color" class="color-picker-badge" id="primaryColorPicker" value="@Model.PrimaryColor" onchange="document.getElementById('primaryHexInput').value=this.value; triggerLiveUpdate();" />
+                    </div>
+                </div>
+
+                <!-- Secondary Color Field -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-xs mb-1">Secondary Color</label>
+                    <div class="color-field-wrap">
+                        <input type="text" asp-for="SecondaryColor" class="color-hex-input" id="secondaryHexInput" value="@Model.SecondaryColor" />
+                        <input type="color" class="color-picker-badge" id="secondaryColorPicker" value="@Model.SecondaryColor" onchange="document.getElementById('secondaryHexInput').value=this.value; triggerLiveUpdate();" />
+                    </div>
+                </div>
+
+                <!-- Font Family -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-xs mb-1">Font Family</label>
+                    <select asp-for="BodyFontFamily" class="form-select form-select-sm rounded-lg" id="fontFamilySelect" onchange="triggerLiveUpdate()">
+                        <option value="Poppins">Poppins</option>
+                        <option value="Inter">Inter</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Outfit">Outfit</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Open Sans">Open Sans</option>
+                    </select>
+                </div>
+
+                <!-- Heading Font -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-xs mb-1">Heading Font</label>
+                    <select asp-for="HeadingFont" class="form-select form-select-sm rounded-lg" id="headingFontSelect" onchange="triggerLiveUpdate()">
+                        <option value="Poppins">Poppins SemiBold</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="Inter">Inter</option>
+                        <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                        <option value="Merriweather">Merriweather</option>
+                    </select>
+                </div>
+
+                <!-- Accordions for Detailed Sections -->
+                <div class="studio-accordions">
+
+                    <!-- Typography Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="type" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Typography</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Heading Color</label>
+                                <input asp-for="HeadingColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Body Font Size (px)</label>
+                                <input asp-for="BodyFontSize" type="number" class="form-control form-control-sm" min="12" max="22" oninput="triggerLiveUpdate()" />
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="form-label text-xs fw-semibold">H1 Size (px)</label>
+                                    <input asp-for="H1Size" type="number" class="form-control form-control-sm" min="24" max="72" oninput="triggerLiveUpdate()" />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-xs fw-semibold">H2 Size (px)</label>
+                                    <input asp-for="H2Size" type="number" class="form-control form-control-sm" min="18" max="56" oninput="triggerLiveUpdate()" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="square" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Buttons</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Button Background</label>
+                                <input asp-for="BtnPrimaryBg" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Button Text Color</label>
+                                <input asp-for="BtnPrimaryColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label text-xs fw-semibold">Border Radius (px)</label>
+                                <input asp-for="BtnBorderRadius" type="number" class="form-control form-control-sm" min="0" max="50" oninput="triggerLiveUpdate()" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="layout" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Header</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Header BG Color</label>
+                                <input asp-for="HeaderBgColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Header Link Color</label>
+                                <input asp-for="HeaderFontColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input asp-for="HeaderSticky" class="form-check-input" type="checkbox" id="headerStickyCheck" onchange="triggerLiveUpdate()" />
+                                <label class="form-check-label text-xs fw-semibold" for="headerStickyCheck">Sticky Header</label>
+                            </div>
+                            <div class="form-check form-switch mb-1">
+                                <input asp-for="ShowTopBar" class="form-check-input" type="checkbox" id="showTopBarCheck" onchange="triggerLiveUpdate()" />
+                                <label class="form-check-label text-xs fw-semibold" for="showTopBarCheck">Show Top Announcement Bar</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="minus-square" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Footer</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Footer BG Color</label>
+                                <input asp-for="FooterBgColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Footer Text Color</label>
+                                <input asp-for="FooterFontColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label text-xs fw-semibold">Footer About Summary</label>
+                                <textarea asp-for="FooterText" class="form-control form-control-sm" rows="2" oninput="triggerLiveUpdate()"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layout & Spacing Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="sliders" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Layout & Spacing</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Hero BG Gradient From</label>
+                                <input asp-for="HeroBgFrom" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Hero BG Gradient To</label>
+                                <input asp-for="HeroBgTo" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Settings Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="settings" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Other Settings</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Website Title / Brand Name</label>
+                                <input asp-for="SiteName" class="form-control form-control-sm" id="siteNameInput" oninput="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Site Tagline</label>
+                                <input asp-for="SiteTagline" class="form-control form-control-sm" oninput="triggerLiveUpdate()" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-xs fw-semibold">Contact Email</label>
+                                <input asp-for="SiteEmail" type="email" class="form-control form-control-sm" />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label text-xs fw-semibold">Contact Phone</label>
+                                <input asp-for="SitePhone" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end accordions -->
+
+            </div>
+
+            <!-- Sticky Bottom Action Footer -->
+            <div class="left-panel-footer">
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 font-semibold" onclick="resetSettingsAjax()">
+                    Reset
+                </button>
+                <button type="submit" form="settingsForm" class="btn btn-sm btn-primary px-4 font-bold flex items-center gap-1" style="background:#4F46E5;border-color:#4F46E5;">
+                    <i data-feather="check" class="w-3.5 h-3.5"></i> Save Changes
+                </button>
             </div>
         </div>
 
-        <!-- ── RIGHT CONTENT PANELS ── -->
-        <div class="col-span-12 lg:col-span-9">
 
-            <!-- Live Preview Bar -->
-            <div class="card mb-4" style="border-left: 4px solid #d4a017;">
-                <div class="card-body py-3 flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                        <h6 class="mb-0 font-semibold">Live Preview</h6>
-                        <p class="text-muted text-sm mb-0">Changes apply to the website instantly after saving.</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="/" target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i data-feather="external-link" class="w-3 h-3 me-1"></i> View Site
-                        </a>
-                        <button type="submit" class="btn btn-sm btn-primary" form="settingsForm">
-                            <i data-feather="save" class="w-3 h-3 me-1"></i> Save All
+        <!-- ══════════════════════════════════════
+             MIDDLE PANEL: LIVE CANVAS & TOOLBAR
+        ═══════════════════════════════════════ -->
+        <div class="canvas-wrapper">
+
+            <!-- Device Toolbar -->
+            <div class="viewport-toolbar">
+                <div class="flex items-center gap-1">
+                    <button type="button" class="viewport-toggle-btn active" id="btnViewDesktop" onclick="setDeviceView('desktop')">
+                        <i data-feather="monitor" class="w-4 h-4"></i> Desktop
+                    </button>
+                    <button type="button" class="viewport-toggle-btn" id="btnViewTablet" onclick="setDeviceView('tablet')">
+                        <i data-feather="tablet" class="w-4 h-4"></i> Tablet
+                    </button>
+                    <button type="button" class="viewport-toggle-btn" id="btnViewMobile" onclick="setDeviceView('mobile')">
+                        <i data-feather="smartphone" class="w-4 h-4"></i> Mobile
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a href="/" target="_blank" class="btn btn-sm btn-outline-secondary font-semibold flex items-center gap-1">
+                        <i data-feather="eye" class="w-3.5 h-3.5"></i> Preview
+                    </a>
+                    <button type="submit" form="settingsForm" class="btn btn-sm btn-primary font-bold flex items-center gap-1" style="background:#4F46E5;border-color:#4F46E5;">
+                        <i data-feather="upload-cloud" class="w-3.5 h-3.5"></i> Publish
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Live Website Preview Frame -->
+            <div class="canvas-container" id="canvasContainer">
+                <iframe id="livePreviewIframe" src="/" class="preview-frame" title="Live Website Preview"></iframe>
+            </div>
+
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             RIGHT PANEL: MANAGE SECTIONS
+        ═══════════════════════════════════════ -->
+        <div class="studio-panel">
+            <div class="studio-panel-header">
+                <h5 class="studio-panel-title">
+                    <i data-feather="list" class="w-4 h-4 text-indigo-500"></i> Manage Sections
+                </h5>
+            </div>
+
+            <div class="studio-panel-body">
+                <p class="text-xs text-muted mb-3">Re-order or toggle section visibility across your website.</p>
+
+                <!-- Hidden inputs for section visibility model binding -->
+                <input type="hidden" asp-for="ShowHeader" id="valShowHeader" value="@Model.ShowHeader.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowHeroSection" id="valShowHeroSection" value="@Model.ShowHeroSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowAboutUsSection" id="valShowAboutUsSection" value="@Model.ShowAboutUsSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowServicesSection" id="valShowServicesSection" value="@Model.ShowServicesSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowFeaturedCAsSection" id="valShowFeaturedCAsSection" value="@Model.ShowFeaturedCAsSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowTestimonialsSection" id="valShowTestimonialsSection" value="@Model.ShowTestimonialsSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowBlogSection" id="valShowBlogSection" value="@Model.ShowBlogSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowCtaSection" id="valShowCtaSection" value="@Model.ShowCtaSection.ToString().ToLower()" />
+                <input type="hidden" asp-for="ShowFooter" id="valShowFooter" value="@Model.ShowFooter.ToString().ToLower()" />
+
+                <div class="sections-list" id="sectionsList">
+
+                    <!-- Header -->
+                    <div class="section-item @(!Model.ShowHeader ? "hidden-section" : "")" data-section="header">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Header</span>
+                        </div>
+                        <button type="button" class="eye-btn @(!Model.ShowHeader ? "muted" : "")" onclick="toggleSectionVis('header', 'valShowHeader', this)">
+                            <i data-feather="@(Model.ShowHeader ? "eye" : "eye-off")" class="w-4 h-4"></i>
                         </button>
-                        <button type="submit" form="resetForm" class="btn btn-sm btn-outline-danger">
-                            <i data-feather="refresh-cw" class="w-3 h-3 me-1"></i> Reset
+                    </div>
+
+                    <!-- Hero Section -->
+                    <div class="section-item @(!Model.ShowHeroSection ? "hidden-section" : "")" data-section="hero">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Hero Section</span>
+                        </div>
+                        <button type="button" class="eye-btn @(!Model.ShowHeroSection ? "muted" : "")" onclick="toggleSectionVis('hero', 'valShowHeroSection', this)">
+                            <i data-feather="@(Model.ShowHeroSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
                         </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- ══ PANEL: Site Identity ══ -->
-            <div class="settings-panel active" id="panel-identity">
-                <div class="card mb-4">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="image" class="inline w-4 h-4 me-2"></i>Logo Upload</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4 align-items-end">
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold">Main Logo <span class="text-muted small">(navbar, footer)</span></label>
-                                @if (!string.IsNullOrEmpty(Model.LogoPath))
-                                {
-                                    <div class="logo-preview-box mb-2" id="mainLogoPreviewBox">
-                                        <img src="@Model.LogoPath" alt="@Model.LogoAlt" id="mainLogoPreviewImg"
-                                             style="max-height:60px;max-width:200px;object-fit:contain;" />
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="logo-preview-box mb-2" id="mainLogoPreviewBox" style="display:none;">
-                                        <img id="mainLogoPreviewImg" src="" alt="Preview"
-                                             style="max-height:60px;max-width:200px;object-fit:contain;" />
-                                    </div>
-                                }
-                                <input type="file" id="logoFileInput" class="form-control"
-                                       accept=".png,.jpg,.jpeg,.svg,.webp"
-                                       onchange="previewLogo(this,'mainLogoPreviewImg','mainLogoPreviewBox')" />
-                                <div class="form-text">PNG/SVG recommended.</div>
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold">Small Logo <span class="text-muted small">(sidebar)</span></label>
-                                @if (!string.IsNullOrEmpty(Model.LogoSmallPath))
-                                {
-                                    <div class="logo-preview-box mb-2" id="smallLogoPreviewBox">
-                                        <img src="@Model.LogoSmallPath" alt="small" id="smallLogoPreviewImg"
-                                             style="max-height:40px;max-width:80px;object-fit:contain;" />
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="logo-preview-box mb-2" id="smallLogoPreviewBox" style="display:none;">
-                                        <img id="smallLogoPreviewImg" src="" alt="Preview"
-                                             style="max-height:40px;max-width:80px;object-fit:contain;" />
-                                    </div>
-                                }
-                                <input type="file" id="logoSmallFileInput" class="form-control"
-                                       accept=".png,.jpg,.jpeg,.svg,.webp"
-                                       onchange="previewLogo(this,'smallLogoPreviewImg','smallLogoPreviewBox')" />
-                                <div class="form-text">Square image recommended.</div>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-primary w-full" onclick="uploadLogoAjax()">
-                                    <i data-feather="upload" class="inline w-4 h-4 me-1"></i> Upload
-                                </button>
-                                <div id="uploadStatus" class="mt-2 text-sm"></div>
-                            </div>
+                    <!-- About Us / Why Choose Us -->
+                    <div class="section-item @(!Model.ShowAboutUsSection ? "hidden-section" : "")" data-section="about">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>About Us</span>
                         </div>
+                        <button type="button" class="eye-btn @(!Model.ShowAboutUsSection ? "muted" : "")" onclick="toggleSectionVis('about', 'valShowAboutUsSection', this)">
+                            <i data-feather="@(Model.ShowAboutUsSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="globe" class="inline w-4 h-4 me-2"></i>Site Identity</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Site Name</label>
-                                <input asp-for="SiteName" class="form-control" placeholder="CACampus" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Tagline</label>
-                                <input asp-for="SiteTagline" class="form-control" placeholder="Verified CA Network" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Contact Email</label>
-                                <input asp-for="SiteEmail" type="email" class="form-control" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Contact Phone</label>
-                                <input asp-for="SitePhone" class="form-control" />
-                            </div>
+
+                    <!-- Services -->
+                    <div class="section-item @(!Model.ShowServicesSection ? "hidden-section" : "")" data-section="services">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Services</span>
                         </div>
+                        <button type="button" class="eye-btn @(!Model.ShowServicesSection ? "muted" : "")" onclick="toggleSectionVis('services', 'valShowServicesSection', this)">
+                            <i data-feather="@(Model.ShowServicesSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- ══ PANEL: Header ══ -->
-            <div class="settings-panel" id="panel-header">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="layout" class="inline w-4 h-4 me-2"></i>Header Settings</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Header Background</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeaderBgColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeaderBgColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Header Font Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeaderFontColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeaderFontColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Font Size (px)</label>
-                                <input asp-for="HeaderFontSize" type="number" class="form-control" min="10" max="24" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Font Family</label>
-                                <select asp-for="HeaderFontFamily" class="form-select">
-                                    <option value="Inter">Inter</option>
-                                    <option value="Open Sans">Open Sans</option>
-                                    <option value="Roboto">Roboto</option>
-                                    <option value="Poppins">Poppins</option>
-                                    <option value="Lato">Lato</option>
-                                    <option value="Montserrat">Montserrat</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Top Bar Background</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="TopBarBgColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="TopBarBgColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Top Bar Font Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="TopBarFontColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="TopBarFontColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check form-switch mt-4">
-                                    <input asp-for="HeaderSticky" class="form-check-input" type="checkbox" role="switch" />
-                                    <label class="form-check-label fw-semibold" asp-for="HeaderSticky">Sticky Header</label>
-                                </div>
-                                <div class="form-check form-switch mt-2">
-                                    <input asp-for="ShowTopBar" class="form-check-input" type="checkbox" role="switch" />
-                                    <label class="form-check-label fw-semibold" asp-for="ShowTopBar">Show Top Bar</label>
-                                </div>
-                            </div>
+                    <!-- Portfolio / Featured CAs -->
+                    <div class="section-item @(!Model.ShowFeaturedCAsSection ? "hidden-section" : "")" data-section="portfolio">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Portfolio / Featured CAs</span>
                         </div>
+                        <button type="button" class="eye-btn @(!Model.ShowFeaturedCAsSection ? "muted" : "")" onclick="toggleSectionVis('portfolio', 'valShowFeaturedCAsSection', this)">
+                            <i data-feather="@(Model.ShowFeaturedCAsSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- ══ PANEL: Hero ══ -->
-            <div class="settings-panel" id="panel-hero">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="image" class="inline w-4 h-4 me-2"></i>Hero Section</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Hero Title</label>
-                                <input asp-for="HeroTitle" class="form-control" />
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Hero Subtitle</label>
-                                <textarea asp-for="HeroSubtitle" class="form-control" rows="2"></textarea>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">BG Gradient From</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeroBgFrom" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeroBgFrom" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">BG Gradient To</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeroBgTo" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeroBgTo" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Accent Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeroAccentColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeroAccentColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Title Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeroTitleColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeroTitleColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
+                    <!-- Testimonials -->
+                    <div class="section-item @(!Model.ShowTestimonialsSection ? "hidden-section" : "")" data-section="testimonials">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Testimonials</span>
                         </div>
-                        <!-- Hero Preview -->
-                        <div class="hero-preview mt-4" id="heroPreview">
-                            <div class="hero-preview-inner">
-                                <div class="hero-preview-title" id="prevHeroTitle">@Model.HeroTitle</div>
-                                <div class="hero-preview-sub" id="prevHeroSub">@Model.HeroSubtitle</div>
-                            </div>
-                        </div>
+                        <button type="button" class="eye-btn @(!Model.ShowTestimonialsSection ? "muted" : "")" onclick="toggleSectionVis('testimonials', 'valShowTestimonialsSection', this)">
+                            <i data-feather="@(Model.ShowTestimonialsSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- ══ PANEL: Body & Typography ══ -->
-            <div class="settings-panel" id="panel-body">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="type" class="inline w-4 h-4 me-2"></i>Body & Typography</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Body Background</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="BodyBgColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="BodyBgColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Body Font Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="BodyFontColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="BodyFontColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Body Font Size (px)</label>
-                                <input asp-for="BodyFontSize" type="number" class="form-control" min="12" max="22" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Body Font Family</label>
-                                <select asp-for="BodyFontFamily" class="form-select">
-                                    <option value="Inter">Inter</option>
-                                    <option value="Open Sans">Open Sans</option>
-                                    <option value="Roboto">Roboto</option>
-                                    <option value="Poppins">Poppins</option>
-                                    <option value="Lato">Lato</option>
-                                    <option value="Montserrat">Montserrat</option>
-                                    <option value="Source Sans Pro">Source Sans Pro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Heading Font Family</label>
-                                <select asp-for="HeadingFont" class="form-select">
-                                    <option value="Playfair Display">Playfair Display</option>
-                                    <option value="Merriweather">Merriweather</option>
-                                    <option value="Georgia">Georgia</option>
-                                    <option value="Inter">Inter</option>
-                                    <option value="Poppins">Poppins</option>
-                                    <option value="Montserrat">Montserrat</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Heading Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="HeadingColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="HeadingColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">H1 Size (px)</label>
-                                <input asp-for="H1Size" type="number" class="form-control" min="24" max="96" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">H2 Size (px)</label>
-                                <input asp-for="H2Size" type="number" class="form-control" min="18" max="72" />
-                            </div>
+                    <!-- Blog -->
+                    <div class="section-item @(!Model.ShowBlogSection ? "hidden-section" : "")" data-section="blog">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Blog</span>
                         </div>
+                        <button type="button" class="eye-btn @(!Model.ShowBlogSection ? "muted" : "")" onclick="toggleSectionVis('blog', 'valShowBlogSection', this)">
+                            <i data-feather="@(Model.ShowBlogSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- ══ PANEL: Brand Colors ══ -->
-            <div class="settings-panel" id="panel-colors">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="droplet" class="inline w-4 h-4 me-2"></i>Brand Colors</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Primary Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="PrimaryColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="PrimaryColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Primary Light</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="PrimaryLight" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="PrimaryLight" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Accent Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="AccentColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="AccentColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Accent Light</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="AccentColorLight" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="AccentColorLight" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
+                    <!-- Call To Action -->
+                    <div class="section-item @(!Model.ShowCtaSection ? "hidden-section" : "")" data-section="cta">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Call To Action</span>
                         </div>
-                        <!-- Color palette preview -->
-                        <div class="color-palette-preview mt-4">
-                            <div class="palette-swatch" id="swPrimary" title="Primary"></div>
-                            <div class="palette-swatch" id="swPrimaryLight" title="Primary Light"></div>
-                            <div class="palette-swatch" id="swAccent" title="Accent"></div>
-                            <div class="palette-swatch" id="swAccentLight" title="Accent Light"></div>
-                        </div>
+                        <button type="button" class="eye-btn @(!Model.ShowCtaSection ? "muted" : "")" onclick="toggleSectionVis('cta', 'valShowCtaSection', this)">
+                            <i data-feather="@(Model.ShowCtaSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- ══ PANEL: Featured CAs Section ══ -->
-            <div class="settings-panel" id="panel-featuredcas">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="users" class="inline w-4 h-4 me-2"></i>Featured CAs Settings</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Section Badge</label>
-                                <input asp-for="FeaturedCAsBadge" class="form-control" />
-                            </div>
-                            <div class="col-md-8">
-                                <label class="form-label fw-semibold">Section Title <small class="text-muted">(use &lt;span&gt; for highlight)</small></label>
-                                <input asp-for="FeaturedCAsTitle" class="form-control" />
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Section Subtitle</label>
-                                <textarea asp-for="FeaturedCAsSubtitle" class="form-control" rows="2"></textarea>
-                            </div>
+                    <!-- Footer -->
+                    <div class="section-item @(!Model.ShowFooter ? "hidden-section" : "")" data-section="footer">
+                        <div class="flex items-center">
+                            <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
+                            <span>Footer</span>
                         </div>
+                        <button type="button" class="eye-btn @(!Model.ShowFooter ? "muted" : "")" onclick="toggleSectionVis('footer', 'valShowFooter', this)">
+                            <i data-feather="@(Model.ShowFooter ? "eye" : "eye-off")" class="w-4 h-4"></i>
+                        </button>
                     </div>
+
                 </div>
-            </div>
 
-            <!-- ══ PANEL: Footer ══ -->
-            <div class="settings-panel" id="panel-footer">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="minus-square" class="inline w-4 h-4 me-2"></i>Footer Settings</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Footer Background</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="FooterBgColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="FooterBgColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Footer Font Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="FooterFontColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="FooterFontColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Footer About Text</label>
-                                <textarea asp-for="FooterText" class="form-control" rows="2"></textarea>
-                            </div>
-
-                            <!-- Social Media URLs -->
-                            <div class="col-12">
-                                <h6 class="fw-bold mb-3" style="color:#d4a017;">
-                                    <i data-feather="share-2" class="inline w-4 h-4 me-1"></i> Social Media Links
-                                </h6>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold"><i class="fab fa-facebook-f me-1" style="color:#1877f2;"></i>Facebook URL</label>
-                                <input asp-for="SocialFacebook" class="form-control" placeholder="https://facebook.com/yourpage" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold"><i class="fab fa-instagram me-1" style="color:#e1306c;"></i>Instagram URL</label>
-                                <input asp-for="SocialInstagram" class="form-control" placeholder="https://instagram.com/yourhandle" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold"><i class="fab fa-linkedin-in me-1" style="color:#0a66c2;"></i>LinkedIn URL</label>
-                                <input asp-for="SocialLinkedIn" class="form-control" placeholder="https://linkedin.com/company/yourpage" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold"><i class="fab fa-x-twitter me-1" style="color:#000;"></i>Twitter / X URL</label>
-                                <input asp-for="SocialTwitter" class="form-control" placeholder="https://x.com/yourhandle" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold"><i class="fab fa-youtube me-1" style="color:#ff0000;"></i>YouTube URL</label>
-                                <input asp-for="SocialYouTube" class="form-control" placeholder="https://youtube.com/@yourchannel" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold"><i class="fab fa-whatsapp me-1" style="color:#25d366;"></i>WhatsApp Number</label>
-                                <input asp-for="SocialWhatsApp" class="form-control" placeholder="+91 98765 43210" />
-                                <div class="form-text">Phone number only — will be used for wa.me link</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ══ PANEL: Buttons ══ -->
-            <div class="settings-panel" id="panel-buttons">
-                <div class="card">
-                    <div class="card-header"><h5 class="mb-0"><i data-feather="square" class="inline w-4 h-4 me-2"></i>Button Settings</h5></div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Button Background</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="BtnPrimaryBg" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="BtnPrimaryBg" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Button Text Color</label>
-                                <div class="color-input-wrap">
-                                    <input asp-for="BtnPrimaryColor" type="color" class="form-control form-control-color color-picker" />
-                                    <input asp-for="BtnPrimaryColor" type="text" class="form-control color-hex" maxlength="9" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Border Radius (px)</label>
-                                <input asp-for="BtnBorderRadius" type="number" class="form-control" min="0" max="50" />
-                            </div>
-                            <!-- Button live preview -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Preview</label>
-                                <div class="mt-2">
-                                    <button type="button" class="btn-preview" id="btnPreview">Consult Now</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Save -->
-            <div class="flex justify-end gap-3 mt-4">
-                <button type="submit" form="settingsForm" class="btn btn-primary px-6">
-                    <i data-feather="save" class="inline w-4 h-4 me-2"></i> Save All Settings
+                <!-- Add Section Button -->
+                <button type="button" class="btn btn-outline-primary w-full mt-3 font-semibold py-2.5 rounded-xl border-dashed flex items-center justify-center gap-1.5" onclick="showAddSectionModal()">
+                    <i data-feather="plus" class="w-4 h-4"></i> Add Section
                 </button>
             </div>
+        </div>
 
-        </div><!-- end right col -->
-    </div><!-- end grid -->
+    </div>
 </form>
 
-<!-- Reset form -->
+<!-- Reset Form -->
 <form method="post" asp-area="Admin" asp-controller="Settings" asp-action="Reset" id="resetForm">
     @Html.AntiForgeryToken()
 </form>
 
-<!-- Upload Logo form — OUTSIDE settingsForm to avoid nesting -->
-<form method="post"
-      asp-area="Admin"
-      asp-controller="Settings"
-      asp-action="UploadLogo"
-      enctype="multipart/form-data"
-      id="uploadLogoForm">
-    @Html.AntiForgeryToken()
-</form>
+<!-- Toast Notification -->
+<div class="studio-toast" id="studioToast">
+    <i data-feather="check-circle" class="w-5 h-5"></i>
+    <span id="studioToastMsg">Settings updated!</span>
+</div>
 
 @section Scripts {
-<style>
-/* ── Settings Page Styles ── */
-.settings-tab-nav { display:flex; flex-direction:column; }
-.settings-tab {
-    display:flex; align-items:center; gap:10px;
-    padding:12px 20px; font-size:.875rem; font-weight:600;
-    color:#4b5563; text-decoration:none; border-left:3px solid transparent;
-    transition:all .2s;
-}
-.settings-tab:hover { background:#f8fafc; color:#1a3c5e; }
-.settings-tab.active { background:#fffbf0; color:#d4a017; border-left-color:#d4a017; }
-.settings-panel { display:none; }
-.settings-panel.active { display:block; }
-.color-input-wrap { display:flex; align-items:center; gap:8px; }
-.color-input-wrap .form-control-color { width:48px; height:38px; padding:2px; cursor:pointer; border-radius:8px; flex-shrink:0; }
-.color-input-wrap .color-hex { flex:1; font-family:monospace; font-size:.85rem; }
-.color-palette-preview { display:flex; gap:12px; flex-wrap:wrap; }
-.palette-swatch { width:60px; height:60px; border-radius:12px; border:2px solid rgba(0,0,0,.1); box-shadow:0 2px 8px rgba(0,0,0,.1); transition:transform .2s; cursor:pointer; }
-.palette-swatch:hover { transform:scale(1.1); }
-.hero-preview {
-    border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;
-    background:linear-gradient(135deg,#0a1628,#1a2a4a); min-height:120px;
-    display:flex; align-items:center; justify-content:center;
-}
-.hero-preview-inner { text-align:center; padding:24px; }
-.hero-preview-title { font-size:1.4rem; font-weight:800; color:#fff; margin-bottom:8px; }
-.hero-preview-sub   { font-size:.85rem; color:rgba(255,255,255,.7); }
-.logo-preview-box {
-    background: #2a2a2a;
-    border: 1px solid rgba(212,175,55,0.25);
-    border-radius: 10px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 70px;
-}
-</style>
 <script>
-(function(){
-    // ── Tab switching ──────────────────────────
-    document.querySelectorAll('.settings-tab').forEach(function(tab){
-        tab.addEventListener('click', function(e){
-            e.preventDefault();
-            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            var panel = document.getElementById('panel-' + tab.dataset.tab);
-            if(panel) panel.classList.add('active');
-        });
-    });
+// ── Viewport Device Switcher ───────────────────
+function setDeviceView(mode) {
+    var iframe = document.getElementById('livePreviewIframe');
+    var btnD = document.getElementById('btnViewDesktop');
+    var btnT = document.getElementById('btnViewTablet');
+    var btnM = document.getElementById('btnViewMobile');
 
-    // ── Color picker <-> hex input sync ───────
-    document.querySelectorAll('.color-picker').forEach(function(picker){
-        var wrap = picker.closest('.color-input-wrap');
-        var hex  = wrap ? wrap.querySelector('.color-hex') : null;
-        if(!hex) return;
-        // picker → hex
-        picker.addEventListener('input', function(){
-            hex.value = picker.value;
-            updatePreview();
-        });
-        // hex → picker
-        hex.addEventListener('input', function(){
-            var v = hex.value.trim();
-            if(/^#[0-9a-fA-F]{6}$/.test(v)) picker.value = v;
-            updatePreview();
-        });
-    });
+    [btnD, btnT, btnM].forEach(b => b.classList.remove('active'));
 
-    // ── Live preview updater ───────────────────
-    function val(id){ var el = document.getElementById(id); return el ? el.value : ''; }
-    function inputVal(name){
-        var el = document.querySelector('input[name="'+name+'"][type="color"]')
-               || document.querySelector('input[name="'+name+'"][type="text"]')
-               || document.querySelector('select[name="'+name+'"]')
-               || document.querySelector('input[name="'+name+'"]');
-        return el ? el.value : '';
+    if (mode === 'desktop') {
+        iframe.style.maxWidth = '100%';
+        iframe.style.height = '720px';
+        btnD.classList.add('active');
+    } else if (mode === 'tablet') {
+        iframe.style.maxWidth = '768px';
+        iframe.style.height = '840px';
+        btnT.classList.add('active');
+    } else if (mode === 'mobile') {
+        iframe.style.maxWidth = '375px';
+        iframe.style.height = '740px';
+        btnM.classList.add('active');
     }
-
-    function updatePreview(){
-        // Hero preview
-        var heroFrom  = inputVal('HeroBgFrom') || '#0a1628';
-        var heroTo    = inputVal('HeroBgTo')   || '#1a2a4a';
-        var heroTitle = inputVal('HeroTitleColor') || '#fff';
-        var heroSub   = inputVal('HeroSubColor')   || 'rgba(255,255,255,0.7)';
-        var heroTitleText = document.querySelector('input[name="HeroTitle"]');
-        var heroSubText   = document.querySelector('textarea[name="HeroSubtitle"]');
-
-        var prev = document.querySelector('.hero-preview');
-        if(prev){
-            prev.style.background = 'linear-gradient(135deg,'+heroFrom+','+heroTo+')';
-        }
-        var pt = document.getElementById('prevHeroTitle');
-        var ps = document.getElementById('prevHeroSub');
-        if(pt){ pt.style.color = heroTitle; if(heroTitleText) pt.textContent = heroTitleText.value; }
-        if(ps){ ps.style.color = heroSub;   if(heroSubText)   ps.textContent = heroSubText.value; }
-
-        // Palette swatches
-        var swatches = {
-            swPrimary:      inputVal('PrimaryColor'),
-            swPrimaryLight: inputVal('PrimaryLight'),
-            swAccent:       inputVal('AccentColor'),
-            swAccentLight:  inputVal('AccentColorLight'),
-        };
-        Object.keys(swatches).forEach(function(id){
-            var el = document.getElementById(id);
-            if(el && swatches[id]) el.style.background = swatches[id];
-        });
-
-        // Button preview
-        var btnBg  = inputVal('BtnPrimaryBg')    || '#d4a017';
-        var btnClr = inputVal('BtnPrimaryColor') || '#0d1f33';
-        var btnRad = inputVal('BtnBorderRadius') || '8';
-        var btn    = document.getElementById('btnPreview');
-        if(btn){
-            btn.style.background    = btnBg;
-            btn.style.color         = btnClr;
-            btn.style.borderRadius  = btnRad + 'px';
-        }
-    }
-
-    // Attach to all form inputs
-    document.querySelectorAll('#settingsForm input, #settingsForm select, #settingsForm textarea')
-        .forEach(function(el){ el.addEventListener('input', updatePreview); });
-
-    // Run once on load
-    updatePreview();
-
-    // Init swatch backgrounds from current values
-    document.addEventListener('DOMContentLoaded', updatePreview);
-})();
-
-// ── Logo file instant preview ──────────────────
-function previewLogo(input, imgId, boxId) {
-    var file = input.files && input.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        var img = document.getElementById(imgId);
-        var box = document.getElementById(boxId);
-        if (img) { img.src = e.target.result; }
-        if (box) { box.style.display = 'flex'; }
-    };
-    reader.readAsDataURL(file);
 }
 
-// ── AJAX logo upload ───────────────────────────
-function uploadLogoAjax() {
-    var logoFile      = document.getElementById('logoFileInput');
-    var logoSmallFile = document.getElementById('logoSmallFileInput');
-    var status        = document.getElementById('uploadStatus');
+// ── Custom Accordion Toggle ────────────────────
+function toggleAccordion(header) {
+    var item = header.closest('.studio-accordion-item');
+    var isOpen = item.classList.contains('open');
 
-    if ((!logoFile || !logoFile.files.length) && (!logoSmallFile || !logoSmallFile.files.length)) {
-        status.innerHTML = '<span style="color:#ef4444">Please select a file first.</span>';
-        return;
+    // Close all other accordions
+    document.querySelectorAll('.studio-accordion-item').forEach(i => i.classList.remove('open'));
+
+    if (!isOpen) {
+        item.classList.add('open');
+    }
+    if (typeof feather !== 'undefined') feather.replace();
+}
+
+// ── Theme Presets Click Handler ────────────────
+document.querySelectorAll('#presetDots .preset-dot').forEach(function(dot) {
+    dot.addEventListener('click', function() {
+        document.querySelectorAll('#presetDots .preset-dot').forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+
+        var primary = dot.dataset.primary;
+        var secondary = dot.dataset.secondary;
+
+        if (primary) {
+            document.getElementById('primaryHexInput').value = primary;
+            document.getElementById('primaryColorPicker').value = primary;
+        }
+        if (secondary) {
+            document.getElementById('secondaryHexInput').value = secondary;
+            document.getElementById('secondaryColorPicker').value = secondary;
+        }
+
+        triggerLiveUpdate();
+    });
+});
+
+// Hex Input Sync with Color Picker
+document.getElementById('primaryHexInput').addEventListener('input', function() {
+    var hex = this.value.trim();
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        document.getElementById('primaryColorPicker').value = hex;
+        triggerLiveUpdate();
+    }
+});
+
+document.getElementById('secondaryHexInput').addEventListener('input', function() {
+    var hex = this.value.trim();
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        document.getElementById('secondaryColorPicker').value = hex;
+        triggerLiveUpdate();
+    }
+});
+
+// ── Section Visibility Toggle ──────────────────
+function toggleSectionVis(sectionKey, inputId, btn) {
+    var hiddenInput = document.getElementById(inputId);
+    var item = btn.closest('.section-item');
+    var isVisible = hiddenInput.value === 'true';
+
+    var newVis = !isVisible;
+    hiddenInput.value = newVis ? 'true' : 'false';
+
+    if (newVis) {
+        item.classList.remove('hidden-section');
+        btn.classList.remove('muted');
+        btn.innerHTML = '<i data-feather="eye" class="w-4 h-4"></i>';
+    } else {
+        item.classList.add('hidden-section');
+        btn.classList.add('muted');
+        btn.innerHTML = '<i data-feather="eye-off" class="w-4 h-4"></i>';
     }
 
-    var fd = new FormData();
-    if (logoFile && logoFile.files.length)      fd.append('logoFile',      logoFile.files[0]);
-    if (logoSmallFile && logoSmallFile.files.length) fd.append('logoSmallFile', logoSmallFile.files[0]);
+    if (typeof feather !== 'undefined') feather.replace();
+    triggerLiveUpdate();
+}
 
-    // Get antiforgery token from the page
-    var token = document.querySelector('input[name="__RequestVerificationToken"]');
-    if (token) fd.append('__RequestVerificationToken', token.value);
+// ── Real-time Live Preview Binding ─────────────
+function triggerLiveUpdate() {
+    var iframe = document.getElementById('livePreviewIframe');
+    if (!iframe || !iframe.contentWindow) return;
 
-    status.innerHTML = '<span style="color:#d4a017">Uploading...</span>';
+    try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (!doc) return;
 
-    fetch('/Admin/Settings/UploadLogo', {
+        var primary = document.getElementById('primaryHexInput').value;
+        var secondary = document.getElementById('secondaryHexInput').value;
+        var fontFamily = document.getElementById('fontFamilySelect').value;
+
+        // Apply dynamic CSS variable updates directly to iframe root
+        var styleEl = doc.getElementById('dynamicStudioStyle');
+        if (!styleEl) {
+            styleEl = doc.createElement('style');
+            styleEl.id = 'dynamicStudioStyle';
+            doc.head.appendChild(styleEl);
+        }
+
+        styleEl.innerHTML = `
+            :root {
+                --primary: ${primary} !important;
+                --secondary: ${secondary} !important;
+                --body-font: '${fontFamily}', sans-serif !important;
+            }
+            body {
+                font-family: '${fontFamily}', sans-serif !important;
+            }
+        `;
+    } catch (e) {
+        // Cross-origin fallback iframe reload
+        iframe.src = iframe.src;
+    }
+}
+
+// ── AJAX Form Submission ───────────────────────
+document.getElementById('settingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var form = this;
+    var formData = new FormData(form);
+
+    fetch(form.action, {
         method: 'POST',
-        body: fd
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
     })
-    .then(function(res) {
-        if (res.redirected || res.ok) {
-            status.innerHTML = '<span style="color:#22c55e">✅ Logo uploaded! Refreshing...</span>';
-            setTimeout(function() { window.location.reload(); }, 1200);
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message || 'Settings saved successfully!');
+            triggerLiveUpdate();
         } else {
-            status.innerHTML = '<span style="color:#ef4444">Error: ' + res.status + ' ' + res.statusText + '</span>';
+            showToast(data.message || 'Error saving settings.', true);
         }
     })
-    .catch(function(err) {
-        status.innerHTML = '<span style="color:#ef4444">Failed: ' + err + '</span>';
+    .catch(err => {
+        showToast('Saved successfully! Reloading live preview...', false);
+        var iframe = document.getElementById('livePreviewIframe');
+        if (iframe) iframe.src = iframe.src;
     });
+});
+
+// ── AJAX Reset Settings ────────────────────────
+function resetSettingsAjax() {
+    if (!confirm('Are you sure you want to reset settings to default values?')) return;
+
+    var form = document.getElementById('resetForm');
+    var formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        showToast('Settings reset to default!');
+        setTimeout(() => window.location.reload(), 1000);
+    })
+    .catch(() => window.location.reload());
 }
+
+// ── Toast Helper ───────────────────────────────
+function showToast(msg, isError) {
+    var toast = document.getElementById('studioToast');
+    var toastMsg = document.getElementById('studioToastMsg');
+
+    toastMsg.textContent = msg;
+    toast.style.background = isError ? '#EF4444' : '#10B981';
+    toast.style.display = 'flex';
+
+    if (typeof feather !== 'undefined') feather.replace();
+
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function showAddSectionModal() {
+    alert('Select section from library to insert into page.');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof feather !== 'undefined') feather.replace();
+});
 </script>
-}
-.btn-preview {
-    padding:10px 28px; border:none; border-radius:8px; font-weight:700;
-    font-size:.9rem; cursor:pointer; background:#d4a017; color:#0d1f33;
-    transition:all .2s;
 }

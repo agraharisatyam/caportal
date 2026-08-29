@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="caBg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="skinVikram" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5ccb0"/>
+      <stop offset="100%" stop-color="#e5b596"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="100" cy="100" r="96" fill="url(#caBg4)"/>
+
+  <!-- Male ACA Portrait (CA Vikram Joshi) -->
+  <g transform="translate(0, 5)">
+    <!-- Suit -->
+    <path d="M 35 190 Q 100 135 165 190 V 200 H 35 Z" fill="#1e1b4b"/>
+    <path d="M 78 190 L 100 145 L 122 190 Z" fill="#ffffff"/>
+    <polygon points="96,155 104,155 106,190 94,190" fill="#3b82f6"/>
+
+    <!-- Neck -->
+    <rect x="85" y="120" width="30" height="30" rx="6" fill="url(#skinVikram)"/>
+
+    <!-- Face -->
+    <ellipse cx="100" cy="92" rx="36" ry="42" fill="url(#skinVikram)"/>
+
+    <!-- Hair -->
+    <path d="M 64 78 C 60 38 140 38 136 78 C 128 52 72 52 64 78 Z" fill="#0f172a"/>
+
+    <!-- Eyes -->
+    <ellipse cx="84" cy="90" rx="4" ry="3" fill="#0f172a"/>
+    <ellipse cx="116" cy="90" rx="4" ry="3" fill="#0f172a"/>
+
+    <!-- Smile -->
+    <path d="M 88 114 Q 100 123 112 114" stroke="#9a3412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

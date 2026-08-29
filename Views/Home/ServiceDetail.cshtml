@@ -1,9 +1,9 @@
-@model caportal.Models.ServiceDetail
+@model caportal.Models.Entities.ServiceDetail
 @{
     ViewData["Title"] = $"{Model.Name} Services — ICAI Verified Chartered Accountants";
     ViewData["Description"] = Model.ShortDescription;
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
-    var settings = ViewBag.Settings as caportal.Models.SiteSettings;
+    var settings = ViewBag.Settings as caportal.Models.Entities.SiteSettings;
     var primaryColor = settings?.PrimaryColor ?? "#1a3c5e";
     var accentColor = settings?.AccentColor ?? "#d4a017";
 }
@@ -195,8 +195,8 @@
                         <li>
                             <i class="fas fa-lock"></i>
                             <div>
-                                <strong>Escrow Protections</strong>
-                                <span>Payments are held securely and released only on milestones.</span>
+                                <strong>Transparent Billing</strong>
+                                <span>Structured engagement milestones and clear deliverable tracking.</span>
                             </div>
                         </li>
                         <li>

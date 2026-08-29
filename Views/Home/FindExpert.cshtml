@@ -1,9 +1,9 @@
 @{
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
     ViewData["Title"] = "Find a CA Expert";
-    ViewData["Description"] = "Browse 12,000+ ICAI-verified Chartered Accountants across India. Filter by city, specialisation, experience and rating to find the right CA for your needs.";
+    ViewData["Description"] = "Browse ICAI-verified Chartered Accountants across India. Filter by city, specialisation, experience and rating to find the right CA for your needs.";
 
-    var allProfessionals = ViewBag.Professionals as List<caportal.Models.CaProfessional> ?? new List<caportal.Models.CaProfessional>();
+    var allProfessionals = ViewBag.Professionals as List<caportal.Models.Entities.CaProfessional> ?? new List<caportal.Models.Entities.CaProfessional>();
     var totalCount = allProfessionals.Count;
     int page = ViewBag.Page ?? 1;
     int pageSize = 10;
@@ -362,8 +362,8 @@
             </div>
             <div class="find-trust-badge d-none d-md-block">
                 <div style="font-size:1.3rem;">&#127942;</div>
-                <div style="font-size:1rem; font-weight:700; color:#fff;">25,000+</div>
-                <div>Clients Connected</div>
+                <div style="font-size:1rem; font-weight:700; color:#fff;">Verified</div>
+                <div>Network</div>
                 <div style="color:rgba(255,255,255,.6); font-size:.72rem;">Trusted CA Network Across India</div>
             </div>
         </div>
@@ -527,9 +527,17 @@
                     var moreTags = p.Specialisations.Length > 3 ? p.Specialisations.Length - 3 : 0;
                     var stars = (int)Math.Floor((double)p.Rating);
                     var fee = 499 + (p.YearsExp * 30) + (p.Rating > 4.8m ? 200 : 0);
-
                     <div class="ca-expert-card">
-                        <div class="ca-avatar">@p.Initials</div>
+                        <div class="ca-avatar">
+                            @if (!string.IsNullOrEmpty(p.ImagePath))
+                            {
+                                <img src="@p.ImagePath" alt="@p.Name" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" />
+                            }
+                            else
+                            {
+                                <span>@p.Initials</span>
+                            }
+                        </div>
                         <div class="ca-card-body">
                             <div class="ca-card-top">
                                 <div>
