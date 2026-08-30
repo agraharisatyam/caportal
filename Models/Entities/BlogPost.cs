@@ -17,5 +17,8 @@ namespace caportal.Models.Entities
         public int ViewsCount { get; set; } = 120;
         public int ReadTimeMinutes { get; set; } = 5;
         public List<string> Tags { get; set; } = new();
+        public string MetaTitle { get; set; } = string.Empty;
+        public string MetaDescription { get; set; } = string.Empty;
+        public string MetaKeywords { get; set; } = string.Empty;
     }
 }

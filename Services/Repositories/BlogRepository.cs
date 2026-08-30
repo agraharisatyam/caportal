@@ -181,6 +181,9 @@ namespace caportal.Services.Repositories
                     existing.IsPublished = post.IsPublished;
                     existing.ReadTimeMinutes = post.ReadTimeMinutes;
                     existing.Tags = post.Tags;
+                    existing.MetaTitle = post.MetaTitle;
+                    existing.MetaDescription = post.MetaDescription;
+                    existing.MetaKeywords = post.MetaKeywords;
                 }
             }
         }
