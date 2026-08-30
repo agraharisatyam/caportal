@@ -149,85 +149,148 @@
     }
 
     // ══════════════════════════════════════════
-    // FLOATING CONSULT WIDGET
+    // UNIQUE FLOATING CONNECT US HUB
     // ══════════════════════════════════════════
-    var floatTrigger  = document.getElementById('floatTriggerBtn');
-    var floatPanel    = document.getElementById('floatFormPanel');
-    var floatClose    = document.getElementById('floatFormClose');
-    var floatForm     = document.getElementById('floatConsultForm');
-    var floatSuccess  = document.getElementById('floatSuccess');
-    var floatBtnIcon  = document.getElementById('floatBtnIcon');
-    var isOpen        = false;
+    var connectTrigger   = document.getElementById('caConnectTrigger');
+    var connectMenu      = document.getElementById('caConnectMenu');
+    var formDrawer       = document.getElementById('caFormDrawer');
+    var connectBackdrop  = document.getElementById('caConnectBackdrop');
+    var openFormBtn      = document.getElementById('caOpenFormBtn');
+    var drawerBack       = document.getElementById('caDrawerBack');
+    var drawerClose      = document.getElementById('caDrawerClose');
+    var callbackForm     = document.getElementById('caCallbackForm');
+    var successBox       = document.getElementById('cbSuccessBox');
 
-    function openWidget() {
-        if (!floatPanel) return;
-        isOpen = true;
-        floatPanel.classList.add('open');
-        floatPanel.setAttribute('aria-hidden', 'false');
-        floatTrigger.classList.add('open');
-        floatTrigger.setAttribute('aria-expanded', 'true');
-        floatBtnIcon.className = 'fas fa-times float-btn-icon';
-        // focus first input
+    function openConnectMenu() {
+        if (!connectMenu) return;
+        closeDrawer();
+        connectMenu.classList.add('active');
+        connectMenu.setAttribute('aria-hidden', 'false');
+        if (connectTrigger) {
+            connectTrigger.classList.add('active');
+            connectTrigger.setAttribute('aria-expanded', 'true');
+        }
+        if (connectBackdrop) connectBackdrop.classList.add('active');
+    }
+
+    function closeConnectMenu() {
+        if (!connectMenu) return;
+        connectMenu.classList.remove('active');
+        connectMenu.setAttribute('aria-hidden', 'true');
+        if (connectTrigger && !isDrawerOpen()) {
+            connectTrigger.classList.remove('active');
+            connectTrigger.setAttribute('aria-expanded', 'false');
+        }
+        if (!isDrawerOpen() && connectBackdrop) {
+            connectBackdrop.classList.remove('active');
+        }
+    }
+
+    function openDrawer() {
+        if (!formDrawer) return;
+        closeConnectMenu();
+        formDrawer.classList.add('active');
+        formDrawer.setAttribute('aria-hidden', 'false');
+        if (connectTrigger) {
+            connectTrigger.classList.add('active');
+            connectTrigger.setAttribute('aria-expanded', 'true');
+        }
+        if (connectBackdrop) connectBackdrop.classList.add('active');
         setTimeout(function () {
-            var first = floatPanel.querySelector('input, select');
+            var first = formDrawer.querySelector('input, select');
             if (first) first.focus();
         }, 150);
     }
 
-    function closeWidget() {
-        if (!floatPanel) return;
-        isOpen = false;
-        floatPanel.classList.remove('open');
-        floatPanel.setAttribute('aria-hidden', 'true');
-        floatTrigger.classList.remove('open');
-        floatTrigger.setAttribute('aria-expanded', 'false');
-        floatBtnIcon.className = 'fas fa-comments float-btn-icon';
+    function closeDrawer() {
+        if (!formDrawer) return;
+        formDrawer.classList.remove('active');
+        formDrawer.setAttribute('aria-hidden', 'true');
+        if (connectTrigger && !isMenuOpen()) {
+            connectTrigger.classList.remove('active');
+            connectTrigger.setAttribute('aria-expanded', 'false');
+        }
+        if (!isMenuOpen() && connectBackdrop) {
+            connectBackdrop.classList.remove('active');
+        }
     }
 
-    if (floatTrigger) {
-        floatTrigger.addEventListener('click', function () {
-            isOpen ? closeWidget() : openWidget();
+    function closeAllConnect() {
+        closeConnectMenu();
+        closeDrawer();
+        if (connectTrigger) {
+            connectTrigger.classList.remove('active');
+            connectTrigger.setAttribute('aria-expanded', 'false');
+        }
+        if (connectBackdrop) connectBackdrop.classList.remove('active');
+    }
+
+    function isMenuOpen() {
+        return connectMenu && connectMenu.classList.contains('active');
+    }
+
+    function isDrawerOpen() {
+        return formDrawer && formDrawer.classList.contains('active');
+    }
+
+    if (connectTrigger) {
+        connectTrigger.addEventListener('click', function () {
+            if (isMenuOpen() || isDrawerOpen()) {
+                closeAllConnect();
+            } else {
+                openConnectMenu();
+            }
         });
     }
 
-    if (floatClose) {
-        floatClose.addEventListener('click', closeWidget);
+    if (openFormBtn) {
+        openFormBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            openDrawer();
+        });
     }
 
-    // "Consult Now" navbar button also opens it
+    if (drawerBack) {
+        drawerBack.addEventListener('click', function () {
+            closeDrawer();
+            openConnectMenu();
+        });
+    }
+
+    if (drawerClose) {
+        drawerClose.addEventListener('click', closeAllConnect);
+    }
+
+    if (connectBackdrop) {
+        connectBackdrop.addEventListener('click', closeAllConnect);
+    }
+
+    // "Consult Now" navbar button opens drawer directly
     document.querySelectorAll('.btn-nav-cta').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            openWidget();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            openDrawer();
         });
     });
 
     // Close on ESC
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && isOpen) closeWidget();
+        if (e.key === 'Escape' && (isMenuOpen() || isDrawerOpen())) {
+            closeAllConnect();
+        }
     });
 
-    // Auto-open after 10 seconds (once per session)
-    if (!sessionStorage.getItem('floatShown')) {
-        setTimeout(function () {
-            openWidget();
-            sessionStorage.setItem('floatShown', '1');
-        }, 10000);
-    }
-
-    // Form validation & submit
-    if (floatForm) {
-        floatForm.addEventListener('submit', function (e) {
+    // Form Validation & Handling
+    if (callbackForm) {
+        callbackForm.addEventListener('submit', function (e) {
             e.preventDefault();
             var valid = true;
 
-            var name    = document.getElementById('fcName');
-            var phone   = document.getElementById('fcPhone');
-            var service = document.getElementById('fcService');
+            var name    = document.getElementById('cbName');
+            var phone   = document.getElementById('cbPhone');
+            var service = document.getElementById('cbService');
 
-            // reset
-            ['fcNameErr','fcPhoneErr','fcServiceErr'].forEach(function (id) {
+            ['cbNameErr', 'cbPhoneErr', 'cbServiceErr'].forEach(function (id) {
                 var el = document.getElementById(id);
                 if (el) el.classList.remove('show');
             });
@@ -236,41 +299,55 @@
             });
 
             if (!name || !name.value.trim() || name.value.trim().length < 2) {
-                document.getElementById('fcNameErr').classList.add('show');
-                name.classList.add('error');
+                var nErr = document.getElementById('cbNameErr');
+                if (nErr) nErr.classList.add('show');
+                if (name) name.classList.add('error');
                 valid = false;
             }
 
             var phoneVal = phone ? phone.value.replace(/\s/g, '') : '';
             if (!phoneVal || !/^[+0-9]{10,15}$/.test(phoneVal)) {
-                document.getElementById('fcPhoneErr').classList.add('show');
-                phone.classList.add('error');
+                var pErr = document.getElementById('cbPhoneErr');
+                if (pErr) pErr.classList.add('show');
+                if (phone) phone.classList.add('error');
                 valid = false;
             }
 
             if (!service || !service.value) {
-                document.getElementById('fcServiceErr').classList.add('show');
-                service.classList.add('error');
+                var sErr = document.getElementById('cbServiceErr');
+                if (sErr) sErr.classList.add('show');
+                if (service) service.classList.add('error');
                 valid = false;
             }
 
             if (!valid) return;
 
-            // Show success
-            floatForm.querySelectorAll('.float-field, .float-submit').forEach(function (el) {
-                el.style.display = 'none';
-            });
-            if (floatSuccess) floatSuccess.style.display = 'block';
+            var submitBtn = document.getElementById('cbSubmitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+            }
 
-            // Reset & close after 3s
+            // Simulated request / API post
             setTimeout(function () {
-                closeWidget();
-                floatForm.reset();
-                floatForm.querySelectorAll('.float-field, .float-submit').forEach(function (el) {
-                    el.style.display = '';
+                callbackForm.querySelectorAll('.ca-form-field, .ca-submit-btn').forEach(function (el) {
+                    el.style.display = 'none';
                 });
-                if (floatSuccess) floatSuccess.style.display = 'none';
-            }, 3000);
+                if (successBox) successBox.style.display = 'block';
+
+                setTimeout(function () {
+                    closeAllConnect();
+                    callbackForm.reset();
+                    callbackForm.querySelectorAll('.ca-form-field, .ca-submit-btn').forEach(function (el) {
+                        el.style.display = '';
+                    });
+                    if (successBox) successBox.style.display = 'none';
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<span>Request Callback</span><i class="fas fa-paper-plane ms-2"></i>';
+                    }
+                }, 3500);
+            }, 600);
         });
     }
 

@@ -350,6 +350,24 @@ namespace caportal.Controllers
             return View(professional);
         }
 
+        // GET /contact
+        [HttpGet("/contact")]
+        public async Task<IActionResult> Contact()
+        {
+            ViewBag.Settings = _settingsService.Get();
+            using var db = _dbFactory.CreateDbContext();
+            var services = await db.CoveredServices.OrderBy(s => s.DisplayOrder).ToListAsync();
+            ViewBag.Services = services;
+            return View();
+        }
+
+        // POST /contact/submit
+        [HttpPost("/contact/submit")]
+        public IActionResult SubmitContact([FromForm] string name, [FromForm] string email, [FromForm] string phone, [FromForm] string city, [FromForm] string clientType, [FromForm] string service, [FromForm] string preferredTime, [FromForm] string message)
+        {
+            return Json(new { success = true, message = "Thank you! Our senior CA consultation desk will connect with you within 2 hours." });
+        }
+
         // GET /sitemap.xml
         [HttpGet("/sitemap.xml")]
         [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]

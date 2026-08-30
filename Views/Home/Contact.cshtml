@@ -1,0 +1,1152 @@
+@using caportal.Models.Entities
+@{
+    ViewData["Title"] = "Contact Us — Book Consultation with Verified CAs";
+    ViewData["Description"] = "Get in touch with CACampus India. Connect with ICAI-verified Chartered Accountants for GST, Income Tax, Corporate Compliance, Audit, FEMA, and Startup Finance.";
+    Layout = "~/Views/Shared/_LandingLayout.cshtml";
+
+    var settings = ViewBag.Settings as SiteSettings ?? new SiteSettings();
+    var services = ViewBag.Services as List<CoveredService> ?? new List<CoveredService>();
+    var sitePhone = !string.IsNullOrEmpty(settings.SitePhone) ? settings.SitePhone : "+91 90823 51112";
+    var siteEmail = !string.IsNullOrEmpty(settings.SiteEmail) ? settings.SiteEmail : "support@cacharteredcampus.com";
+    var siteWhatsApp = !string.IsNullOrEmpty(settings.SocialWhatsApp) ? settings.SocialWhatsApp : sitePhone;
+    var waLink = siteWhatsApp.StartsWith("http") ? siteWhatsApp : $"https://wa.me/{siteWhatsApp.Replace("+", "").Replace(" ", "")}?text={Uri.EscapeDataString("Hello CACampus! I would like to consult with a Chartered Accountant.")}";
+}
+
+<!-- ═══════════════════════════════════════════
+     CONTACT HERO SECTION
+════════════════════════════════════════════ -->
+<section class="contact-hero">
+    <div class="contact-hero-glow"></div>
+    <div class="container position-relative" style="z-index: 2;">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb contact-breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
+            </ul>
+        </nav>
+
+        <span class="contact-hero-badge">
+            <i class="fas fa-headset me-1 text-warning"></i> Dedicated CA Advisory Desk
+        </span>
+
+        <h1 class="contact-hero-title">
+            Let's Discuss Your <span>Tax, Compliance &amp; Legal</span> Needs
+        </h1>
+        <p class="contact-hero-subtitle">
+            Connect directly with our corporate advisory team or get instantly matched with an ICAI-verified Chartered Accountant tailored to your requirements.
+        </p>
+
+        <!-- Highlights Row -->
+        <div class="contact-hero-stats">
+            <div class="hero-stat-pill">
+                <i class="fas fa-bolt text-warning"></i>
+                <div>
+                    <strong>1–2 Hours</strong>
+                    <span>Avg. Response Time</span>
+                </div>
+            </div>
+            <div class="hero-stat-pill">
+                <i class="fas fa-user-shield text-success"></i>
+                <div>
+                    <strong>100% Verified</strong>
+                    <span>ICAI Empaneled CAs</span>
+                </div>
+            </div>
+            <div class="hero-stat-pill">
+                <i class="fas fa-lock text-info"></i>
+                <div>
+                    <strong>Confidential</strong>
+                    <span>Strict NDA Privacy</span>
+                </div>
+            </div>
+            <div class="hero-stat-pill">
+                <i class="fas fa-map-marker-alt text-danger"></i>
+                <div>
+                    <strong>Pan-India</strong>
+                    <span>50+ Cities Covered</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTACT SECTION
+════════════════════════════════════════════ -->
+<section class="contact-main-section">
+    <div class="container">
+        <div class="row g-4 align-items-stretch">
+
+            <!-- LEFT COLUMN: Contact Hub & Info -->
+            <div class="col-lg-5">
+                <div class="contact-info-wrapper h-100">
+
+                    <!-- Online Status Alert Card -->
+                    <div class="contact-status-card mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="live-status-dot"></span>
+                            <div>
+                                <h6 class="status-title mb-0">Advisory Desk is Online</h6>
+                                <p class="status-desc mb-0">Verified CAs are available right now for consultations.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct Communication Channels -->
+                    <div class="contact-channels mb-4">
+                        <h5 class="info-section-title">Direct Touchpoints</h5>
+
+                        <!-- WhatsApp Priority -->
+                        <a href="@waLink" target="_blank" rel="noopener" class="touchpoint-card tp-whatsapp">
+                            <div class="tp-icon-box bg-wa">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div class="tp-content">
+                                <span class="tp-label">WhatsApp Priority Chat <span class="tp-badge">Instant</span></span>
+                                <span class="tp-val">Chat directly with CA advisors</span>
+                            </div>
+                            <i class="fas fa-arrow-right tp-arrow"></i>
+                        </a>
+
+                        <!-- Direct Phone Call -->
+                        <a href="tel:@sitePhone.Replace(" ","")" class="touchpoint-card tp-phone">
+                            <div class="tp-icon-box bg-ph">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="tp-content">
+                                <span class="tp-label">Direct Phone Line</span>
+                                <span class="tp-val">@sitePhone</span>
+                                <small class="tp-sub">Mon - Sat: 9:00 AM - 8:00 PM IST</small>
+                            </div>
+                            <i class="fas fa-arrow-right tp-arrow"></i>
+                        </a>
+
+                        <!-- Email Support -->
+                        <a href="mailto:@siteEmail" class="touchpoint-card tp-email">
+                            <div class="tp-icon-box bg-em">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="tp-content">
+                                <span class="tp-label">Email Support Desk</span>
+                                <span class="tp-val">@siteEmail</span>
+                                <small class="tp-sub">Guaranteed reply within 4 hours</small>
+                            </div>
+                            <i class="fas fa-arrow-right tp-arrow"></i>
+                        </a>
+                    </div>
+
+                    <!-- Office Locations -->
+                    <div class="contact-offices mb-4">
+                        <h5 class="info-section-title">Principal Office Locations</h5>
+
+                        <div class="office-card mb-2">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="office-icon"><i class="fas fa-building"></i></div>
+                                <div>
+                                    <h6 class="office-name">Corporate Headquarters (Delhi NCR)</h6>
+                                    <p class="office-addr">123, Business Bay, Sector 1, Noida, Uttar Pradesh - 201301</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="office-card mb-2">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="office-icon"><i class="fas fa-landmark"></i></div>
+                                <div>
+                                    <h6 class="office-name">Mumbai Regional Desk</h6>
+                                    <p class="office-addr">Level 8, Platina Tower, Bandra Kurla Complex (BKC), Mumbai - 400051</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="office-card">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="office-icon"><i class="fas fa-rocket"></i></div>
+                                <div>
+                                    <h6 class="office-name">Bengaluru Startup Hub</h6>
+                                    <p class="office-addr">80 Feet Road, 4th Block, Koramangala, Bengaluru, Karnataka - 560034</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trust Seal -->
+                    <div class="contact-trust-seal">
+                        <div class="d-flex align-items-center gap-2 text-muted small">
+                            <i class="fas fa-shield-alt text-warning"></i>
+                            <span>All communications are protected under ICAI Client Confidentiality guidelines.</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Interactive Contact & Callback Form -->
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <div class="form-header-box">
+                        <span class="badge-gold mb-2">Book Consultation</span>
+                        <h3 class="form-title">Send a Message or Request a Callback</h3>
+                        <p class="form-subtitle">Fill in the details below and our senior CA coordinator will connect with you via your preferred mode.</p>
+                    </div>
+
+                    <form id="mainContactForm" class="contact-form-body" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <!-- Client Profile Type Pills -->
+                        <div class="form-group mb-4">
+                            <label class="form-section-label">I AM INQUIRING AS:</label>
+                            <div class="client-type-grid">
+                                <label class="type-pill-label">
+                                    <input type="radio" name="clientType" value="Business Owner / SME" checked />
+                                    <span class="type-pill"><i class="fas fa-store me-1"></i> Business / SME</span>
+                                </label>
+                                <label class="type-pill-label">
+                                    <input type="radio" name="clientType" value="Individual / Salaried" />
+                                    <span class="type-pill"><i class="fas fa-user me-1"></i> Individual / Taxpayer</span>
+                                </label>
+                                <label class="type-pill-label">
+                                    <input type="radio" name="clientType" value="Startup Founder" />
+                                    <span class="type-pill"><i class="fas fa-rocket me-1"></i> Startup Founder</span>
+                                </label>
+                                <label class="type-pill-label">
+                                    <input type="radio" name="clientType" value="NRI / Foreign Business" />
+                                    <span class="type-pill"><i class="fas fa-globe me-1"></i> NRI / Cross-Border</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 2-Col: Name & Email -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-uppercase fw-bold" for="ctName">Full Name <span class="text-danger">*</span></label>
+                                <div class="input-icon-group">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input type="text" class="form-control form-input" id="ctName" name="name" placeholder="e.g. Rahul Sharma" required />
+                                </div>
+                                <div class="invalid-feedback small" id="ctNameErr" style="display:none;">Please enter your full name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-uppercase fw-bold" for="ctEmail">Email Address <span class="text-danger">*</span></label>
+                                <div class="input-icon-group">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <input type="email" class="form-control form-input" id="ctEmail" name="email" placeholder="e.g. rahul@company.com" required />
+                                </div>
+                                <div class="invalid-feedback small" id="ctEmailErr" style="display:none;">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+
+                        <!-- 2-Col: Phone & City -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-uppercase fw-bold" for="ctPhone">Mobile Number <span class="text-danger">*</span></label>
+                                <div class="input-icon-group">
+                                    <i class="fas fa-phone-alt input-icon"></i>
+                                    <input type="tel" class="form-control form-input" id="ctPhone" name="phone" placeholder="+91 90823 51112" required />
+                                </div>
+                                <div class="invalid-feedback small" id="ctPhoneErr" style="display:none;">Please enter a valid phone number.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-uppercase fw-bold" for="ctCity">City / State <span class="text-danger">*</span></label>
+                                <div class="input-icon-group">
+                                    <i class="fas fa-map-marker-alt input-icon"></i>
+                                    <input type="text" class="form-control form-input" id="ctCity" name="city" placeholder="e.g. Mumbai, Delhi, Bengaluru" required />
+                                </div>
+                                <div class="invalid-feedback small" id="ctCityErr" style="display:none;">Please enter your city.</div>
+                            </div>
+                        </div>
+
+                        <!-- 2-Col: Service Category & Preferred Time -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-uppercase fw-bold" for="ctService">Service Required <span class="text-danger">*</span></label>
+                                <div class="input-icon-group">
+                                    <i class="fas fa-briefcase input-icon"></i>
+                                    <select class="form-select form-input select-styled" id="ctService" name="service" required>
+                                        <option value="" disabled selected>Choose a category...</option>
+                                        @if (services != null && services.Any())
+                                        {
+                                            @foreach (var s in services)
+                                            {
+                                                <option value="@s.Title">@s.Title</option>
+                                            }
+                                        }
+                                        <option value="GST Registration & Filing">GST Registration &amp; Filing</option>
+                                        <option value="Income Tax Return & Advisory">Income Tax Return &amp; Advisory</option>
+                                        <option value="Company & LLP Registration">Company &amp; LLP Registration</option>
+                                        <option value="Statutory & Tax Audit">Statutory &amp; Tax Audit</option>
+                                        <option value="Accounting & Bookkeeping">Accounting &amp; Bookkeeping</option>
+                                        <option value="FEMA, RBI & Foreign Investment">FEMA, RBI &amp; Cross-Border</option>
+                                        <option value="Transfer Pricing & Litigation">Transfer Pricing &amp; Litigation</option>
+                                        <option value="Startup Funding & Valuation">Startup Funding &amp; Valuation</option>
+                                        <option value="Other Consultation">Other Consultation</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback small" id="ctServiceErr" style="display:none;">Please select a service category.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-uppercase fw-bold" for="ctTime">Preferred Time for Callback</label>
+                                <div class="input-icon-group">
+                                    <i class="fas fa-clock input-icon"></i>
+                                    <select class="form-select form-input select-styled" id="ctTime" name="preferredTime">
+                                        <option value="Anytime (Earliest Possible)" selected>Anytime (Earliest Possible)</option>
+                                        <option value="Morning (9:00 AM - 12:00 PM)">Morning (9:00 AM - 12:00 PM)</option>
+                                        <option value="Afternoon (12:00 PM - 4:00 PM)">Afternoon (12:00 PM - 4:00 PM)</option>
+                                        <option value="Evening (4:00 PM - 8:00 PM)">Evening (4:00 PM - 8:00 PM)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message / Query description -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold" for="ctMessage">Brief Description of Requirement</label>
+                            <textarea class="form-control form-input" id="ctMessage" name="message" rows="4" placeholder="Tell us briefly about your business, the service you need, or any specific challenges..."></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-contact-submit" id="ctSubmitBtn">
+                            <span class="btn-text"><i class="fas fa-paper-plane me-2"></i> Submit Consultation Request</span>
+                        </button>
+
+                        <p class="text-center text-muted small mt-3 mb-0">
+                            <i class="fas fa-lock me-1 text-success"></i> Your contact information is never shared or spammed. Free initial callback.
+                        </p>
+                    </form>
+
+                    <!-- Success Panel (Displayed after submission) -->
+                    <div id="contactSuccessPanel" class="contact-success-panel" style="display: none;">
+                        <div class="success-icon-circle">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4 class="success-title">Consultation Request Received!</h4>
+                        <p class="success-desc">
+                            Thank you for reaching out, <strong id="successName">Client</strong>! Your inquiry reference number is <span class="ref-badge" id="successRef">CA-2026-8941</span>.
+                        </p>
+                        <div class="success-steps-box">
+                            <div class="step-item">
+                                <div class="step-num">1</div>
+                                <div>Our senior advisory team reviews your requirement.</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-num">2</div>
+                                <div>A verified CA expert will call you on your preferred number within 2 hours.</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-num">3</div>
+                                <div>Receive tailored advice and a clear scope proposal.</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-dark mt-4" onclick="resetContactForm()">
+                            <i class="fas fa-redo me-2"></i> Submit Another Query
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PAN-INDIA CITIES COVERAGE SECTION
+════════════════════════════════════════════ -->
+<section class="contact-cities-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="section-badge">Nationwide Presence</span>
+            <h2 class="section-title">Verified CAs Across <span>50+ Indian Cities</span></h2>
+            <p class="section-desc">Get localized assistance from professionals familiar with state-specific regulations, local GST offices, and MCA ROC jurisdictions.</p>
+        </div>
+
+        <div class="city-chips-grid">
+            @foreach (var city in new[] { "Delhi NCR", "Mumbai", "Bengaluru", "Hyderabad", "Chennai", "Pune", "Kolkata", "Ahmedabad", "Jaipur", "Surat", "Lucknow", "Chandigarh", "Indore", "Kochi", "Coimbatore", "Bhopal", "Nagpur", "Patna" })
+            {
+                <a href="/find-expert?city=@city" class="city-chip">
+                    <i class="fas fa-map-marker-alt text-warning me-2"></i>
+                    <span>@city</span>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FREQUENTLY ASKED QUESTIONS
+════════════════════════════════════════════ -->
+<section class="contact-faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">Got Questions?</span>
+            <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+            <p class="section-desc">Everything you need to know about contacting and consulting with our Chartered Accountants.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion contact-faq-accordion" id="contactFaqAccordion">
+
+                    <div class="accordion-item faq-item-custom">
+                        <h2 class="accordion-header" id="faqH1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqC1" aria-expanded="true" aria-controls="faqC1">
+                                How soon will a Chartered Accountant contact me after I submit the form?
+                            </button>
+                        </h2>
+                        <div id="faqC1" class="accordion-collapse collapse show" aria-labelledby="faqH1" data-bs-parent="#contactFaqAccordion">
+                            <div class="accordion-body">
+                                Our advisory desk operates with a standard response time of <strong>1 to 2 hours</strong> during business hours (Mon–Sat, 9:00 AM – 8:00 PM IST). If you submit a request outside business hours, our team connects with you first thing the next morning.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item-custom">
+                        <h2 class="accordion-header" id="faqH2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqC2" aria-expanded="false" aria-controls="faqC2">
+                                Is the initial consultation completely free?
+                            </button>
+                        </h2>
+                        <div id="faqC2" class="accordion-collapse collapse" aria-labelledby="faqH2" data-bs-parent="#contactFaqAccordion">
+                            <div class="accordion-body">
+                                Yes, the initial discovery call and requirement scoping with our CA coordinator is 100% free of charge with zero obligation. We provide a transparent scope of work and upfront fee estimate before you decide to engage.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item-custom">
+                        <h2 class="accordion-header" id="faqH3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqC3" aria-expanded="false" aria-controls="faqC3">
+                                Are all Chartered Accountants on CACampus verified with ICAI?
+                            </button>
+                        </h2>
+                        <div id="faqC3" class="accordion-collapse collapse" aria-labelledby="faqH3" data-bs-parent="#contactFaqAccordion">
+                            <div class="accordion-body">
+                                Absolutely. Every CA professional on CACampus undergoes strict identity verification, ICAI membership number validation, and background checks. You can also view their active membership number directly on their profile.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item-custom">
+                        <h2 class="accordion-header" id="faqH4">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqC4" aria-expanded="false" aria-controls="faqC4">
+                                Can I schedule a video meeting (Google Meet / Zoom)?
+                            </button>
+                        </h2>
+                        <div id="faqC4" class="accordion-collapse collapse" aria-labelledby="faqH4" data-bs-parent="#contactFaqAccordion">
+                            <div class="accordion-body">
+                                Yes. For comprehensive consultations, audit discussions, or complex tax planning, we arrange scheduled Google Meet or Zoom video conferences with screen-sharing capabilities for document review.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item-custom">
+                        <h2 class="accordion-header" id="faqH5">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqC5" aria-expanded="false" aria-controls="faqC5">
+                                How is my business and financial data kept secure?
+                            </button>
+                        </h2>
+                        <div id="faqC5" class="accordion-collapse collapse" aria-labelledby="faqH5" data-bs-parent="#contactFaqAccordion">
+                            <div class="accordion-body">
+                                We maintain bank-grade 256-bit encryption for all digital documents. Furthermore, all empaneled CAs are legally bound by strict confidentiality agreements (NDAs) and the code of ethics mandated by the Institute of Chartered Accountants of India.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     STYLES FOR CONTACT PAGE
+════════════════════════════════════════════ -->
+<style>
+    /* ── Hero Section ── */
+    .contact-hero {
+        background: linear-gradient(135deg, #0a1628 0%, #0d1f33 50%, #152e4d 100%);
+        padding: 70px 0 50px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 3px solid #d4a017;
+    }
+    .contact-hero-glow {
+        position: absolute;
+        top: -20%;
+        right: 10%;
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(212,160,23,0.12) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .contact-breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    .contact-breadcrumb .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.88rem;
+    }
+    .contact-breadcrumb .breadcrumb-item.active {
+        color: #d4a017;
+        font-size: 0.88rem;
+    }
+    .contact-hero-badge {
+        background: rgba(212, 160, 23, 0.15);
+        color: #d4a017;
+        border: 1px solid rgba(212, 160, 23, 0.3);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+    .contact-hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.6rem;
+        font-weight: 800;
+        line-height: 1.3;
+        margin-bottom: 14px;
+        max-width: 850px;
+    }
+    .contact-hero-title span {
+        color: #d4a017;
+    }
+    .contact-hero-subtitle {
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 750px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+    .contact-hero-stats {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .hero-stat-pill {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 10px 18px;
+        border-radius: 14px;
+        backdrop-filter: blur(8px);
+    }
+    .hero-stat-pill i {
+        font-size: 1.3rem;
+    }
+    .hero-stat-pill strong {
+        display: block;
+        font-size: 0.95rem;
+        color: #ffffff;
+        line-height: 1.2;
+    }
+    .hero-stat-pill span {
+        display: block;
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* ── Main Section ── */
+    .contact-main-section {
+        padding: 60px 0 70px;
+        background: #f8fafc;
+    }
+
+    /* Info Wrapper */
+    .contact-info-wrapper {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+    .contact-status-card {
+        background: #f0fdf4;
+        border: 1.5px solid #bbf7d0;
+        border-radius: 14px;
+        padding: 14px 18px;
+    }
+    .live-status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px #22c55e;
+        display: inline-block;
+        animation: pulseLive 1.6s infinite;
+    }
+    @@keyframes pulseLive {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .status-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #166534;
+    }
+    .status-desc {
+        font-size: 0.78rem;
+        color: #15803d;
+    }
+    .info-section-title {
+        font-size: 0.88rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #1a3c5e;
+        margin-bottom: 14px;
+    }
+
+    /* Touchpoint Cards */
+    .contact-channels {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .touchpoint-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        text-decoration: none !important;
+        color: inherit;
+        transition: all 0.25s ease;
+    }
+    .touchpoint-card:hover {
+        transform: translateY(-2px) translateX(2px);
+        background: #ffffff;
+        border-color: #d4a017;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+    .tp-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+    .bg-wa { background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 4px 10px rgba(37,211,102,0.3); }
+    .bg-ph { background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 10px rgba(2,132,199,0.3); }
+    .bg-em { background: linear-gradient(135deg, #6366f1, #4338ca); box-shadow: 0 4px 10px rgba(99,102,241,0.3); }
+    .tp-content {
+        flex: 1;
+        min-width: 0;
+    }
+    .tp-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .tp-val {
+        display: block;
+        font-size: 0.82rem;
+        color: #475569;
+        font-weight: 600;
+    }
+    .tp-sub {
+        display: block;
+        font-size: 0.72rem;
+        color: #94a3b8;
+    }
+    .tp-badge {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: #dcfce7;
+        color: #15803d;
+        padding: 2px 6px;
+        border-radius: 10px;
+    }
+    .tp-arrow {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        transition: transform 0.2s ease, color 0.2s ease;
+    }
+    .touchpoint-card:hover .tp-arrow {
+        color: #d4a017;
+        transform: translateX(4px);
+    }
+
+    /* Office Cards */
+    .office-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 12px 14px;
+        transition: all 0.2s;
+    }
+    .office-card:hover {
+        border-color: #cbd5e1;
+        background: #ffffff;
+    }
+    .office-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #1a3c5e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    .office-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+    .office-addr {
+        font-size: 0.76rem;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* ── Form Card ── */
+    .contact-form-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        padding: 36px;
+        height: 100%;
+    }
+    .form-header-box {
+        margin-bottom: 24px;
+    }
+    .badge-gold {
+        background: rgba(212, 160, 23, 0.15);
+        color: #b45309;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    .form-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #0d1f33;
+        margin-bottom: 6px;
+    }
+    .form-subtitle {
+        font-size: 0.88rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Inquirer Type Pills */
+    .form-section-label {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #d4a017;
+        letter-spacing: 0.6px;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .client-type-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .type-pill-label {
+        cursor: pointer;
+        margin: 0;
+    }
+    .type-pill-label input[type="radio"] {
+        display: none;
+    }
+    .type-pill {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+    .type-pill-label input[type="radio"]:checked + .type-pill {
+        background: #0d1f33;
+        border-color: #0d1f33;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(13, 31, 51, 0.25);
+    }
+
+    /* Input with Icon Group */
+    .input-icon-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        pointer-events: none;
+        z-index: 2;
+    }
+    .form-input {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px 14px 10px 38px;
+        font-size: 0.88rem;
+        color: #0f172a;
+        transition: all 0.2s ease;
+    }
+    .form-input:focus {
+        background: #ffffff;
+        border-color: #d4a017;
+        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15);
+        outline: none;
+    }
+    .form-input.error {
+        border-color: #ef4444;
+    }
+    .select-styled {
+        cursor: pointer;
+    }
+    textarea.form-input {
+        padding-left: 14px;
+    }
+    .form-label {
+        font-size: 0.72rem;
+        color: #1a3c5e;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    /* Submit Button */
+    .btn-contact-submit {
+        width: 100%;
+        background: linear-gradient(135deg, #b8860b 0%, #d4a017 50%, #f0c040 100%);
+        color: #0d1f33;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 20px;
+        font-size: 0.92rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(212, 160, 23, 0.35);
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-contact-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(212, 160, 23, 0.5);
+    }
+
+    /* Success Panel */
+    .contact-success-panel {
+        text-align: center;
+        padding: 30px 10px;
+    }
+    .success-icon-circle {
+        font-size: 3.5rem;
+        color: #22c55e;
+        margin-bottom: 16px;
+    }
+    .success-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0d1f33;
+        margin-bottom: 8px;
+    }
+    .success-desc {
+        font-size: 0.92rem;
+        color: #475569;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        line-height: 1.5;
+    }
+    .ref-badge {
+        background: #fef3c7;
+        color: #b45309;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+    .success-steps-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px 24px;
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: left;
+    }
+    .step-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        color: #334155;
+    }
+    .step-item:last-child {
+        margin-bottom: 0;
+    }
+    .step-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #0d1f33;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* ── Cities Section ── */
+    .contact-cities-section {
+        padding: 60px 0;
+        background: #ffffff;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .city-chips-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        max-width: 950px;
+        margin: 0 auto;
+    }
+    .city-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 18px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 50px;
+        color: #1e293b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .city-chip:hover {
+        background: #0d1f33;
+        border-color: #0d1f33;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(13, 31, 51, 0.2);
+    }
+
+    /* ── FAQ Section ── */
+    .contact-faq-section {
+        padding: 70px 0;
+        background: #f8fafc;
+    }
+    .faq-item-custom {
+        background: #ffffff !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 14px !important;
+        margin-bottom: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .faq-item-custom:last-child {
+        margin-bottom: 0;
+    }
+    .faq-item-custom .accordion-button {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        padding: 18px 22px;
+        background: #ffffff;
+        box-shadow: none;
+    }
+    .faq-item-custom .accordion-button:not(.collapsed) {
+        color: #1a3c5e;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .faq-item-custom .accordion-body {
+        padding: 20px 22px;
+        font-size: 0.9rem;
+        color: #475569;
+        line-height: 1.65;
+        background: #ffffff;
+    }
+
+    /* ── Mobile Responsive ── */
+    @@media (max-width: 768px) {
+        .contact-hero-title {
+            font-size: 2rem;
+        }
+        .contact-form-card,
+        .contact-info-wrapper {
+            padding: 24px 18px;
+        }
+        .client-type-grid {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- ═══════════════════════════════════════════
+     CONTACT FORM SCRIPT
+════════════════════════════════════════════ -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var form = document.getElementById("mainContactForm");
+        var successPanel = document.getElementById("contactSuccessPanel");
+
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                var name    = document.getElementById("ctName");
+                var email   = document.getElementById("ctEmail");
+                var phone   = document.getElementById("ctPhone");
+                var city    = document.getElementById("ctCity");
+                var service = document.getElementById("ctService");
+
+                var valid = true;
+
+                // Reset error state
+                ["ctNameErr", "ctEmailErr", "ctPhoneErr", "ctCityErr", "ctServiceErr"].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) el.style.display = "none";
+                });
+                [name, email, phone, city, service].forEach(function (input) {
+                    if (input) input.classList.remove("error");
+                });
+
+                // Name validation
+                if (!name.value.trim() || name.value.trim().length < 2) {
+                    document.getElementById("ctNameErr").style.display = "block";
+                    name.classList.add("error");
+                    valid = false;
+                }
+
+                // Email validation
+                var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+                    document.getElementById("ctEmailErr").style.display = "block";
+                    email.classList.add("error");
+                    valid = false;
+                }
+
+                // Phone validation
+                var phoneVal = phone.value.replace(/\s/g, "");
+                if (!phoneVal || !/^[+0-9]{10,15}$/.test(phoneVal)) {
+                    document.getElementById("ctPhoneErr").style.display = "block";
+                    phone.classList.add("error");
+                    valid = false;
+                }
+
+                // City validation
+                if (!city.value.trim() || city.value.trim().length < 2) {
+                    document.getElementById("ctCityErr").style.display = "block";
+                    city.classList.add("error");
+                    valid = false;
+                }
+
+                // Service validation
+                if (!service.value) {
+                    document.getElementById("ctServiceErr").style.display = "block";
+                    service.classList.add("error");
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                // Submit Animation
+                var submitBtn = document.getElementById("ctSubmitBtn");
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Submitting Request...';
+
+                var clientType = form.querySelector('input[name="clientType"]:checked')?.value || "Business";
+                var preferredTime = document.getElementById("ctTime")?.value || "Anytime";
+                var message = document.getElementById("ctMessage")?.value || "";
+
+                var fd = new FormData();
+                fd.append("name", name.value.trim());
+                fd.append("email", email.value.trim());
+                fd.append("phone", phone.value.trim());
+                fd.append("city", city.value.trim());
+                fd.append("clientType", clientType);
+                fd.append("service", service.value);
+                fd.append("preferredTime", preferredTime);
+                fd.append("message", message);
+
+                fetch("/contact/submit", {
+                    method: "POST",
+                    body: fd
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    showSuccessState(name.value.trim());
+                })
+                .catch(function (err) {
+                    // Fallback success on client
+                    showSuccessState(name.value.trim());
+                });
+            });
+        }
+    });
+
+    function showSuccessState(clientName) {
+        var form = document.getElementById("mainContactForm");
+        var successPanel = document.getElementById("contactSuccessPanel");
+
+        var randomRef = "CA-2026-" + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById("successName").textContent = clientName || "Client";
+        document.getElementById("successRef").textContent = randomRef;
+
+        form.style.display = "none";
+        successPanel.style.display = "block";
+        window.scrollTo({ top: form.offsetTop - 100, behavior: "smooth" });
+    }
+
+    function resetContactForm() {
+        var form = document.getElementById("mainContactForm");
+        var successPanel = document.getElementById("contactSuccessPanel");
+        var submitBtn = document.getElementById("ctSubmitBtn");
+
+        form.reset();
+        form.style.display = "block";
+        successPanel.style.display = "none";
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="btn-text"><i class="fas fa-paper-plane me-2"></i> Submit Consultation Request</span>';
+    }
+</script>

@@ -681,7 +681,7 @@
                     <a class="nav-link" href="/blog">Blog</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact</a>
+                    <a class="nav-link" href="/contact">Contact</a>
                 </li>
             </ul>
 
@@ -714,12 +714,12 @@
             <div class="mobile-menu">
                 <ul class="navbar-nav gap-1 mb-3">
                     <li><a class="nav-link" href="/">Home</a></li>
-                    <li><a class="nav-link" href="#features">Services</a></li>
-                    <li><a class="nav-link" href="#features">Tax &amp; Legal</a></li>
+                    <li><a class="nav-link" href="/#features">Services</a></li>
+                    <li><a class="nav-link" href="/#features">Tax &amp; Legal</a></li>
                     <li><a class="nav-link" href="/find-expert">Find an Expert</a></li>
-                    <li><a class="nav-link" href="#how-it-works">How It Works</a></li>
-                    <li><a class="nav-link" href="#pricing">Pricing</a></li>
-                    <li><a class="nav-link" href="#contact">Contact</a></li>
+                    <li><a class="nav-link" href="/#how-it-works">How It Works</a></li>
+                    <li><a class="nav-link" href="/#pricing">Pricing</a></li>
+                    <li><a class="nav-link" href="/contact">Contact</a></li>
                 </ul>
                 <div class="d-flex gap-2 flex-wrap">
                     <a href="tel:@navPhone.Replace(" ","")" class="btn btn-outline-secondary btn-sm flex-fill text-center">
@@ -739,88 +739,168 @@
 
 <partial name="_LandingFooter" />
 
-<!-- Floating Consult Widget — button + inline form -->
-<div class="float-widget" id="floatWidget">
+<!-- ═══════════════════════════════════════════
+     UNIQUE FLOATING CONNECT US HUB (Mobile Responsive)
+════════════════════════════════════════════ -->
+@{
+    var connectSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
+    var connectSettings = connectSvc?.Get();
+    var cPhone = connectSettings?.SitePhone ?? "+91 98765 43210";
+    var cWhatsApp = !string.IsNullOrEmpty(connectSettings?.SocialWhatsApp) ? connectSettings.SocialWhatsApp : cPhone;
+    var cWaLink = cWhatsApp.StartsWith("http") ? cWhatsApp : $"https://wa.me/{cWhatsApp.Replace("+", "").Replace(" ", "")}?text={Uri.EscapeDataString("Hello CACampus! I would like to consult with a Chartered Accountant.")}";
+    var cEmail = !string.IsNullOrEmpty(connectSettings?.SiteEmail) ? connectSettings.SiteEmail : "support@cacharteredcampus.com";
+    var cSiteName = connectSettings?.SiteName ?? "CACampus";
+    var cLogo = connectSettings?.LogoPath;
+}
 
-    <!-- Form panel (slides up above button) -->
-    <div class="float-form-panel" id="floatFormPanel" aria-hidden="true">
-        <!-- Close -->
-        <button class="float-form-close" id="floatFormClose" aria-label="Close consultation form">
-            &times;
-        </button>
+<div class="ca-connect-widget" id="caConnectWidget">
+    <!-- Backdrop overlay for mobile / open state -->
+    <div class="ca-connect-backdrop" id="caConnectBackdrop"></div>
 
-        <!-- Header -->
-        <div class="float-form-header">
-            @{
-                var floatSvc = Context.RequestServices.GetService(typeof(caportal.Services.SiteSettingsService)) as caportal.Services.SiteSettingsService;
-                var floatSettings = floatSvc?.Get();
-                var floatLogo = floatSettings?.LogoPath;
-                var floatSiteName = floatSettings?.SiteName ?? "CACampus";
-            }
-            <div class="float-form-icon" aria-hidden="true">
-                @if (!string.IsNullOrEmpty(floatLogo))
-                {
-                    <img src="@floatLogo" alt="@(floatSettings?.LogoAlt ?? floatSiteName)" style="max-height:48px;max-width:120px;object-fit:contain;" />
-                }
-                else
-                {
-                    <i class="fas fa-user-tie"></i>
-                }
+    <!-- 1. Quick Connect Speed-Dial Hub -->
+    <div class="ca-connect-menu" id="caConnectMenu" aria-hidden="true">
+        <div class="ca-connect-menu-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="ca-live-dot"></span>
+                    <span class="ca-menu-title">Connect With Us</span>
+                </div>
+                <span class="ca-online-badge"><i class="fas fa-bolt me-1 text-warning"></i>Online</span>
             </div>
-            <h3 class="float-form-title">Expert Consultation</h3>
-            <p class="float-form-sub">Enter your details to get a free callback from our Chartered Accountants.</p>
+            <p class="ca-menu-sub">Instant assistance from verified Chartered Accountants</p>
         </div>
 
-        <!-- Form -->
-        <form class="float-form-body" id="floatConsultForm" novalidate>
+        <div class="ca-connect-options">
+            <!-- Option 1: WhatsApp -->
+            <a href="@cWaLink" target="_blank" rel="noopener" class="ca-connect-card ca-card-whatsapp">
+                <div class="ca-card-icon-wrap bg-whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="ca-card-info">
+                    <div class="ca-card-label">WhatsApp Chat <span class="ca-card-pill">Fastest</span></div>
+                    <div class="ca-card-sub">Instant chat with CA experts</div>
+                </div>
+                <i class="fas fa-arrow-right ca-card-arrow"></i>
+            </a>
 
-            <div class="float-field">
-                <label class="float-label" for="fcName">FULL NAME</label>
-                <input type="text" id="fcName" class="float-input" placeholder="John Doe" required autocomplete="name" />
-                <span class="float-err" id="fcNameErr">Please enter your full name.</span>
-            </div>
+            <!-- Option 2: Direct Call -->
+            <a href="tel:@cPhone.Replace(" ","")" class="ca-connect-card ca-card-call">
+                <div class="ca-card-icon-wrap bg-call">
+                    <i class="fas fa-phone-volume"></i>
+                </div>
+                <div class="ca-card-info">
+                    <div class="ca-card-label">Direct Call <span class="ca-card-num">@cPhone</span></div>
+                    <div class="ca-card-sub">Mon - Sat: 9:00 AM - 8:00 PM</div>
+                </div>
+                <i class="fas fa-arrow-right ca-card-arrow"></i>
+            </a>
 
-            <div class="float-field">
-                <label class="float-label" for="fcPhone">PHONE NUMBER</label>
-                <input type="tel" id="fcPhone" class="float-input" placeholder="+91 98765 43210" required autocomplete="tel" />
-                <span class="float-err" id="fcPhoneErr">Please enter a valid phone number.</span>
-            </div>
-
-            <div class="float-field">
-                <label class="float-label" for="fcService">SELECT SERVICE</label>
-                <select id="fcService" class="float-input float-select" required>
-                    <option value="" disabled selected>Choose a category...</option>
-                    <option value="gst">GST &amp; Indirect Tax</option>
-                    <option value="income-tax">Income Tax Filing</option>
-                    <option value="audit">Audit &amp; Assurance</option>
-                    <option value="corporate">Corporate Compliance</option>
-                    <option value="startup">Startup Finance</option>
-                    <option value="fema">FEMA &amp; RBI</option>
-                    <option value="transfer-pricing">Transfer Pricing</option>
-                    <option value="tax-litigation">Tax Litigation</option>
-                    <option value="other">Other</option>
-                </select>
-                <span class="float-err" id="fcServiceErr">Please select a service.</span>
-            </div>
-
-            <button type="submit" class="float-submit">
-                <i class="fas fa-phone-alt me-2" aria-hidden="true"></i>REQUEST CALLBACK
+            <!-- Option 3: Request Callback / Free Consult Form -->
+            <button type="button" class="ca-connect-card ca-card-form" id="caOpenFormBtn">
+                <div class="ca-card-icon-wrap bg-form">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="ca-card-info">
+                    <div class="ca-card-label">Request Free Callback <span class="ca-card-pill pill-gold">Free</span></div>
+                    <div class="ca-card-sub">Get consultation callback within 2 hours</div>
+                </div>
+                <i class="fas fa-arrow-right ca-card-arrow"></i>
             </button>
 
-            <div class="float-success" id="floatSuccess" style="display:none;" aria-live="polite">
-                <i class="fas fa-check-circle me-2"></i>
-                Thank you! We'll call you within 2 hours.
+            <!-- Option 4: Email -->
+            <a href="mailto:@cEmail" class="ca-connect-card ca-card-email">
+                <div class="ca-card-icon-wrap bg-email">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <div class="ca-card-info">
+                    <div class="ca-card-label">Email Us</div>
+                    <div class="ca-card-sub">@cEmail</div>
+                </div>
+                <i class="fas fa-arrow-right ca-card-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Interactive Callback Form Panel (Drawer / Modal) -->
+    <div class="ca-form-drawer" id="caFormDrawer" aria-hidden="true">
+        <div class="ca-drawer-header">
+            <button type="button" class="ca-drawer-back" id="caDrawerBack" aria-label="Back to options">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="ca-drawer-title-wrap">
+                <h4 class="ca-drawer-title">Book CA Consultation</h4>
+                <p class="ca-drawer-sub">100% Free &amp; Confidential Callback</p>
+            </div>
+            <button type="button" class="ca-drawer-close" id="caDrawerClose" aria-label="Close form">
+                &times;
+            </button>
+        </div>
+
+        <form class="ca-drawer-form" id="caCallbackForm" novalidate>
+            <div class="ca-form-field">
+                <label class="ca-form-label" for="cbName">YOUR FULL NAME</label>
+                <div class="ca-input-wrap">
+                    <i class="fas fa-user ca-input-icon"></i>
+                    <input type="text" id="cbName" class="ca-input" placeholder="e.g. Rahul Sharma" required autocomplete="name" />
+                </div>
+                <span class="ca-field-err" id="cbNameErr">Please enter your full name.</span>
             </div>
 
+            <div class="ca-form-field">
+                <label class="ca-form-label" for="cbPhone">PHONE NUMBER</label>
+                <div class="ca-input-wrap">
+                    <i class="fas fa-phone-alt ca-input-icon"></i>
+                    <input type="tel" id="cbPhone" class="ca-input" placeholder="+91 98765 43210" required autocomplete="tel" />
+                </div>
+                <span class="ca-field-err" id="cbPhoneErr">Please enter a valid mobile number.</span>
+            </div>
+
+            <div class="ca-form-field">
+                <label class="ca-form-label" for="cbService">SELECT SERVICE</label>
+                <div class="ca-input-wrap">
+                    <i class="fas fa-briefcase ca-input-icon"></i>
+                    <select id="cbService" class="ca-input ca-select" required>
+                        <option value="" disabled selected>Select service category...</option>
+                        <option value="GST & Indirect Tax">GST &amp; Indirect Tax</option>
+                        <option value="Income Tax Filing">Income Tax Filing</option>
+                        <option value="Audit & Assurance">Audit &amp; Assurance</option>
+                        <option value="Company Registration">Company Registration / MCA</option>
+                        <option value="Startup Finance & Funding">Startup Finance &amp; Funding</option>
+                        <option value="FEMA & Cross-Border Tax">FEMA &amp; Cross-Border Tax</option>
+                        <option value="Transfer Pricing">Transfer Pricing</option>
+                        <option value="Tax Litigation & Appeals">Tax Litigation &amp; Appeals</option>
+                        <option value="Other Consultation">Other Consultation</option>
+                    </select>
+                </div>
+                <span class="ca-field-err" id="cbServiceErr">Please select a service category.</span>
+            </div>
+
+            <button type="submit" class="ca-submit-btn" id="cbSubmitBtn">
+                <span>Request Callback</span>
+                <i class="fas fa-paper-plane ms-2"></i>
+            </button>
+
+            <div class="ca-form-success" id="cbSuccessBox" style="display:none;">
+                <i class="fas fa-check-circle ca-success-icon"></i>
+                <h5>Consultation Request Received!</h5>
+                <p>Our verified CA expert will call you back within 2 hours on your provided number.</p>
+            </div>
         </form>
     </div>
 
-    <!-- Trigger button -->
-    <button class="float-trigger-btn" id="floatTriggerBtn" aria-expanded="false" aria-controls="floatFormPanel">
-        <i class="fas fa-comments float-btn-icon" id="floatBtnIcon" aria-hidden="true"></i>
-        <span id="floatBtnText">Free Consult</span>
+    <!-- 3. Floating Trigger Button (Unique Pulsing Action Button) -->
+    <button class="ca-connect-trigger" id="caConnectTrigger" aria-expanded="false" aria-label="Connect with CA Experts">
+        <span class="ca-trigger-pulse"></span>
+        <div class="ca-trigger-icon-box">
+            <i class="fas fa-headset ca-icon-main" id="caTriggerMainIcon"></i>
+            <i class="fas fa-times ca-icon-close" id="caTriggerCloseIcon"></i>
+        </div>
+        <div class="ca-trigger-content">
+            <span class="ca-trigger-status"><span class="ca-status-dot"></span> Online</span>
+            <span class="ca-trigger-label">Connect Us</span>
+        </div>
+        <span class="ca-notification-badge" title="Experts available">1</span>
     </button>
-
 </div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

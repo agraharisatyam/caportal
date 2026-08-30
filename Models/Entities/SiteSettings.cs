@@ -6,7 +6,7 @@ public class SiteSettings
     public string SiteName        { get; set; } = "CACampus";
     public string SiteTagline     { get; set; } = "Verified CA Network";
     public string SiteEmail       { get; set; } = "";
-    public string SitePhone       { get; set; } = "+91 98765 43210";
+    public string SitePhone       { get; set; } = "+91 90823 51112";
 
     // ── Logo ──────────────────────────────────────────
     public string LogoPath        { get; set; } = "";   // e.g. /images/logo.png
