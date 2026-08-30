@@ -15,10 +15,17 @@
         var pageTitle   = ViewData["Title"]?.ToString() ?? "Find Verified Chartered Accountants";
         var pageDesc    = ViewData["Description"]?.ToString()
                           ?? $"{seoSiteName} — India's premier platform connecting businesses with ICAI-verified Chartered Accountants. GST, Income Tax, Audit, Corporate Compliance, FEMA & Startup Finance.";
+        var pageKeywords = ViewData["Keywords"]?.ToString()
+                          ?? "Chartered Accountant India, find CA online, GST filing, income tax, ICAI verified CA, audit services, corporate compliance, startup finance, FEMA, tax litigation, ROC filing, CA near me";
         var canonicalUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
-        var ogImage      = !string.IsNullOrEmpty(seoLogo)
-                           ? $"{Context.Request.Scheme}://{Context.Request.Host}{seoLogo.Split('?')[0]}"
-                           : $"{Context.Request.Scheme}://{Context.Request.Host}/images/og-default.png";
+        
+        var customOgImage = ViewData["OgImage"]?.ToString();
+        var ogImage      = !string.IsNullOrEmpty(customOgImage)
+                           ? (customOgImage.StartsWith("http") ? customOgImage : $"{Context.Request.Scheme}://{Context.Request.Host}{customOgImage}")
+                           : (!string.IsNullOrEmpty(seoLogo)
+                               ? $"{Context.Request.Scheme}://{Context.Request.Host}{seoLogo.Split('?')[0]}"
+                               : $"{Context.Request.Scheme}://{Context.Request.Host}/images/og-default.png");
+                               
         var fullTitle    = pageTitle.Contains(seoSiteName) ? pageTitle : $"{pageTitle} | {seoSiteName}";
     }
 
@@ -26,7 +33,7 @@
     <title>@fullTitle</title>
     <meta name="google-site-verification" content="google95a83b0d5ee7be01" />
     <meta name="description" content="@pageDesc" />
-    <meta name="keywords" content="Chartered Accountant India, find CA online, GST filing, income tax, ICAI verified CA, audit services, corporate compliance, startup finance, FEMA, tax litigation, ROC filing, CA near me" />
+    <meta name="keywords" content="@pageKeywords" />
     <meta name="author" content="@seoSiteName" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="@canonicalUrl" />

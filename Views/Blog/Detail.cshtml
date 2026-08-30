@@ -1,7 +1,19 @@
 @model caportal.Models.Entities.BlogPost
 @{
-    ViewData["Title"] = $"{Model.Title} — CACampus Blog";
-    ViewData["Description"] = Model.Excerpt;
+    ViewData["Title"] = !string.IsNullOrWhiteSpace(Model.MetaTitle) 
+        ? Model.MetaTitle 
+        : $"{Model.Title} — CACampus Blog";
+
+    ViewData["Description"] = !string.IsNullOrWhiteSpace(Model.MetaDescription) 
+        ? Model.MetaDescription 
+        : Model.Excerpt;
+
+    ViewData["Keywords"] = !string.IsNullOrWhiteSpace(Model.MetaKeywords) 
+        ? Model.MetaKeywords 
+        : (Model.Tags != null && Model.Tags.Any() ? string.Join(", ", Model.Tags) : null);
+
+    ViewData["OgImage"] = Model.FeaturedImagePath;
+
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
 
     var relatedPosts = ViewBag.RelatedPosts as List<caportal.Models.Entities.BlogPost> ?? new();
