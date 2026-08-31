@@ -109,4 +109,7 @@ public class SiteSettingsRecord
     public string BtnPrimaryBg     { get; set; } = "#D4AF37";
     public string BtnPrimaryColor  { get; set; } = "#111111";
     public string BtnBorderRadius  { get; set; } = "8";
+
+    // Section Ordering
+    public string SectionOrder     { get; set; } = "header,hero,about,services,portfolio,testimonials,blog,cta,footer";
 }

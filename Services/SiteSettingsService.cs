@@ -200,7 +200,8 @@ h3 {{ font-size: {s.H3Size}px; }}
                     ("ShowTestimonialsSection", "bit NOT NULL DEFAULT 1"),
                     ("ShowBlogSection", "bit NOT NULL DEFAULT 1"),
                     ("ShowCtaSection", "bit NOT NULL DEFAULT 1"),
-                    ("ShowFooter", "bit NOT NULL DEFAULT 1")
+                    ("ShowFooter", "bit NOT NULL DEFAULT 1"),
+                    ("SectionOrder", "nvarchar(max) NOT NULL DEFAULT 'header,hero,about,services,portfolio,testimonials,blog,cta,footer'")
                 };
 
                 foreach (var (colName, colDef) in cols)
@@ -307,6 +308,7 @@ h3 {{ font-size: {s.H3Size}px; }}
         SocialFacebook  = r.SocialFacebook,  SocialInstagram = r.SocialInstagram,
         SocialLinkedIn  = r.SocialLinkedIn,  SocialTwitter   = r.SocialTwitter,
         SocialYouTube   = r.SocialYouTube,   SocialWhatsApp  = r.SocialWhatsApp,
+        SectionOrder          = r.SectionOrder,
     };
 
     private static void MapToRecord(SiteSettings s, SiteSettingsRecord r)
@@ -363,5 +365,6 @@ h3 {{ font-size: {s.H3Size}px; }}
         r.SocialFacebook  = s.SocialFacebook;  r.SocialInstagram = s.SocialInstagram;
         r.SocialLinkedIn  = s.SocialLinkedIn;  r.SocialTwitter   = s.SocialTwitter;
         r.SocialYouTube   = s.SocialYouTube;   r.SocialWhatsApp  = s.SocialWhatsApp;
+        r.SectionOrder    = s.SectionOrder;
     }
 }

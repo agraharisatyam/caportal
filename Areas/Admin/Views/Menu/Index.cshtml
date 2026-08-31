@@ -1,0 +1,140 @@
+@model List<caportal.Models.Entities.NavbarMenuItem>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Menu Editor";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="page-block">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center">
+                    <i data-feather="menu" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i>
+                    <span>Menu Editor</span>
+                </h4>
+                <span class="text-muted small">Configure the header navigation bar options for the public platform</span>
+            </div>
+            <div>
+                <a href="/Admin/Menu/Create" class="btn btn-primary flex items-center gap-1">
+                    <i data-feather="plus" style="width: 16px; height: 16px;"></i>
+                    <span>Add Menu Item</span>
+                </a>
+            </div>
+        </div>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Menu Editor</li>
+        </ul>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="check-circle" class="me-1"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="alert-circle" class="me-1"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-white font-weight-bold">Navigation Menu Bar Links</h5>
+        <span class="badge bg-primary">@Model.Count Links</span>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5 text-muted">
+                <p class="mb-3">No navigation items defined yet.</p>
+                <a href="/Admin/Menu/Create" class="btn btn-sm btn-primary"><i data-feather="plus" class="me-1"></i> Create First Link</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 80px;" class="text-center">Order</th>
+                            <th>Link Text</th>
+                            <th>URL Path</th>
+                            <th>Type</th>
+                            <th style="width: 120px;" class="text-center">Status</th>
+                            <th style="width: 180px;" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(m => m.Order))
+                        {
+                            <tr>
+                                <td class="text-center font-weight-bold text-dark">@item.Order</td>
+                                <td>
+                                    <strong class="text-dark">@item.DisplayName</strong>
+                                    @if (item.OpenInNewTab)
+                                    {
+                                        <small class="badge bg-info-subtle text-info text-xs ms-1">New Tab</small>
+                                    }
+                                </td>
+                                <td class="small text-secondary">
+                                    @if (item.MegaMenuType != "None")
+                                    {
+                                        <span class="text-muted italic">Pre-built Mega-dropdown</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Url
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.MegaMenuType == "Services")
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning">Mega Dropdown (Services)</span>
+                                    }
+                                    else if (item.MegaMenuType == "FindExpert")
+                                    {
+                                        <span class="badge bg-success-subtle text-success">Mega Dropdown (Find Expert)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted">Standard Link</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a href="/Admin/Menu/Edit/@item.Id" class="btn btn-xs btn-outline-warning me-1">
+                                        <i data-feather="edit-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i> Edit
+                                    </a>
+                                    
+                                    <form method="post" action="/Admin/Menu/Delete" onsubmit="return confirm('Are you sure you want to delete \'@item.DisplayName\'?');" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-xs btn-outline-danger">
+                                            <i data-feather="trash-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

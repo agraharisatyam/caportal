@@ -1,0 +1,95 @@
+@model caportal.Models.Entities.NavbarMenuItem
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = $"Edit Menu Item — {Model.DisplayName}";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="page-block">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center">
+                    <i data-feather="edit-2" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> 
+                    <span>Edit Menu Item: @Model.DisplayName</span>
+                </h4>
+                <span class="text-muted small">Update settings for this navigation link</span>
+            </div>
+            <div>
+                <a href="/Admin/Menu" class="btn btn-outline-secondary flex items-center gap-1">
+                    <i data-feather="arrow-left" style="width: 16px; height: 16px;"></i>
+                    <span>Back to Menu List</span>
+                </a>
+            </div>
+        </div>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item"><a href="/Admin/Menu">Menu Editor</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Menu Item</li>
+        </ul>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 text-gold font-weight-bold">Link Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Admin/Menu/Edit">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Display Name *</label>
+                        <input type="text" name="DisplayName" class="form-control" placeholder="e.g. Services, About Us" value="@Model.DisplayName" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">URL / Link *</label>
+                        <input type="text" name="Url" class="form-control" placeholder="e.g. /about, #pricing, /find-expert" value="@Model.Url" required />
+                        <small class="text-muted text-xs d-block mt-1">Use <code>/</code> relative paths or <code>#</code> scroll anchors. Mega-menus ignore this URL value.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Display Order</label>
+                        <input type="number" name="Order" class="form-control" value="@Model.Order" min="1" required />
+                        <small class="text-muted text-xs d-block mt-1">Used to sort the links left-to-right (lower numbers display first)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Mega Menu Dropdown Type</label>
+                        <select name="MegaMenuType" class="form-control">
+                            <option value="None" selected="@(Model.MegaMenuType == "None" ? "selected" : null)">None (Standard Link)</option>
+                            <option value="Services" selected="@(Model.MegaMenuType == "Services" ? "selected" : null)">Services (TaxNiti 6-column Mega Dropdown)</option>
+                            <option value="FindExpert" selected="@(Model.MegaMenuType == "FindExpert" ? "selected" : null)">Find an Expert (2-column Category Dropdown)</option>
+                        </select>
+                        <small class="text-muted text-xs d-block mt-1">Mega-dropdowns contain pre-compiled category panels.</small>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="OpenInNewTab" id="openTabCheck" class="form-check-input" value="true" @(Model.OpenInNewTab ? "checked" : "") />
+                        <input type="hidden" name="OpenInNewTab" value="false" />
+                        <label class="form-check-label font-weight-bold" for="openTabCheck">Open link in new browser tab</label>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" name="IsActive" id="activeCheck" class="form-check-input" value="true" @(Model.IsActive ? "checked" : "") />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <label class="form-check-label font-weight-bold" for="activeCheck">Active (Display in navigation)</label>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i data-feather="save" class="me-1"></i> Save Changes
+                        </button>
+                        <a href="/Admin/Menu" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

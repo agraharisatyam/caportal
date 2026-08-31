@@ -103,4 +103,7 @@ public class SiteSettings
     public string BtnPrimaryBg    { get; set; } = "#d4a017";
     public string BtnPrimaryColor { get; set; } = "#0d1f33";
     public string BtnBorderRadius { get; set; } = "8";   // px
+
+    // ── Section Ordering ──────────────────────────────
+    public string SectionOrder    { get; set; } = "header,hero,about,services,portfolio,testimonials,blog,cta,footer";
 }

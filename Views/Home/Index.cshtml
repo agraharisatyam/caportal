@@ -7,526 +7,464 @@
     var settings = ViewBag.Settings as caportal.Models.Entities.SiteSettings ?? new caportal.Models.Entities.SiteSettings();
 }
 
-@if (settings.ShowHeroSection)
-{
-    <!-- ═══════════════════════════════════════
-         HERO V2 — Dark gold, full-width
-    ════════════════════════════════════════ -->
-    <section class="hero-v2" aria-label="Hero Banner" style="background:#000000 !important; padding: 0 !important; min-height: auto !important; display: block !important; overflow: hidden !important;">
-        <div class="w-100 text-center">
-            <img src="/images/hero-banner.png" alt="CA &amp; Legal Compliance Platform" style="width: 100%; max-width: 1920px; height: auto; display: block; margin: 0 auto;" />
-        </div>
-    </section>
+@{
+    var sectionOrder = (settings.SectionOrder ?? "hero,about,services,portfolio,testimonials,blog,cta")
+        .Split(',')
+        .Select(s => s.Trim().ToLower())
+        .ToList();
 }
 
-@if (settings.ShowServicesSection)
+@foreach (var sectionKey in sectionOrder)
 {
-    <!-- ═══════════════════════════════════════
-         SERVICES GRID
-    ════════════════════════════════════════ -->
-<section class="services-grid-section" aria-labelledby="services-heading">
-    <div class="container">
-        <div class="text-center mb-4">
-            <span class="section-badge">@ViewBag.ServicesBadge</span>
-            <h2 class="section-title" id="services-heading">@Html.Raw(ViewBag.ServicesTitle)</h2>
-        </div>
-        <div class="row g-3">
-            @foreach (var svc in Model.Services)
-            {
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="/service/@svc.Id"
-                       class="service-card reveal text-decoration-none d-block">
-                        <div class="service-icon">
-                            @if (!string.IsNullOrEmpty(svc.ImagePath))
-                            {
-                                <img src="@svc.ImagePath" alt="@svc.Title" />
-                            }
-                            else
-                            {
-                                <i class="@svc.Icon" aria-hidden="true"></i>
-                            }
-                        </div>
-                        <div class="service-title">@svc.Title</div>
-                        <div class="service-desc">@svc.Description</div>
-                    </a>
+    if (sectionKey == "hero" && settings.ShowHeroSection)
+    {
+        <!-- ═══════════════════════════════════════
+             HERO V2 — Dark gold, full-width
+        ════════════════════════════════════════ -->
+        <section class="hero-v2" aria-label="Hero Banner" style="background:#000000 !important; padding: 0 !important; min-height: auto !important; display: block !important; overflow: hidden !important;">
+            <div class="w-100 text-center">
+                <img src="/images/hero-banner.png" alt="CA &amp; Legal Compliance Platform" style="width: 100%; max-width: 1920px; height: auto; display: block; margin: 0 auto;" />
+            </div>
+        </section>
+    }
+    else if (sectionKey == "services" && settings.ShowServicesSection)
+    {
+        <!-- ═══════════════════════════════════════
+             SERVICES GRID
+        ════════════════════════════════════════ -->
+        <section class="services-grid-section" aria-labelledby="services-heading">
+            <div class="container">
+                <div class="text-center mb-4">
+                    <span class="section-badge">@ViewBag.ServicesBadge</span>
+                    <h2 class="section-title" id="services-heading">@Html.Raw(ViewBag.ServicesTitle)</h2>
                 </div>
-            }
-        </div>
-    </div>
-</section>
-}
-
-@if (settings.ShowAboutUsSection)
-{
-<!-- ═══════════════════════════════════════
-     WHY CHOOSE US
-════════════════════════════════════════ -->
-<section class="why-choose-section" aria-labelledby="wcu-heading">
-    <div class="container">
-        <div class="text-center wcu-header">
-            <div class="wcu-badge-container">
-                <div class="wcu-line"></div>
-                <span class="wcu-badge-main">@settings.WhyChooseUsBadge</span>
-                <div class="wcu-line"></div>
-            </div>
-            <h2 class="wcu-title" id="wcu-heading">@settings.WhyChooseUsTitle</h2>
-            <div class="wcu-header-icon">
-                <i class="fas fa-shield-alt" aria-hidden="true"></i>
-            </div>
-            <p class="wcu-subtitle">@settings.WhyChooseUsSub</p>
-        </div>
-
-        <div class="wcu-grid">
-            @foreach (var item in Model.WhyChooseUsItems)
-            {
-                <div class="wcu-card text-center">
-                    <div class="wcu-card-icon-wrap">
-                        @if (!string.IsNullOrEmpty(item.ImagePath))
-                        {
-                            <img src="@item.ImagePath" alt="@item.Title" class="wcu-custom-icon" />
-                        }
-                        else
-                        {
-                            <i class="@item.Icon" aria-hidden="true"></i>
-                        }
-                    </div>
-                    <h5 class="wcu-card-title">@item.Title</h5>
-                    <p class="wcu-card-desc">@item.Description</p>
-                </div>
-            }
-        </div>
-
-       
-    </div>
-</section>
-
-<style>
-/* Why Choose Us Section Styling */
-.why-choose-section {
-    background: #060606;
-    color: #ffffff;
-    padding: 80px 0;
-    font-family: 'Calibri', 'Inter', sans-serif;
-    border-top: 1px solid rgba(212,175,55,0.1);
-    border-bottom: 1px solid rgba(212,175,55,0.1);
-}
-.wcu-header {
-    margin-bottom: 50px;
-}
-.wcu-badge-container {
-    display: inline-flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 12px;
-}
-.wcu-line {
-    width: 30px;
-    height: 1px;
-    background: #d4a017;
-}
-.wcu-badge-main {
-    color: #d4a017;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-.wcu-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-}
-.wcu-header-icon {
-    font-size: 1.2rem;
-    color: #d4a017;
-    margin-bottom: 15px;
-}
-.wcu-subtitle {
-    color: #bdbdbd;
-    max-width: 700px;
-    margin: 0 auto;
-    font-size: 1rem;
-    line-height: 1.6;
-}
-.wcu-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-bottom: 40px;
-}
-@@media (max-width: 1200px) {
-    .wcu-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-@@media (max-width: 768px) {
-    .wcu-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@@media (max-width: 480px) {
-    .wcu-grid {
-        grid-template-columns: 1fr;
-    }
-}
-.wcu-card {
-    background: #111111;
-    border: 1px solid rgba(212,175,55,0.15);
-    border-radius: 12px;
-    padding: 24px 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100%;
-}
-.wcu-card:hover {
-    transform: translateY(-5px);
-    border-color: #d4a017;
-    box-shadow: 0 8px 24px rgba(212,175,55,0.15);
-}
-.wcu-card-icon-wrap {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 1px solid #d4a017;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #d4a017;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-}
-.wcu-card:hover .wcu-card-icon-wrap {
-    background: #d4a017;
-    color: #111111;
-}
-.wcu-custom-icon {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-}
-.wcu-card-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-}
-.wcu-card-desc {
-    font-size: 0.8rem;
-    color: #bdbdbd;
-    line-height: 1.5;
-    margin-bottom: 0;
-}
-
-/* Bottom Stats Bar */
-.wcu-stats-bar {
-    background: #0a0a0a;
-    border: 1px solid rgba(212,175,55,0.3);
-    border-radius: 14px;
-    padding: 24px 30px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-}
-.wcu-badge-shield {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #d4a017, #f0c040);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #111111;
-    font-size: 1.4rem;
-}
-.wcu-badge-subtitle {
-    font-size: 0.7rem;
-    color: #bdbdbd;
-    letter-spacing: 1px;
-    font-weight: 600;
-}
-.wcu-badge-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #d4a017;
-    text-transform: uppercase;
-}
-.wcu-stat-item {
-    border-left: 1px solid rgba(212,175,55,0.15);
-    padding-left: 20px;
-}
-@@media (max-width: 991px) {
-    .wcu-stat-item {
-        border-left: none;
-        padding-left: 0;
-    }
-}
-.wcu-stat-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(212,175,55,0.1);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #d4a017;
-    font-size: 0.95rem;
-}
-.wcu-stat-num {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.2;
-}
-.wcu-stat-lbl {
-    font-size: 0.72rem;
-    color: #bdbdbd;
-}
-</style>
-
-
-<!-- ═══════════════════════════════════════
-     EXPERT CONNECT BAND
-════════════════════════════════════════ -->
-<div class="expert-band">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h3 class="expert-band-title">Need a CA Right Now?</h3>
-                <p class="expert-band-sub">Post your requirement — connect directly with verified experts for your business requirements. Free to start.</p>
-            </div>
-            <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
-                <a href="#professionals" class="btn-hero-primary me-2">
-                    <i class="fas fa-user-tie me-1"></i> Find a CA
-                </a>
-                <a href="#how-it-works" class="btn-hero-secondary">
-                    <i class="fas fa-info-circle me-1"></i> Learn More
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════════════════════════
-     HOW IT WORKS
-════════════════════════════════════════ -->
-<section class="how-section" id="how-it-works" aria-labelledby="how-heading">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="section-badge">Simple Process</span>
-            <h2 class="section-title" id="how-heading">Find Your CA in <span>3 Easy Steps</span></h2>
-            <p class="section-desc mx-auto">No long paperwork. Direct transparent communication. Connect directly with the right expert in minutes.</p>
-        </div>
-        <div class="steps-wrapper">
-            <div class="step-connector" aria-hidden="true"></div>
-            <div class="row g-4">
-                @{
-                    var steps = new (string Title, string Desc, string Icon)[]
+                <div class="row g-3">
+                    @foreach (var svc in Model.Services)
                     {
-                        ("Post Your Requirement",  "Describe what you need — tax filing, GST, audit, or compliance advisory. Takes under 2 minutes.", "fas fa-edit"),
-                        ("Browse Verified CAs",     "Browse ICAI-verified professionals matched to your exact service requirements.", "fas fa-user-check"),
-                        ("Engage & Get It Done",   "Chat, schedule a call, or hire directly. Transparent pricing and milestone tracking built in.", "fas fa-handshake")
-                    };
-                }
-                @for (int i = 0; i < steps.Length; i++)
-                {
-                    <div class="col-md-4">
-                        <div class="step-card reveal @(i > 0 ? $"reveal-delay-{i*2}" : "")">
-                            <div class="step-number" aria-label="Step @(i+1)">
-                                <i class="@steps[i].Icon me-1" style="font-size:0.95rem;opacity:0.9;"></i>@(i+1)
-                            </div>
-                            <h5>@steps[i].Title</h5>
-                            <p>@steps[i].Desc</p>
-                        </div>
-                    </div>
-                }
-        </div>
-    </div>
-</section>
-}
-
-@if (settings.ShowFeaturedCAsSection)
-{
-<!-- ═══════════════════════════════════════
-     FEATURED CA PROFESSIONALS
-════════════════════════════════════════ -->
-<section class="professionals-section" id="professionals" aria-labelledby="prof-heading">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="section-badge">@settings.FeaturedCAsBadge</span>
-            <h2 class="section-title" id="prof-heading">@Html.Raw(settings.FeaturedCAsTitle)</h2>
-            <p class="section-desc mx-auto">@settings.FeaturedCAsSubtitle</p>
-        </div>
-        <div class="row g-4">
-            @{ int delay = 0; }
-            @foreach (var ca in featured)
-            {
-                var caSlug = ca.Name.ToLower().Replace("ca ", "").Replace(" ", "-") + "-" + ca.Id;
-                <div class="col-md-6 col-lg-3">
-                    <div class="prof-card reveal @(delay > 0 ? $"reveal-delay-{delay}" : "")" itemscope itemtype="https://schema.org/Person">
-                        <div class="prof-card-header">
-                            @if (ca.IsVerified)
-                            {
-                                <span class="prof-verified"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified</span>
-                            }
-                            <a href="/expert/@caSlug" style="text-decoration:none;" aria-label="View profile of @ca.Name">
-                                <div class="prof-avatar" aria-label="@ca.Name">
-                                    @if (!string.IsNullOrEmpty(ca.ImagePath))
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <a href="/service/@svc.Id"
+                               class="service-card reveal text-decoration-none d-block">
+                                <div class="service-icon">
+                                    @if (!string.IsNullOrEmpty(svc.ImagePath))
                                     {
-                                        <img src="@ca.ImagePath" alt="@ca.Name" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+                                        <img src="@svc.ImagePath" alt="@svc.Title" />
                                     }
                                     else
                                     {
-                                        <i class="fas fa-user-tie" style="font-size:1.4rem;color:#0d1f33;" aria-hidden="true"></i>
+                                        <i class="@svc.Icon" aria-hidden="true"></i>
                                     }
                                 </div>
-                                <div class="prof-name" itemprop="name">@ca.Name</div>
-                            </a>
-                            <div class="prof-designation" itemprop="jobTitle">@ca.Designation &middot; @ca.YearsExp yrs &middot; <span itemprop="workLocation">@ca.City</span></div>
-                        </div>
-                        <div class="prof-card-body">
-                            <div class="mb-2">
-                                @foreach (var tag in ca.Specialisations.Take(2))
-                                {
-                                    <span class="prof-tag" itemprop="knowsAbout">@tag</span>
-                                }
-                            </div>
-                            <div class="prof-rating" aria-label="Rating @ca.Rating out of 5" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
-                                <meta itemprop="ratingValue" content="@ca.Rating" />
-                                <meta itemprop="bestRating" content="5" />
-                                @for (int s = 1; s <= 5; s++)
-                                {
-                                    <span>@(s <= (int)ca.Rating ? "★" : "☆")</span>
-                                }
-                                <span class="ms-1 text-muted small">@ca.Rating</span>
-                            </div>
-                            <div class="prof-meta">
-                                <i class="fas fa-briefcase" aria-hidden="true"></i> @ca.CasesHandled+ cases &nbsp;|&nbsp;
-                                <i class="fas fa-clock" aria-hidden="true"></i> ~@ca.ResponseTime
-                            </div>
-                            <a href="/expert/@caSlug" class="btn btn-connect text-decoration-none" aria-label="View Profile of @ca.Name">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i> View Profile &amp; Connect
+                                <div class="service-title">@svc.Title</div>
+                                <div class="service-desc">@svc.Description</div>
                             </a>
                         </div>
-                    </div>
-                </div>
-                delay++;
-            }
-        </div>
-        <div class="text-center mt-4">
-            <a href="/find-expert" class="btn-hero-secondary d-inline-flex" style="color:#1a3c5e;border-color:#1a3c5e;">
-                <i class="fas fa-th-large" aria-hidden="true"></i>&nbsp; Browse All @Model.FeaturedProfessionals.Count+ Professionals
-            </a>
-        </div>
-    </div>
-</section>
-}
-
-@if (settings.ShowTestimonialsSection)
-{
-<!-- ═══════════════════════════════════════
-     TESTIMONIALS
-════════════════════════════════════════ -->
-<section class="testimonials-section" aria-labelledby="testi-heading">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="section-badge">Client Stories</span>
-            <h2 class="section-title" id="testi-heading">What Our <span>Clients Say</span></h2>
-        </div>
-        <div class="row g-4">
-            @{ int td = 0; }
-            @foreach (var t in Model.Testimonials)
-            {
-                <div class="col-md-6 col-lg-4">
-                    <div class="testi-card reveal @(td > 0 ? $"reveal-delay-{td*2}" : "")">
-                        <div class="testi-quote" aria-hidden="true">"</div>
-                        <p class="testi-text">@t.Text</p>
-                        <div class="testi-author">
-                            <div class="testi-avatar" aria-hidden="true">
-                                <i class="fas fa-user-circle" style="font-size:1.5rem;color:#ffffff;"></i>
-                            </div>
-                            <div>
-                                <div class="testi-name">@t.AuthorName</div>
-                                <div class="testi-role">@t.AuthorRole</div>
-                                <div class="testi-stars" aria-label="@t.Rating star rating">
-                                    @for (int s = 0; s < t.Rating; s++) { <span>★</span> }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                td++;
-            }
-        </div>
-    </div>
-</section>
-}
-
-@if (settings.ShowBlogSection)
-{
-<!-- ═══════════════════════════════════════
-     FAQ
-════════════════════════════════════════ -->
-<section class="faq-section" id="faq" aria-labelledby="faq-heading">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="section-badge">Got Questions?</span>
-            <h2 class="section-title" id="faq-heading">Frequently Asked <span>Questions</span></h2>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="accordion faq-accordion" id="faqAccordion">
-                    @{ int fi = 0; }
-                    @foreach (var faq in Model.Faqs)
-                    {
-                        var faqId = $"faqH{fi}";
-                        var collapseId = $"faqC{fi}";
-                        <div class="accordion-item faq-item reveal">
-                            <h3 class="accordion-header" id="@faqId">
-                                <button class="accordion-button @(fi > 0 ? "collapsed" : "")" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#@collapseId"
-                                        aria-expanded="@(fi == 0 ? "true" : "false")" aria-controls="@collapseId">
-                                    @faq.Question
-                                </button>
-                            </h3>
-                            <div id="@collapseId" class="accordion-collapse collapse @(fi == 0 ? "show" : "")"
-                                 aria-labelledby="@faqId" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">@faq.Answer</div>
-                            </div>
-                        </div>
-                        fi++;
                     }
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-}
+        </section>
+    }
+    else if (sectionKey == "about" && settings.ShowAboutUsSection)
+    {
+        <!-- ═══════════════════════════════════════
+             WHY CHOOSE US
+        ════════════════════════════════════════ -->
+        <section class="why-choose-section" aria-labelledby="wcu-heading">
+            <div class="container">
+                <div class="text-center wcu-header">
+                    <div class="wcu-badge-container">
+                        <div class="wcu-line"></div>
+                        <span class="wcu-badge-main">@settings.WhyChooseUsBadge</span>
+                        <div class="wcu-line"></div>
+                    </div>
+                    <h2 class="wcu-title" id="wcu-heading">@settings.WhyChooseUsTitle</h2>
+                    <div class="wcu-header-icon">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    </div>
+                    <p class="wcu-subtitle">@settings.WhyChooseUsSub</p>
+                </div>
 
-@if (settings.ShowCtaSection)
-{
-<!-- ═══════════════════════════════════════
-     CTA
-════════════════════════════════════════ -->
-<section class="cta-section" aria-labelledby="cta-heading">
-    <div class="container">
-        <div class="cta-content">
-            <span class="section-badge" style="background:rgba(212,160,23,0.15);color:#f0c040;border-color:rgba(212,160,23,0.3);">Ready to Begin?</span>
-            <h2 class="section-title mt-2" id="cta-heading">
-                Join <span>@Model.Stats.TotalCAs Professionals</span><br>Already on CACampus
-            </h2>
-            <p class="section-desc">Whether you're a business looking for expert CA services, or a CA wanting to grow your practice — CACampus is built for you.</p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="#" class="btn-cta-white">
-                    <i class="fas fa-user-tie" aria-hidden="true"></i> I'm Looking for a CA
-                </a>
-                <a href="#" class="btn-cta-outline">
-                    <i class="fas fa-graduation-cap" aria-hidden="true"></i> I'm a CA Professional
-                </a>
+                <div class="wcu-grid">
+                    @foreach (var item in Model.WhyChooseUsItems)
+                    {
+                        <div class="wcu-card text-center">
+                            <div class="wcu-card-icon-wrap">
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                {
+                                    <img src="@item.ImagePath" alt="@item.Title" class="wcu-custom-icon" />
+                                }
+                                else
+                                {
+                                    <i class="@item.Icon" aria-hidden="true"></i>
+                                }
+                            </div>
+                            <h5 class="wcu-card-title">@item.Title</h5>
+                            <p class="wcu-card-desc">@item.Description</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════
+             EXPERT CONNECT BAND
+        ════════════════════════════════════════ -->
+        <div class="expert-band">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h3 class="expert-band-title">Need a CA Right Now?</h3>
+                        <p class="expert-band-sub">Post your requirement — connect directly with verified experts for your business requirements. Free to start.</p>
+                    </div>
+                    <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                        <a href="#professionals" class="btn-hero-primary me-2">
+                            <i class="fas fa-user-tie me-1"></i> Find a CA
+                        </a>
+                        <a href="#how-it-works" class="btn-hero-secondary">
+                            <i class="fas fa-info-circle me-1"></i> Learn More
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
-}
 
+        <!-- ═══════════════════════════════════════
+             HOW IT WORKS
+        ════════════════════════════════════════ -->
+        <section class="how-section" id="how-it-works" aria-labelledby="how-heading">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="section-badge">Simple Process</span>
+                    <h2 class="section-title" id="how-heading">Find Your CA in <span>3 Easy Steps</span></h2>
+                    <p class="section-desc mx-auto">No long paperwork. Direct transparent communication. Connect directly with the right expert in minutes.</p>
+                </div>
+                <div class="steps-wrapper">
+                    <div class="step-connector" aria-hidden="true"></div>
+                    <div class="row g-4">
+                        @{
+                            var steps = new (string Title, string Desc, string Icon)[]
+                            {
+                                ("Post Your Requirement",  "Describe what you need — tax filing, GST, audit, or compliance advisory. Takes under 2 minutes.", "fas fa-edit"),
+                                ("Browse Verified CAs",     "Browse ICAI-verified professionals matched to your exact service requirements.", "fas fa-user-check"),
+                                ("Engage & Get It Done",   "Chat, schedule a call, or hire directly. Transparent pricing and milestone tracking built in.", "fas fa-handshake")
+                            };
+                        }
+                        @for (int i = 0; i < steps.Length; i++)
+                        {
+                            <div class="col-md-4">
+                                <div class="step-card reveal @(i > 0 ? $"reveal-delay-{i*2}" : "")">
+                                    <div class="step-number" aria-label="Step @(i+1)">
+                                        <i class="@steps[i].Icon me-1" style="font-size:0.95rem;opacity:0.9;"></i>@(i+1)
+                                    </div>
+                                    <h5>@steps[i].Title</h5>
+                                    <p>@steps[i].Desc</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+        /* Why Choose Us Section Styling */
+        .why-choose-section {
+            background: #060606;
+            color: #ffffff;
+            padding: 80px 0;
+            font-family: 'Calibri', 'Inter', sans-serif;
+            border-top: 1px solid rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+        }
+        .wcu-header {
+            margin-bottom: 50px;
+        }
+        .wcu-badge-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        .wcu-line {
+            width: 30px;
+            height: 1px;
+            background: #d4a017;
+        }
+        .wcu-badge-main {
+            color: #d4a017;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .wcu-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .wcu-header-icon {
+            font-size: 1.2rem;
+            color: #d4a017;
+            margin-bottom: 15px;
+        }
+        .wcu-subtitle {
+            color: #bdbdbd;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .wcu-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        @@media (max-width: 1200px) {
+            .wcu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @@media (max-width: 768px) {
+            .wcu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @@media (max-width: 480px) {
+            .wcu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .wcu-card {
+            background: #111111;
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 12px;
+            padding: 24px 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+        .wcu-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4a017;
+            box-shadow: 0 8px 24px rgba(212,175,55,0.15);
+        }
+        .wcu-card-icon-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 1px solid #d4a017;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4a017;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .wcu-card:hover .wcu-card-icon-wrap {
+            background: #d4a017;
+            color: #111111;
+        }
+        .wcu-custom-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+        .wcu-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .wcu-card-desc {
+            font-size: 0.8rem;
+            color: #bdbdbd;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+        </style>
+    }
+    else if (sectionKey == "portfolio" && settings.ShowFeaturedCAsSection)
+    {
+        <!-- ═══════════════════════════════════════
+             FEATURED CA PROFESSIONALS
+        ════════════════════════════════════════ -->
+        <section class="professionals-section" id="professionals" aria-labelledby="prof-heading">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="section-badge">@settings.FeaturedCAsBadge</span>
+                    <h2 class="section-title" id="prof-heading">@Html.Raw(settings.FeaturedCAsTitle)</h2>
+                    <p class="section-desc mx-auto">@settings.FeaturedCAsSubtitle</p>
+                </div>
+                <div class="row g-4">
+                    @{ int delay = 0; }
+                    @foreach (var ca in featured)
+                    {
+                        var caSlug = ca.Name.ToLower().Replace("ca ", "").Replace(" ", "-") + "-" + ca.Id;
+                        <div class="col-md-6 col-lg-3">
+                            <div class="prof-card reveal @(delay > 0 ? $"reveal-delay-{delay}" : "")" itemscope itemtype="https://schema.org/Person">
+                                <div class="prof-card-header">
+                                    @if (ca.IsVerified)
+                                    {
+                                        <span class="prof-verified"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified</span>
+                                    }
+                                    <a href="/expert/@caSlug" style="text-decoration:none;" aria-label="View profile of @ca.Name">
+                                        <div class="prof-avatar" aria-label="@ca.Name">
+                                            @if (!string.IsNullOrEmpty(ca.ImagePath))
+                                            {
+                                                <img src="@ca.ImagePath" alt="@ca.Name" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-user-tie" style="font-size:1.4rem;color:#0d1f33;" aria-hidden="true"></i>
+                                            }
+                                        </div>
+                                        <div class="prof-name" itemprop="name">@ca.Name</div>
+                                    </a>
+                                    <div class="prof-designation" itemprop="jobTitle">@ca.Designation &middot; @ca.YearsExp yrs &middot; <span itemprop="workLocation">@ca.City</span></div>
+                                </div>
+                                <div class="prof-card-body">
+                                    <div class="mb-2">
+                                        @foreach (var tag in ca.Specialisations.Take(2))
+                                        {
+                                            <span class="prof-tag" itemprop="knowsAbout">@tag</span>
+                                        }
+                                    </div>
+                                    <div class="prof-rating" aria-label="Rating @ca.Rating out of 5" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+                                        <meta itemprop="ratingValue" content="@ca.Rating" />
+                                        <meta itemprop="bestRating" content="5" />
+                                        @for (int s = 1; s <= 5; s++)
+                                        {
+                                            <span>@(s <= (int)ca.Rating ? "★" : "☆")</span>
+                                        }
+                                        <span class="ms-1 text-muted small">@ca.Rating</span>
+                                    </div>
+                                    <div class="prof-meta">
+                                        <i class="fas fa-briefcase" aria-hidden="true"></i> @ca.CasesHandled+ cases &nbsp;|&nbsp;
+                                        <i class="fas fa-clock" aria-hidden="true"></i> ~@ca.ResponseTime
+                                    </div>
+                                    <a href="/expert/@caSlug" class="btn btn-connect text-decoration-none" aria-label="View Profile of @ca.Name">
+                                        <i class="fas fa-user-circle" aria-hidden="true"></i> View Profile &amp; Connect
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        delay++;
+                    }
+                </div>
+                <div class="text-center mt-4">
+                    <a href="/find-expert" class="btn-hero-secondary d-inline-flex" style="color:#1a3c5e;border-color:#1a3c5e;">
+                        <i class="fas fa-th-large" aria-hidden="true"></i>&nbsp; Browse All @Model.FeaturedProfessionals.Count+ Professionals
+                    </a>
+                </div>
+            </div>
+        </section>
+    }
+    else if (sectionKey == "testimonials" && settings.ShowTestimonialsSection)
+    {
+        <!-- ═══════════════════════════════════════
+             TESTIMONIALS
+        ════════════════════════════════════════ -->
+        <section class="testimonials-section" aria-labelledby="testi-heading">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="section-badge">Client Stories</span>
+                    <h2 class="section-title" id="testi-heading">What Our <span>Clients Say</span></h2>
+                </div>
+                <div class="row g-4">
+                    @{ int td = 0; }
+                    @foreach (var t in Model.Testimonials)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="testi-card reveal @(td > 0 ? $"reveal-delay-{td*2}" : "")">
+                                <div class="testi-quote" aria-hidden="true">"</div>
+                                <p class="testi-text">@t.Text</p>
+                                <div class="testi-author">
+                                    <div class="testi-avatar" aria-hidden="true">
+                                        <i class="fas fa-user-circle" style="font-size:1.5rem;color:#ffffff;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="testi-name">@t.AuthorName</div>
+                                        <div class="testi-role">@t.AuthorRole</div>
+                                        <div class="testi-stars" aria-label="@t.Rating star rating">
+                                            @for (int s = 0; s < t.Rating; s++) { <span>★</span> }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        td++;
+                    }
+                </div>
+            </div>
+        </section>
+    }
+    else if (sectionKey == "blog" && settings.ShowBlogSection)
+    {
+        <!-- ═══════════════════════════════════════
+             FAQ
+        ════════════════════════════════════════ -->
+        <section class="faq-section" id="faq" aria-labelledby="faq-heading">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="section-badge">Got Questions?</span>
+                    <h2 class="section-title" id="faq-heading">Frequently Asked <span>Questions</span></h2>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="accordion faq-accordion" id="faqAccordion">
+                            @{ int fi = 0; }
+                            @foreach (var faq in Model.Faqs)
+                            {
+                                var faqId = $"faqH{fi}";
+                                var collapseId = $"faqC{fi}";
+                                <div class="accordion-item faq-item reveal">
+                                    <h3 class="accordion-header" id="@faqId">
+                                        <button class="accordion-button @(fi > 0 ? "collapsed" : "")" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#@collapseId"
+                                                aria-expanded="@(fi == 0 ? "true" : "false")" aria-controls="@collapseId">
+                                            @faq.Question
+                                        </button>
+                                    </h3>
+                                    <div id="@collapseId" class="accordion-collapse collapse @(fi == 0 ? "show" : "")"
+                                         aria-labelledby="@faqId" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">@faq.Answer</div>
+                                    </div>
+                                </div>
+                                fi++;
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+    else if (sectionKey == "cta" && settings.ShowCtaSection)
+    {
+        <!-- ═══════════════════════════════════════
+             CTA
+        ════════════════════════════════════════ -->
+        <section class="cta-section" aria-labelledby="cta-heading">
+            <div class="container">
+                <div class="cta-content">
+                    <span class="section-badge" style="background:rgba(212,160,23,0.15);color:#f0c040;border-color:rgba(212,160,23,0.3);">Ready to Begin?</span>
+                    <h2 class="section-title mt-2" id="cta-heading">
+                        Join <span>@Model.Stats.TotalCAs Professionals</span><br>Already on CACampus
+                    </h2>
+                    <p class="section-desc">Whether you're a business looking for expert CA services, or a CA wanting to grow your practice — CACampus is built for you.</p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="#" class="btn-cta-white">
+                            <i class="fas fa-user-tie" aria-hidden="true"></i> I'm Looking for a CA
+                        </a>
+                        <a href="#" class="btn-cta-outline">
+                            <i class="fas fa-graduation-cap" aria-hidden="true"></i> I'm a CA Professional
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+}

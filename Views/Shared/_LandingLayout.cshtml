@@ -192,6 +192,11 @@
         var navSiteName = navSettings?.SiteName ?? "CACampus";
         var navTagline  = navSettings?.SiteTagline ?? "Verified CA Network";
         var navPhone    = navSettings?.SitePhone ?? "+91 98765 43210";
+
+        var menuItems    = caportal.Services.Repositories.MenuRepository.GetAll();
+        var servicesItem = menuItems.FirstOrDefault(m => m.MegaMenuType == "Services");
+        var findExpertItem = menuItems.FirstOrDefault(m => m.MegaMenuType == "FindExpert");
+        var homeItem     = menuItems.FirstOrDefault(m => m.DisplayName == "Home" || m.Url == "/");
     }
     <div class="container">
         <div class="navbar-inner">
@@ -214,15 +219,20 @@
 
             <!-- Desktop Nav links -->
             <ul class="navbar-nav flex-row gap-0 d-none d-lg-flex mb-0 align-items-center" role="list">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
+                @if (homeItem != null && homeItem.IsActive)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@homeItem.Url" @(homeItem.OpenInNewTab ? "target=\"_blank\"" : "")>@homeItem.DisplayName</a>
+                    </li>
+                }
 
-                <!-- SERVICES mega-menu — TaxNiti style 6-column -->
-                <li class="nav-item nav-dropdown" id="servicesNav">
-                    <a class="nav-link nav-link-dropdown" href="#features">
-                        Services <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
-                    </a>
+                @if (servicesItem == null || servicesItem.IsActive)
+                {
+                    <!-- SERVICES mega-menu — TaxNiti style 6-column -->
+                    <li class="nav-item nav-dropdown" id="servicesNav">
+                        <a class="nav-link nav-link-dropdown" href="#features">
+                            @(servicesItem?.DisplayName ?? "Services") <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                        </a>
                     <div class="nav-mega-menu nav-mega-menu--full" role="menu">
                         <div class="mega-col">
                             <div class="mega-col-header">
@@ -640,12 +650,15 @@
                         </div>
                     </div>
                 </li>
+                }
 
-                <!-- FIND AN EXPERT -->
-                <li class="nav-item nav-dropdown" id="findExpertNav">
-                    <a class="nav-link nav-link-dropdown" href="/find-expert">
-                        Find an Expert <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
-                    </a>
+                @if (findExpertItem == null || findExpertItem.IsActive)
+                {
+                    <!-- FIND AN EXPERT -->
+                    <li class="nav-item nav-dropdown" id="findExpertNav">
+                        <a class="nav-link nav-link-dropdown" href="/find-expert">
+                            @(findExpertItem?.DisplayName ?? "Find an Expert") <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                        </a>
                     <div class="nav-mega-menu" role="menu" style="min-width:520px;">
                         <div class="row g-0">
                             <div class="col-6">
@@ -677,19 +690,14 @@
                         </div>
                     </div>
                 </li>
+                }
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#how-it-works">How It Works</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#pricing">Pricing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/blog">Blog</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/contact">Contact</a>
-                </li>
+                @foreach (var item in menuItems.Where(m => m.MegaMenuType == "None" && (m.DisplayName != "Home" && m.Url != "/") && m.IsActive).OrderBy(m => m.Order))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@item.Url" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>@item.DisplayName</a>
+                    </li>
+                }
             </ul>
 
             <!-- Desktop right side: phone + admin + CTAs -->
@@ -720,13 +728,12 @@
         <div class="collapse" id="mobileNav">
             <div class="mobile-menu">
                 <ul class="navbar-nav gap-1 mb-3">
-                    <li><a class="nav-link" href="/">Home</a></li>
-                    <li><a class="nav-link" href="/#features">Services</a></li>
-                    <li><a class="nav-link" href="/#features">Tax &amp; Legal</a></li>
-                    <li><a class="nav-link" href="/find-expert">Find an Expert</a></li>
-                    <li><a class="nav-link" href="/#how-it-works">How It Works</a></li>
-                    <li><a class="nav-link" href="/#pricing">Pricing</a></li>
-                    <li><a class="nav-link" href="/contact">Contact</a></li>
+                    @foreach (var item in menuItems.Where(m => m.IsActive).OrderBy(m => m.Order))
+                    {
+                        <li>
+                            <a class="nav-link" href="@(string.IsNullOrEmpty(item.Url) ? (item.MegaMenuType == "Services" ? "/#features" : "/find-expert") : item.Url)" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>@item.DisplayName</a>
+                        </li>
+                    }
                 </ul>
                 <div class="d-flex gap-2 flex-wrap">
                     <a href="tel:@navPhone.Replace(" ","")" class="btn btn-outline-secondary btn-sm flex-fill text-center">
