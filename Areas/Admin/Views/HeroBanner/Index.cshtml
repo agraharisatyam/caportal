@@ -1,0 +1,658 @@
+@model List<caportal.Models.Entities.HeroBannerSlide>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Hero Banners & Carousel";
+    var settings = ViewBag.Settings as caportal.Models.Entities.SiteSettings ?? new caportal.Models.Entities.SiteSettings();
+}
+
+<style>
+/* ── Multi-Banner Manager Styles ───────────────── */
+.hb-grid {
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    gap: 24px;
+    align-items: start;
+}
+@@media (max-width: 1200px) {
+    .hb-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hb-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+.dark .hb-card {
+    background: #181b24;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.hb-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: rgba(249, 250, 251, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dark .hb-card-header {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.hb-card-body {
+    padding: 20px;
+}
+
+/* Slide Cards in List */
+.slide-item-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+.dark .slide-item-card {
+    background: #111319;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.slide-item-card:hover {
+    border-color: #4F46E5;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.slide-item-card.inactive {
+    opacity: 0.6;
+    background: #f9fafb;
+}
+.dark .slide-item-card.inactive {
+    background: #0d0f14;
+}
+
+.slide-drag-handle {
+    color: #9ca3af;
+    cursor: grab;
+    padding: 4px;
+}
+.slide-thumb {
+    width: 100px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #000;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+.slide-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+.slide-title-text {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #111827;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dark .slide-title-text {
+    color: #f3f4f6;
+}
+.slide-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Live Carousel Preview Box */
+.carousel-preview-wrap {
+    background: #000000;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    min-height: 220px;
+}
+
+.carousel-slide-view {
+    display: none;
+    position: relative;
+    width: 100%;
+    animation: fadeIn 0.4s ease;
+}
+.carousel-slide-view.active {
+    display: block;
+}
+@@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.carousel-slide-img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+
+.carousel-content-box {
+    padding: 30px 20px;
+    text-align: center;
+    color: #fff;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-ctrl-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+}
+.carousel-ctrl-btn:hover {
+    background: #4F46E5;
+}
+.carousel-prev { left: 10px; }
+.carousel-next { right: 10px; }
+
+.carousel-dots-wrap {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    z-index: 10;
+}
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.carousel-dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background: #d4a017;
+}
+
+/* Modal Form Styles */
+.banner-preview-box {
+    width: 100%;
+    max-height: 160px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    object-fit: cover;
+    background: #000;
+    margin-bottom: 8px;
+}
+</style>
+
+<div class="page-header mb-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <h4 class="mb-0 font-bold d-flex align-items-center gap-2">
+                <i data-feather="monitor" class="text-indigo-600"></i> Hero Banners &amp; Carousel
+            </h4>
+            <p class="text-muted text-xs mb-0">Add multiple dynamic banners, arrange slide sequence, and preview the live hero carousel.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/" target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i data-feather="external-link" class="w-3.5 h-3.5 me-1"></i> Visit Website
+            </a>
+            <button type="button" class="btn btn-sm btn-primary font-bold d-flex align-items-center gap-1" onclick="openAddModal()" style="background:#4F46E5;border-color:#4F46E5;">
+                <i data-feather="plus" class="w-3.5 h-3.5"></i> Add New Banner
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        <i data-feather="check-circle" class="w-4 h-4 me-1 inline"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="hb-grid">
+
+    <!-- ══════════════════════════════════════
+         LEFT COLUMN: BANNER SLIDES LIST
+    ═══════════════════════════════════════ -->
+    <div>
+        <div class="hb-card">
+            <div class="hb-card-header">
+                <h5 class="m-0 font-bold text-sm d-flex align-items-center gap-2">
+                    <i data-feather="layers" class="w-4 h-4 text-indigo-500"></i> Active Slides (@Model.Count)
+                </h5>
+                <span class="text-xs text-muted">Slides will rotate in landing page carousel</span>
+            </div>
+
+            <div class="hb-card-body" id="slidesListContainer">
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i data-feather="image" class="w-12 h-12 mb-2 stroke-1 opacity-50"></i>
+                        <p class="mb-2">No hero banners created yet.</p>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="openAddModal()">Add First Banner</button>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var slide in Model.OrderBy(s => s.DisplayOrder))
+                    {
+                        <div class="slide-item-card @(!slide.IsActive ? "inactive" : "")" data-id="@slide.Id">
+                            <i data-feather="menu" class="slide-drag-handle"></i>
+
+                            <img src="@(!string.IsNullOrEmpty(slide.ImagePath) ? slide.ImagePath : "/images/hero-banner.png")"
+                                 alt="@slide.Title" class="slide-thumb" />
+
+                            <div class="slide-info">
+                                <div class="slide-title-text">@slide.Title</div>
+                                <div class="slide-meta">
+                                    <span class="badge @(slide.SlideType == "content" ? "bg-info" : "bg-primary") text-xs">
+                                        @(slide.SlideType == "content" ? "Rich Content" : "Image Banner")
+                                    </span>
+                                    <span>Order: <strong>#@slide.DisplayOrder</strong></span>
+                                    @if (!string.IsNullOrEmpty(slide.LinkUrl))
+                                    {
+                                        <span>Link: <code class="text-xs">@slide.LinkUrl</code></span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check form-switch mb-0" title="Toggle Slide Visibility">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                           onchange="toggleSlideStatus(@slide.Id, this)" @(slide.IsActive ? "checked" : "") />
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary p-1.5" onclick="editSlide(@slide.Id)" title="Edit Slide">
+                                    <i data-feather="edit-2" class="w-4 h-4"></i>
+                                </button>
+                                <form method="post" asp-area="Admin" asp-controller="HeroBanner" asp-action="DeleteSlide" onsubmit="return confirm('Delete this banner slide?');" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@slide.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger p-1.5" title="Delete">
+                                        <i data-feather="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         RIGHT COLUMN: LIVE CAROUSEL PREVIEW
+    ═══════════════════════════════════════ -->
+    <div>
+        <div class="hb-card">
+            <div class="hb-card-header">
+                <h5 class="m-0 font-bold text-sm d-flex align-items-center gap-2">
+                    <i data-feather="play-circle" class="w-4 h-4 text-success"></i> Carousel Live Preview
+                </h5>
+                <span class="badge bg-success text-xs">Auto-rotating</span>
+            </div>
+
+            <div class="hb-card-body">
+                <div class="carousel-preview-wrap" id="previewCarousel">
+                    @{
+                        var activeSlides = Model.Where(s => s.IsActive).OrderBy(s => s.DisplayOrder).ToList();
+                        if (!activeSlides.Any()) activeSlides = Model.ToList();
+                    }
+
+                    @for (int i = 0; i < activeSlides.Count; i++)
+                    {
+                        var s = activeSlides[i];
+                        <div class="carousel-slide-view @(i == 0 ? "active" : "")" data-index="@i">
+                            @if (s.SlideType == "content")
+                            {
+                                <div class="carousel-content-box" style="background: linear-gradient(135deg, @(s.BgGradientFrom ?? "#0a1628") 0%, @(s.BgGradientTo ?? "#1a2a4a") 100%);">
+                                    @if (!string.IsNullOrEmpty(s.Badge))
+                                    {
+                                        <span class="badge bg-warning text-dark mb-2">@s.Badge</span>
+                                    }
+                                    <h5 class="font-bold text-white mb-1">@s.Title</h5>
+                                    <p class="text-xs text-muted mb-3" style="color:rgba(255,255,255,0.75) !important;">@s.Subtitle</p>
+                                    @if (!string.IsNullOrEmpty(s.ButtonText))
+                                    {
+                                        <button class="btn btn-xs btn-warning font-bold">@s.ButtonText</button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="@(!string.IsNullOrEmpty(s.ImagePath) ? s.ImagePath : "/images/hero-banner.png")"
+                                     alt="@s.Title" class="carousel-slide-img" />
+                            }
+                        </div>
+                    }
+
+                    <!-- Carousel Controls -->
+                    @if (activeSlides.Count > 1)
+                    {
+                        <button type="button" class="carousel-ctrl-btn carousel-prev" onclick="prevSlide()">
+                            <i data-feather="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" class="carousel-ctrl-btn carousel-next" onclick="nextSlide()">
+                            <i data-feather="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                        <div class="carousel-dots-wrap">
+                            @for (int i = 0; i < activeSlides.Count; i++)
+                            {
+                                <div class="carousel-dot @(i == 0 ? "active" : "")" onclick="goToSlide(@i)"></div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="mt-3 p-3 border rounded-lg bg-light text-xs text-muted">
+                    <i data-feather="info" class="w-3.5 h-3.5 me-1 inline text-indigo-600"></i>
+                    <strong>Landing Page Carousel:</strong> Rotates every 4 seconds automatically. Users can also swipe or use navigation arrows.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     ADD / EDIT BANNER SLIDE MODAL
+═══════════════════════════════════════════ -->
+<div class="modal fade" id="slideModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-area="Admin" asp-controller="HeroBanner" asp-action="SaveSlide" enctype="multipart/form-data" id="slideForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="modalSlideId" value="0" />
+                <input type="hidden" name="existingImagePath" id="modalExistingImage" />
+                <input type="hidden" name="existingMobileImagePath" id="modalExistingMobileImage" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title font-bold text-sm" id="modalTitle">
+                        <i data-feather="image" class="w-4 h-4 text-indigo-600 me-1 inline"></i> Add Banner Slide
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Slide Type -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-xs">Slide Type *</label>
+                        <select name="slideType" id="modalSlideType" class="form-select form-select-sm" onchange="toggleModalFields()">
+                            <option value="image">Full Image Banner (1920 &times; 580px)</option>
+                            <option value="content">Rich Content Hero (Headline + CTA Buttons + BG Gradient)</option>
+                        </select>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-xs">Banner Title / Heading *</label>
+                        <input type="text" name="title" id="modalSlideTitle" class="form-control form-control-sm" required placeholder="e.g. CA & Legal Compliance Platform" />
+                    </div>
+
+                    <!-- Image Upload Fields (Image Type) -->
+                    <div id="imageFieldsGroup">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold text-xs">Desktop Banner Image (1920 &times; 580px)</label>
+                                <img src="/images/hero-banner.png" id="modalImgPreview" class="banner-preview-box" />
+                                <input type="file" name="imageFile" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.svg,.webp" onchange="previewModalImg(this, 'modalImgPreview')" />
+                                <div class="text-xs text-muted mt-1">Recommended size: 1920 &times; 580 px.</div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold text-xs">Mobile Banner Image (Optional)</label>
+                                <img src="/images/hero-banner.png" id="modalMobileImgPreview" class="banner-preview-box" style="display:none;" />
+                                <input type="file" name="mobileImageFile" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.svg,.webp" onchange="previewModalImg(this, 'modalMobileImgPreview')" />
+                                <div class="text-xs text-muted mt-1">Mobile optimized artwork (768 &times; 600 px).</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-xs">Banner Click Link (Optional)</label>
+                            <input type="text" name="linkUrl" id="modalLinkUrl" class="form-control form-control-sm" placeholder="e.g. /find-expert or /service/startup-registration" />
+                        </div>
+                    </div>
+
+                    <!-- Content Fields (Content Type) -->
+                    <div id="contentFieldsGroup" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-xs">Top Badge Text</label>
+                            <input type="text" name="badge" id="modalBadge" class="form-control form-control-sm" placeholder="e.g. ⭐ India's #1 Verified CA Network" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-xs">Subtitle / Description</label>
+                            <textarea name="subtitle" id="modalSubtitle" class="form-control form-control-sm" rows="2" placeholder="Connecting businesses with ICAI-verified Chartered Accountants..."></textarea>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold text-xs">Primary Button Text</label>
+                                <input type="text" name="buttonText" id="modalBtnText" class="form-control form-control-sm" placeholder="Find a CA" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold text-xs">Primary Button Link</label>
+                                <input type="text" name="buttonUrl" id="modalBtnUrl" class="form-control form-control-sm" placeholder="/find-expert" />
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold text-xs">Background From</label>
+                                <input type="color" name="bgGradientFrom" id="modalBgFrom" class="form-control form-control-color w-100 h-8 rounded" value="#0a1628" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold text-xs">Background To</label>
+                                <input type="color" name="bgGradientTo" id="modalBgTo" class="form-control form-control-color w-100 h-8 rounded" value="#1a2a4a" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-xs">Display Order</label>
+                            <input type="number" name="displayOrder" id="modalDisplayOrder" class="form-control form-control-sm" value="1" min="1" max="100" />
+                        </div>
+                        <div class="col-6 d-flex align-items-center pt-3">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" name="isActive" id="modalIsActive" value="true" checked />
+                                <label class="form-check-label fw-semibold text-xs" for="modalIsActive">Active in Carousel</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-primary font-bold px-4" style="background:#4F46E5;border-color:#4F46E5;">
+                        <i data-feather="check" class="w-3.5 h-3.5 me-1 inline"></i> Save Banner Slide
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+// ── Carousel Auto-Play Engine ──────────────────
+var currentSlide = 0;
+var slideElements = document.querySelectorAll('.carousel-slide-view');
+var dotElements = document.querySelectorAll('.carousel-dot');
+var autoSlideTimer = null;
+
+function showSlide(index) {
+    if (!slideElements.length) return;
+    if (index >= slideElements.length) index = 0;
+    if (index < 0) index = slideElements.length - 1;
+
+    slideElements.forEach(s => s.classList.remove('active'));
+    dotElements.forEach(d => d.classList.remove('active'));
+
+    currentSlide = index;
+    if (slideElements[currentSlide]) slideElements[currentSlide].classList.add('active');
+    if (dotElements[currentSlide]) dotElements[currentSlide].classList.add('active');
+}
+
+function nextSlide() {
+    showSlide(currentSlide + 1);
+    resetAutoPlay();
+}
+
+function prevSlide() {
+    showSlide(currentSlide - 1);
+    resetAutoPlay();
+}
+
+function goToSlide(index) {
+    showSlide(index);
+    resetAutoPlay();
+}
+
+function startAutoPlay() {
+    if (slideElements.length > 1) {
+        autoSlideTimer = setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 4000);
+    }
+}
+
+function resetAutoPlay() {
+    clearInterval(autoSlideTimer);
+    startAutoPlay();
+}
+
+// ── Modal Actions ──────────────────────────────
+function openAddModal() {
+    document.getElementById('modalSlideId').value = '0';
+    document.getElementById('modalTitle').innerHTML = '<i data-feather="image" class="w-4 h-4 text-indigo-600 me-1 inline"></i> Add Banner Slide';
+    document.getElementById('modalSlideTitle').value = '';
+    document.getElementById('modalSlideType').value = 'image';
+    document.getElementById('modalBadge').value = '';
+    document.getElementById('modalSubtitle').value = '';
+    document.getElementById('modalLinkUrl').value = '';
+    document.getElementById('modalBtnText').value = '';
+    document.getElementById('modalBtnUrl').value = '';
+    document.getElementById('modalDisplayOrder').value = (slideElements.length + 1);
+    document.getElementById('modalIsActive').checked = true;
+    document.getElementById('modalExistingImage').value = '';
+    document.getElementById('modalExistingMobileImage').value = '';
+    document.getElementById('modalImgPreview').src = '/images/hero-banner.png';
+    document.getElementById('modalMobileImgPreview').style.display = 'none';
+
+    toggleModalFields();
+    var modal = new bootstrap.Modal(document.getElementById('slideModal'));
+    modal.show();
+    if (typeof feather !== 'undefined') feather.replace();
+}
+
+function editSlide(id) {
+    fetch('/Admin/HeroBanner/GetSlideJson/' + id)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('modalSlideId').value = data.id;
+            document.getElementById('modalTitle').innerHTML = '<i data-feather="edit-2" class="w-4 h-4 text-indigo-600 me-1 inline"></i> Edit Banner Slide';
+            document.getElementById('modalSlideTitle').value = data.title || '';
+            document.getElementById('modalSlideType').value = data.slideType || 'image';
+            document.getElementById('modalBadge').value = data.badge || '';
+            document.getElementById('modalSubtitle').value = data.subtitle || '';
+            document.getElementById('modalLinkUrl').value = data.linkUrl || '';
+            document.getElementById('modalBtnText').value = data.buttonText || '';
+            document.getElementById('modalBtnUrl').value = data.buttonUrl || '';
+            document.getElementById('modalDisplayOrder').value = data.displayOrder || 1;
+            document.getElementById('modalIsActive').checked = data.isActive;
+            document.getElementById('modalExistingImage').value = data.imagePath || '';
+            document.getElementById('modalExistingMobileImage').value = data.mobileImagePath || '';
+
+            document.getElementById('modalImgPreview').src = data.imagePath || '/images/hero-banner.png';
+            if (data.mobileImagePath) {
+                document.getElementById('modalMobileImgPreview').src = data.mobileImagePath;
+                document.getElementById('modalMobileImgPreview').style.display = 'block';
+            } else {
+                document.getElementById('modalMobileImgPreview').style.display = 'none';
+            }
+
+            if (data.bgGradientFrom) document.getElementById('modalBgFrom').value = data.bgGradientFrom;
+            if (data.bgGradientTo) document.getElementById('modalBgTo').value = data.bgGradientTo;
+
+            toggleModalFields();
+            var modal = new bootstrap.Modal(document.getElementById('slideModal'));
+            modal.show();
+            if (typeof feather !== 'undefined') feather.replace();
+        })
+        .catch(err => alert('Failed to load slide data.'));
+}
+
+function toggleModalFields() {
+    var type = document.getElementById('modalSlideType').value;
+    document.getElementById('imageFieldsGroup').style.display = (type === 'image') ? 'block' : 'none';
+    document.getElementById('contentFieldsGroup').style.display = (type === 'content') ? 'block' : 'none';
+}
+
+function previewModalImg(input, previewId) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = document.getElementById(previewId);
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function toggleSlideStatus(id, checkbox) {
+    var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+    fetch('/Admin/HeroBanner/ToggleSlide', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'RequestVerificationToken': token
+        },
+        body: 'id=' + id
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            var card = checkbox.closest('.slide-item-card');
+            if (card) card.classList.toggle('inactive', !data.isActive);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof feather !== 'undefined') feather.replace();
+    startAutoPlay();
+});
+</script>
+}

@@ -18,12 +18,155 @@
 {
     if (sectionKey == "hero" && settings.ShowHeroSection)
     {
-        <!-- ═══════════════════════════════════════
-             HERO V2 — Dark gold, full-width
-        ════════════════════════════════════════ -->
-        <section class="hero-v2" aria-label="Hero Banner" style="background:#000000 !important; padding: 0 !important; min-height: auto !important; display: block !important; overflow: hidden !important;">
-            <div class="w-100 text-center">
-                <img src="/images/hero-banner.png" alt="CA &amp; Legal Compliance Platform" style="width: 100%; max-width: 1920px; height: auto; display: block; margin: 0 auto;" />
+        var heroSlides = Model.HeroBannerSlides?.Where(s => s.IsActive).OrderBy(s => s.DisplayOrder).ToList()
+                         ?? new List<caportal.Models.Entities.HeroBannerSlide>();
+
+        if (!heroSlides.Any())
+        {
+            heroSlides = new List<caportal.Models.Entities.HeroBannerSlide>
+            {
+                new()
+                {
+                    Title = settings.HeroTitle ?? "CA & Legal Compliance Platform",
+                    Subtitle = settings.HeroSubtitle,
+                    Badge = settings.HeroBadge,
+                    ImagePath = !string.IsNullOrEmpty(settings.HeroBannerImage) ? settings.HeroBannerImage : "/images/hero-banner.png",
+                    MobileImagePath = settings.HeroBannerMobileImage,
+                    LinkUrl = settings.HeroBannerLink,
+                    SlideType = settings.HeroMode ?? "image",
+                    ButtonText = settings.HeroPrimaryCtaText,
+                    ButtonUrl = settings.HeroPrimaryCtaUrl
+                }
+            };
+        }
+
+        <section class="hero-carousel-section" aria-label="Hero Carousel Banner">
+            <div id="homeHeroCarousel" class="carousel slide @(heroSlides.Count > 1 ? "carousel-fade" : "")"
+                 data-bs-ride="@(heroSlides.Count > 1 ? "carousel" : "false")"
+                 data-bs-interval="4500" data-bs-pause="hover" data-bs-touch="true">
+                
+                @if (heroSlides.Count > 1)
+                {
+                    <!-- Indicators / Dots -->
+                    <div class="carousel-indicators hero-carousel-dots">
+                        @for (int i = 0; i < heroSlides.Count; i++)
+                        {
+                            <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="@i"
+                                    class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")"
+                                    aria-label="Slide @(i + 1)"></button>
+                        }
+                    </div>
+                }
+
+                <!-- Carousel Slides -->
+                <div class="carousel-inner">
+                    @for (int i = 0; i < heroSlides.Count; i++)
+                    {
+                        var slide = heroSlides[i];
+                        var bannerImg = !string.IsNullOrEmpty(slide.ImagePath) ? slide.ImagePath : "/images/hero-banner.png";
+                        var bannerMobile = !string.IsNullOrEmpty(slide.MobileImagePath) ? slide.MobileImagePath : bannerImg;
+
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            @if (slide.SlideType == "content")
+                            {
+                                <!-- Rich Content Hero Slide -->
+                                <div class="hero-v2 hero-slide-content-wrap" style="background: linear-gradient(135deg, @(slide.BgGradientFrom ?? "#0a1628") 0%, @(slide.BgGradientTo ?? "#1a2a4a") 100%);">
+                                    <div class="hero-v2-overlay"></div>
+                                    <div class="container position-relative" style="z-index: 2;">
+                                        <div class="text-center max-w-4xl mx-auto py-5">
+                                            @if (!string.IsNullOrEmpty(slide.Badge))
+                                            {
+                                                <div class="hero-v2-label">
+                                                    <span>@slide.Badge</span>
+                                                </div>
+                                            }
+                                            <h1 class="hero-v2-title">@slide.Title</h1>
+                                            @if (!string.IsNullOrEmpty(slide.Subtitle))
+                                            {
+                                                <p class="hero-v2-sub">@slide.Subtitle</p>
+                                            }
+
+                                            @if (settings.HeroShowSearch)
+                                            {
+                                                <div class="hero-v2-search">
+                                                    <form action="/find-expert" method="get" class="hero-v2-search-inner">
+                                                        <div class="hero-v2-field">
+                                                            <i class="fas fa-search text-warning"></i>
+                                                            <input type="text" name="q" placeholder="Search by service (GST, ITR, Audit, MCA)..." />
+                                                        </div>
+                                                        <div class="hero-v2-field-border"></div>
+                                                        <div class="hero-v2-field">
+                                                            <i class="fas fa-map-marker-alt text-warning"></i>
+                                                            <input type="text" name="city" placeholder="City (e.g. Mumbai, Delhi, Noida)" />
+                                                        </div>
+                                                        <button type="submit" class="hero-v2-search-btn">
+                                                            <span>Find CA</span>
+                                                            <i class="fas fa-arrow-right ms-1"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            }
+
+                                            <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+                                                @if (!string.IsNullOrEmpty(slide.ButtonText))
+                                                {
+                                                    <a href="@(!string.IsNullOrEmpty(slide.ButtonUrl) ? slide.ButtonUrl : "/find-expert")" class="btn-hero-primary">
+                                                        <i class="fas fa-user-tie me-1"></i> @slide.ButtonText
+                                                    </a>
+                                                }
+                                                @if (!string.IsNullOrEmpty(slide.SecondaryButtonText))
+                                                {
+                                                    <a href="@(!string.IsNullOrEmpty(slide.SecondaryButtonUrl) ? slide.SecondaryButtonUrl : "/#features")" class="btn-hero-secondary">
+                                                        <i class="fas fa-layer-group me-1"></i> @slide.SecondaryButtonText
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Full Image Banner Slide -->
+                                <div class="w-100 text-center hero-slide-img-wrap" style="background:#000000;">
+                                    @if (!string.IsNullOrEmpty(slide.LinkUrl))
+                                    {
+                                        <a href="@slide.LinkUrl" class="d-block w-100">
+                                            <picture>
+                                                @if (!string.IsNullOrEmpty(slide.MobileImagePath))
+                                                {
+                                                    <source media="(max-width: 768px)" srcset="@bannerMobile">
+                                                }
+                                                <img src="@bannerImg" alt="@slide.Title" class="hero-carousel-img" />
+                                            </picture>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <picture>
+                                            @if (!string.IsNullOrEmpty(slide.MobileImagePath))
+                                            {
+                                                <source media="(max-width: 768px)" srcset="@bannerMobile">
+                                            }
+                                            <img src="@bannerImg" alt="@slide.Title" class="hero-carousel-img" />
+                                        </picture>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (heroSlides.Count > 1)
+                {
+                    <!-- Next / Prev Controls -->
+                    <button class="carousel-control-prev hero-carousel-arrow hero-arrow-left" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev" aria-label="Previous Slide">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <button class="carousel-control-next hero-carousel-arrow hero-arrow-right" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next" aria-label="Next Slide">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                }
             </div>
         </section>
     }
@@ -171,7 +314,7 @@
             background: #060606;
             color: #ffffff;
             padding: 80px 0;
-            font-family: 'Calibri', 'Inter', sans-serif;
+            font-family: var(--body-font, 'Inter', sans-serif);
             border-top: 1px solid rgba(212,175,55,0.1);
             border-bottom: 1px solid rgba(212,175,55,0.1);
         }
@@ -187,10 +330,10 @@
         .wcu-line {
             width: 30px;
             height: 1px;
-            background: #d4a017;
+            background: var(--secondary, #d4a017);
         }
         .wcu-badge-main {
-            color: #d4a017;
+            color: var(--secondary, #d4a017);
             font-size: 0.85rem;
             font-weight: 700;
             letter-spacing: 2px;
@@ -199,13 +342,14 @@
         .wcu-title {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #ffffff;
+            font-family: var(--heading-font, 'Playfair Display', serif);
+            color: var(--heading-color, #ffffff);
             letter-spacing: 0.5px;
             margin-bottom: 10px;
         }
         .wcu-header-icon {
             font-size: 1.2rem;
-            color: #d4a017;
+            color: var(--secondary, #d4a017);
             margin-bottom: 15px;
         }
         .wcu-subtitle {
@@ -246,24 +390,24 @@
         }
         .wcu-card:hover {
             transform: translateY(-5px);
-            border-color: #d4a017;
+            border-color: var(--primary, #4F46E5);
             box-shadow: 0 8px 24px rgba(212,175,55,0.15);
         }
         .wcu-card-icon-wrap {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            border: 1px solid #d4a017;
+            border: 1px solid var(--secondary, #d4a017);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #d4a017;
+            color: var(--secondary, #d4a017);
             font-size: 1.5rem;
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
         .wcu-card:hover .wcu-card-icon-wrap {
-            background: #d4a017;
+            background: var(--secondary, #d4a017);
             color: #111111;
         }
         .wcu-custom-icon {
@@ -274,6 +418,7 @@
         .wcu-card-title {
             font-size: 0.95rem;
             font-weight: 700;
+            font-family: var(--heading-font, 'Playfair Display', serif);
             color: #ffffff;
             letter-spacing: 0.5px;
             margin-bottom: 12px;

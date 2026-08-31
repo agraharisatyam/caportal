@@ -21,12 +21,21 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #f5d87a 0%, #f0a04b 50%, #e8624a 100%);
+              background: url('/images/images (1).jpg') center center / cover no-repeat fixed;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Inter', sans-serif;
       padding: 24px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 0;
     }
 
     /* ── Outer card ── */
@@ -34,10 +43,12 @@
       display: flex;
       width: 100%;
       max-width: 960px;
-      min-height: 540px;
+      min-height: 420px;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+      position: relative;
+      z-index: 1;
     }
 
     /* ── Left panel ── */
@@ -47,8 +58,8 @@
       background: #c0195a;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      padding: 48px 40px;
+      justify-content: space-between;
+      padding: 36px 40px;
       overflow: hidden;
       /* diagonal right edge */
       clip-path: polygon(0 0, 92% 0, 100% 100%, 0 100%);
@@ -80,6 +91,58 @@
     .login-left-content {
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Logo on left panel */
+    .login-left-logo {
+      margin-bottom: auto;
+      padding-bottom: 24px;
+    }
+
+    .login-left-logo-img {
+      max-height: 245px;
+      max-width: 245px;
+      width: 100%;
+      object-fit: contain;
+    }
+
+    /* Brand icon (fallback when no image logo) */
+    .brand-icon-left {
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+
+    .login-left-logo-text {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+      line-height: 1.1;
+    }
+
+    .login-left-logo-text span {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .login-left-logo-tagline {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.65);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
     }
 
     .login-left-sub {
@@ -132,7 +195,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 48px 40px;
+      padding: 32px 40px;
     }
 
     /* Logo */
@@ -268,39 +331,43 @@
     <!-- ── Left Panel ── -->
     <div class="login-left">
       <div class="login-left-content">
-        <div class="login-left-sub">My Dashboard</div>
-        <div class="login-left-title">ADMIN LOGIN</div>
-        <div class="login-left-stats">
-          <div class="login-stat">
-            <span class="login-stat-num">Active</span>
-            <span class="login-stat-lbl">Portal</span>
-          </div>
-          <div class="login-stat">
-            <span class="login-stat-num">Empaneled</span>
-            <span class="login-stat-lbl">CA Network</span>
-          </div>
-          <div class="login-stat">
-            <span class="login-stat-num">ICAI</span>
-            <span class="login-stat-lbl">Verified</span>
+
+        <!-- Logo at top of left panel -->
+        <div class="login-left-logo">
+          @if (!string.IsNullOrEmpty(loginLogo))
+          {
+            <img src="/images/site-logo-sm.png" alt="@loginSiteName" class="login-left-logo-img" />
+          }
+          else
+          {
+            <img src="/images/site-logo-sm.png" alt="@loginSiteName" class="login-left-logo-img" />
+          }
+        </div>
+
+        <div>
+          <div class="login-left-sub">My Dashboard</div>
+          <div class="login-left-title">ADMIN LOGIN</div>
+          <div class="login-left-stats">
+            <div class="login-stat">
+              <span class="login-stat-num">Active</span>
+              <span class="login-stat-lbl">Portal</span>
+            </div>
+            <div class="login-stat">
+              <span class="login-stat-num">Empaneled</span>
+              <span class="login-stat-lbl">CA Network</span>
+            </div>
+            <div class="login-stat">
+              <span class="login-stat-num">ICAI</span>
+              <span class="login-stat-lbl">Verified</span>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
     <!-- ── Right Panel ── -->
     <div class="login-right">
-
-      <!-- Logo -->
-      <div class="login-logo mb-2">
-        @if (!string.IsNullOrEmpty(loginLogo))
-        {
-          <img src="@loginLogo" alt="@(loginSettings?.LogoAlt ?? loginSiteName)" />
-        }
-        else
-        {
-          <div class="login-logo-text"><span>CA</span>@loginSiteName.Replace("CA","")</div>
-        }
-      </div>
 
       <h2 class="login-welcome">WELCOME BACK!</h2>
       <p class="login-sub">Please login to view your dashboard</p>

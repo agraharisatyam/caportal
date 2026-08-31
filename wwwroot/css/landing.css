@@ -3414,6 +3414,49 @@ body .ca-footer .newsletter-btn:hover {
     opacity: 0.9 !important;
 }
 
+/* Compact Newsletter in Get In Touch column */
+body .ca-footer .footer-compact-newsletter {
+    max-width: 100%;
+}
+body .ca-footer .compact-news-input {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+    font-size: 0.78rem !important;
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
+    height: 34px !important;
+}
+body .ca-footer .compact-news-input:focus {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: var(--secondary, #d4a017) !important;
+    box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.25) !important;
+    outline: none !important;
+}
+body .ca-footer .compact-news-input::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-size: 0.76rem !important;
+}
+body .ca-footer .btn-gold-compact {
+    background: linear-gradient(135deg, var(--secondary, #d4a017), var(--secondary, #f0c040)) !important;
+    color: #0d1f33 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    height: 34px !important;
+    width: 36px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    transition: all 0.2s ease !important;
+}
+body .ca-footer .btn-gold-compact:hover {
+    transform: translateY(-1px) !important;
+    filter: brightness(1.15) !important;
+    box-shadow: 0 4px 12px rgba(212, 160, 23, 0.3) !important;
+}
+
 /* Bottom strip styles */
 body .ca-footer .footer-bottom-strip {
     background: #050505 !important;
@@ -4666,5 +4709,67 @@ section {
 .newsletter-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(212,160,23,0.4);
+}
+
+/* ── Multi-Banner Hero Carousel Styles ─────────── */
+.hero-carousel-section {
+    background: #000000 !important;
+    position: relative;
+    width: 100%;
+}
+.hero-carousel-img {
+    width: 100%;
+    max-width: 1920px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+.hero-carousel-arrow {
+    width: 44px;
+    height: 44px;
+    background: rgba(10, 22, 40, 0.7);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.85;
+    transition: all 0.3s ease;
+    color: #d4a017 !important;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 15;
+}
+.hero-carousel-arrow:hover {
+    background: #d4a017;
+    color: #0a1628 !important;
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.7);
+}
+.hero-arrow-left { left: 20px; }
+.hero-arrow-right { right: 20px; }
+
+.hero-carousel-dots {
+    bottom: 16px;
+    margin-bottom: 0;
+    gap: 8px;
+    z-index: 15;
+}
+.hero-carousel-dots [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid #d4a017;
+    background-color: rgba(255, 255, 255, 0.3);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+.hero-carousel-dots .active {
+    width: 28px;
+    border-radius: 6px;
+    background-color: #d4a017;
+    opacity: 1;
 }
 

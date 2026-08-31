@@ -4,10 +4,10 @@
 }
 
 <style>
-/* ══ 3-COLUMN UI CUSTOMIZATION STUDIO STYLES ══ */
+/* ══ 2-COLUMN UI CUSTOMIZATION STUDIO STYLES ══ */
 .studio-container {
     display: grid;
-    grid-template-columns: 320px 1fr 280px;
+    grid-template-columns: 320px 1fr;
     gap: 20px;
     align-items: start;
     margin-top: 10px;
@@ -15,7 +15,7 @@
 
 @@media (max-width: 1400px) {
     .studio-container {
-        grid-template-columns: 300px 1fr 260px;
+        grid-template-columns: 300px 1fr;
         gap: 15px;
     }
 }
@@ -448,12 +448,18 @@
                 <div class="mb-4">
                     <label class="form-label fw-bold text-xs uppercase tracking-wider text-muted mb-1">Theme Presets</label>
                     <div class="preset-dots" id="presetDots">
-                        <div class="preset-dot active" style="background:#4F46E5;" title="Indigo / Emerald" data-primary="#4F46E5" data-secondary="#10B981"></div>
-                        <div class="preset-dot" style="background:#7C3AED;" title="Violet / Pink" data-primary="#7C3AED" data-secondary="#EC4899"></div>
-                        <div class="preset-dot" style="background:#10B981;" title="Emerald / Blue" data-primary="#10B981" data-secondary="#3B82F6"></div>
-                        <div class="preset-dot" style="background:#F97316;" title="Orange / Yellow" data-primary="#F97316" data-secondary="#EAB308"></div>
-                        <div class="preset-dot" style="background:#EF4444;" title="Crimson / Gold" data-primary="#EF4444" data-secondary="#F59E0B"></div>
-                        <div class="preset-dot" style="background:#1E293B;" title="Dark Slate" data-primary="#1E293B" data-secondary="#64748B"></div>
+                        <div class="preset-dot active" style="background:#4F46E5;" title="Indigo / Emerald"
+                             data-primary="#4F46E5" data-secondary="#10B981" data-heading="#1E1B4B" data-header-bg="#FFFFFF" data-header-font="#1E1B4B" data-btn-bg="#4F46E5" data-btn-color="#FFFFFF" data-footer-bg="#0F172A" data-footer-font="#94A3B8" data-hero-from="#0F172A" data-hero-to="#1E1B4B"></div>
+                        <div class="preset-dot" style="background:#7C3AED;" title="Violet / Pink"
+                             data-primary="#7C3AED" data-secondary="#EC4899" data-heading="#2E1065" data-header-bg="#FFFFFF" data-header-font="#2E1065" data-btn-bg="#7C3AED" data-btn-color="#FFFFFF" data-footer-bg="#1E1035" data-footer-font="#C4B5FD" data-hero-from="#1E1035" data-hero-to="#4C1D95"></div>
+                        <div class="preset-dot" style="background:#10B981;" title="Emerald / Blue"
+                             data-primary="#10B981" data-secondary="#3B82F6" data-heading="#064E3B" data-header-bg="#FFFFFF" data-header-font="#064E3B" data-btn-bg="#10B981" data-btn-color="#FFFFFF" data-footer-bg="#062E25" data-footer-font="#A7F3D0" data-hero-from="#062E25" data-hero-to="#064E3B"></div>
+                        <div class="preset-dot" style="background:#F97316;" title="Orange / Yellow"
+                             data-primary="#F97316" data-secondary="#EAB308" data-heading="#431407" data-header-bg="#FFFFFF" data-header-font="#431407" data-btn-bg="#F97316" data-btn-color="#FFFFFF" data-footer-bg="#1C1917" data-footer-font="#D6D3D1" data-hero-from="#1C1917" data-hero-to="#431407"></div>
+                        <div class="preset-dot" style="background:#EF4444;" title="Crimson / Gold"
+                             data-primary="#EF4444" data-secondary="#F59E0B" data-heading="#450A0A" data-header-bg="#FFFFFF" data-header-font="#450A0A" data-btn-bg="#EF4444" data-btn-color="#FFFFFF" data-footer-bg="#18181B" data-footer-font="#D4D4D8" data-hero-from="#18181B" data-hero-to="#450A0A"></div>
+                        <div class="preset-dot" style="background:#1E293B;" title="Dark Slate / Cyan"
+                             data-primary="#1E293B" data-secondary="#06B6D4" data-heading="#0F172A" data-header-bg="#FFFFFF" data-header-font="#0F172A" data-btn-bg="#1E293B" data-btn-color="#FFFFFF" data-footer-bg="#020617" data-footer-font="#94A3B8" data-hero-from="#020617" data-hero-to="#0F172A"></div>
                     </div>
                 </div>
 
@@ -462,25 +468,25 @@
                     <label class="form-label fw-semibold text-xs mb-1">Primary Color</label>
                     <div class="color-field-wrap">
                         <input type="text" asp-for="PrimaryColor" class="color-hex-input" id="primaryHexInput" value="@Model.PrimaryColor" />
-                        <input type="color" class="color-picker-badge" id="primaryColorPicker" value="@Model.PrimaryColor" onchange="document.getElementById('primaryHexInput').value=this.value; triggerLiveUpdate();" />
+                        <input type="color" class="color-picker-badge" id="primaryColorPicker" value="@Model.PrimaryColor" />
                     </div>
                 </div>
 
                 <!-- Secondary Color Field -->
                 <div class="mb-4">
-                    <label class="form-label fw-semibold text-xs mb-1">Secondary Color</label>
+                    <label class="form-label fw-semibold text-xs mb-1">Secondary Color (Accents &amp; Highlights)</label>
                     <div class="color-field-wrap">
                         <input type="text" asp-for="SecondaryColor" class="color-hex-input" id="secondaryHexInput" value="@Model.SecondaryColor" />
-                        <input type="color" class="color-picker-badge" id="secondaryColorPicker" value="@Model.SecondaryColor" onchange="document.getElementById('secondaryHexInput').value=this.value; triggerLiveUpdate();" />
+                        <input type="color" class="color-picker-badge" id="secondaryColorPicker" value="@Model.SecondaryColor" />
                     </div>
                 </div>
 
                 <!-- Font Family -->
                 <div class="mb-3">
-                    <label class="form-label fw-semibold text-xs mb-1">Font Family</label>
+                    <label class="form-label fw-semibold text-xs mb-1">Body Font Family</label>
                     <select asp-for="BodyFontFamily" class="form-select form-select-sm rounded-lg" id="fontFamilySelect" onchange="triggerLiveUpdate()">
-                        <option value="Poppins">Poppins</option>
                         <option value="Inter">Inter</option>
+                        <option value="Poppins">Poppins</option>
                         <option value="Roboto">Roboto</option>
                         <option value="Outfit">Outfit</option>
                         <option value="Montserrat">Montserrat</option>
@@ -492,8 +498,8 @@
                 <div class="mb-4">
                     <label class="form-label fw-semibold text-xs mb-1">Heading Font</label>
                     <select asp-for="HeadingFont" class="form-select form-select-sm rounded-lg" id="headingFontSelect" onchange="triggerLiveUpdate()">
-                        <option value="Poppins">Poppins SemiBold</option>
                         <option value="Playfair Display">Playfair Display</option>
+                        <option value="Poppins">Poppins</option>
                         <option value="Inter">Inter</option>
                         <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
                         <option value="Merriweather">Merriweather</option>
@@ -506,26 +512,29 @@
                     <!-- Typography Accordion -->
                     <div class="studio-accordion-item">
                         <div class="studio-accordion-header" onclick="toggleAccordion(this)">
-                            <span><i data-feather="type" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Typography</span>
+                            <span><i data-feather="type" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Typography &amp; Headings</span>
                             <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
                         </div>
                         <div class="studio-accordion-body">
                             <div class="mb-3">
-                                <label class="form-label text-xs fw-semibold">Heading Color</label>
-                                <input asp-for="HeadingColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <label class="form-label text-xs fw-semibold">Heading &amp; Header Color</label>
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="HeadingColor" class="color-hex-input" id="headingHexInput" value="@Model.HeadingColor" />
+                                    <input type="color" class="color-picker-badge" id="headingColorPicker" value="@Model.HeadingColor" />
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Body Font Size (px)</label>
-                                <input asp-for="BodyFontSize" type="number" class="form-control form-control-sm" min="12" max="22" oninput="triggerLiveUpdate()" />
+                                <input asp-for="BodyFontSize" type="number" class="form-control form-control-sm" id="bodyFontSizeInput" min="12" max="22" oninput="triggerLiveUpdate()" />
                             </div>
                             <div class="row g-2">
                                 <div class="col-6">
                                     <label class="form-label text-xs fw-semibold">H1 Size (px)</label>
-                                    <input asp-for="H1Size" type="number" class="form-control form-control-sm" min="24" max="72" oninput="triggerLiveUpdate()" />
+                                    <input asp-for="H1Size" type="number" class="form-control form-control-sm" id="h1SizeInput" min="24" max="72" oninput="triggerLiveUpdate()" />
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label text-xs fw-semibold">H2 Size (px)</label>
-                                    <input asp-for="H2Size" type="number" class="form-control form-control-sm" min="18" max="56" oninput="triggerLiveUpdate()" />
+                                    <input asp-for="H2Size" type="number" class="form-control form-control-sm" id="h2SizeInput" min="18" max="56" oninput="triggerLiveUpdate()" />
                                 </div>
                             </div>
                         </div>
@@ -539,16 +548,22 @@
                         </div>
                         <div class="studio-accordion-body">
                             <div class="mb-3">
-                                <label class="form-label text-xs fw-semibold">Button Background</label>
-                                <input asp-for="BtnPrimaryBg" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <label class="form-label text-xs fw-semibold">Button Background Color</label>
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="BtnPrimaryBg" class="color-hex-input" id="btnPrimaryBgHexInput" value="@Model.BtnPrimaryBg" />
+                                    <input type="color" class="color-picker-badge" id="btnPrimaryBgPicker" value="@Model.BtnPrimaryBg" />
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Button Text Color</label>
-                                <input asp-for="BtnPrimaryColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="BtnPrimaryColor" class="color-hex-input" id="btnPrimaryColorHexInput" value="@Model.BtnPrimaryColor" />
+                                    <input type="color" class="color-picker-badge" id="btnPrimaryColorPicker" value="@Model.BtnPrimaryColor" />
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label text-xs fw-semibold">Border Radius (px)</label>
-                                <input asp-for="BtnBorderRadius" type="number" class="form-control form-control-sm" min="0" max="50" oninput="triggerLiveUpdate()" />
+                                <input asp-for="BtnBorderRadius" type="number" class="form-control form-control-sm" id="btnBorderRadiusInput" min="0" max="50" oninput="triggerLiveUpdate()" />
                             </div>
                         </div>
                     </div>
@@ -556,17 +571,23 @@
                     <!-- Header Accordion -->
                     <div class="studio-accordion-item">
                         <div class="studio-accordion-header" onclick="toggleAccordion(this)">
-                            <span><i data-feather="layout" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Header</span>
+                            <span><i data-feather="layout" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Navbar &amp; Header</span>
                             <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
                         </div>
                         <div class="studio-accordion-body">
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Header BG Color</label>
-                                <input asp-for="HeaderBgColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="HeaderBgColor" class="color-hex-input" id="headerBgHexInput" value="@Model.HeaderBgColor" />
+                                    <input type="color" class="color-picker-badge" id="headerBgPicker" value="@Model.HeaderBgColor" />
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-xs fw-semibold">Header Link Color</label>
-                                <input asp-for="HeaderFontColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <label class="form-label text-xs fw-semibold">Header Link &amp; Text Color</label>
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="HeaderFontColor" class="color-hex-input" id="headerFontHexInput" value="@Model.HeaderFontColor" />
+                                    <input type="color" class="color-picker-badge" id="headerFontPicker" value="@Model.HeaderFontColor" />
+                                </div>
                             </div>
                             <div class="form-check form-switch mb-2">
                                 <input asp-for="HeaderSticky" class="form-check-input" type="checkbox" id="headerStickyCheck" onchange="triggerLiveUpdate()" />
@@ -588,15 +609,21 @@
                         <div class="studio-accordion-body">
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Footer BG Color</label>
-                                <input asp-for="FooterBgColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="FooterBgColor" class="color-hex-input" id="footerBgHexInput" value="@Model.FooterBgColor" />
+                                    <input type="color" class="color-picker-badge" id="footerBgPicker" value="@Model.FooterBgColor" />
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Footer Text Color</label>
-                                <input asp-for="FooterFontColor" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="FooterFontColor" class="color-hex-input" id="footerFontHexInput" value="@Model.FooterFontColor" />
+                                    <input type="color" class="color-picker-badge" id="footerFontPicker" value="@Model.FooterFontColor" />
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label text-xs fw-semibold">Footer About Summary</label>
-                                <textarea asp-for="FooterText" class="form-control form-control-sm" rows="2" oninput="triggerLiveUpdate()"></textarea>
+                                <textarea asp-for="FooterText" class="form-control form-control-sm" id="footerTextInput" rows="2" oninput="triggerLiveUpdate()"></textarea>
                             </div>
                         </div>
                     </div>
@@ -604,18 +631,73 @@
                     <!-- Layout & Spacing Accordion -->
                     <div class="studio-accordion-item">
                         <div class="studio-accordion-header" onclick="toggleAccordion(this)">
-                            <span><i data-feather="sliders" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Layout & Spacing</span>
+                            <span><i data-feather="sliders" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Layout &amp; Hero Gradient</span>
                             <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
                         </div>
                         <div class="studio-accordion-body">
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Hero BG Gradient From</label>
-                                <input asp-for="HeroBgFrom" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="HeroBgFrom" class="color-hex-input" id="heroBgFromHexInput" value="@Model.HeroBgFrom" />
+                                    <input type="color" class="color-picker-badge" id="heroBgFromPicker" value="@Model.HeroBgFrom" />
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Hero BG Gradient To</label>
-                                <input asp-for="HeroBgTo" type="color" class="form-control form-control-color w-full h-8 cursor-pointer rounded" onchange="triggerLiveUpdate()" />
+                                <div class="color-field-wrap">
+                                    <input type="text" asp-for="HeroBgTo" class="color-hex-input" id="heroBgToHexInput" value="@Model.HeroBgTo" />
+                                    <input type="color" class="color-picker-badge" id="heroBgToPicker" value="@Model.HeroBgTo" />
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Logo Upload Accordion -->
+                    <div class="studio-accordion-item">
+                        <div class="studio-accordion-header" onclick="toggleAccordion(this)">
+                            <span><i data-feather="image" class="w-3.5 h-3.5 me-1 text-muted inline"></i> Logo Upload</span>
+                            <i data-feather="chevron-down" class="w-4 h-4 acc-icon text-muted"></i>
+                        </div>
+                        <div class="studio-accordion-body">
+                            <form method="post" asp-area="Admin" asp-controller="Settings" asp-action="UploadLogo"
+                                  enctype="multipart/form-data" id="logoUploadForm">
+                                @Html.AntiForgeryToken()
+
+                                <!-- Main Logo -->
+                                <div class="mb-3">
+                                    <label class="form-label text-xs fw-semibold">Main Logo</label>
+                                    @if (!string.IsNullOrEmpty(Model.LogoPath))
+                                    {
+                                        <div class="mb-2 p-2 border rounded-lg text-center" style="background:#f9fafb;">
+                                            <img src="@Model.LogoPath" alt="Current Logo" style="max-height:50px;object-fit:contain;" />
+                                            <div class="text-xs text-muted mt-1">Current logo</div>
+                                        </div>
+                                    }
+                                    <input type="file" name="logoFile" class="form-control form-control-sm"
+                                           accept=".png,.jpg,.jpeg,.svg,.webp" id="logoFileInput" />
+                                    <div class="text-xs text-muted mt-1">PNG, JPG, SVG, WebP — shown in navbar &amp; footer</div>
+                                </div>
+
+                                <!-- Small / Icon Logo -->
+                                <div class="mb-3">
+                                    <label class="form-label text-xs fw-semibold">Small Logo / Icon</label>
+                                    @if (!string.IsNullOrEmpty(Model.LogoSmallPath))
+                                    {
+                                        <div class="mb-2 p-2 border rounded-lg text-center" style="background:#f9fafb;">
+                                            <img src="@Model.LogoSmallPath" alt="Current Small Logo" style="max-height:36px;object-fit:contain;" />
+                                            <div class="text-xs text-muted mt-1">Current small logo</div>
+                                        </div>
+                                    }
+                                    <input type="file" name="logoSmallFile" class="form-control form-control-sm"
+                                           accept=".png,.jpg,.jpeg,.svg,.webp" id="logoSmFileInput" />
+                                    <div class="text-xs text-muted mt-1">Used in admin sidebar &amp; favicon area</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-sm btn-success w-100 font-semibold" id="logoUploadBtn">
+                                    <i data-feather="upload" class="w-3.5 h-3.5 me-1 inline"></i> Upload Logo
+                                </button>
+                                <div id="logoUploadMsg" class="mt-2 text-xs"></div>
+                            </form>
                         </div>
                     </div>
 
@@ -632,15 +714,15 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Site Tagline</label>
-                                <input asp-for="SiteTagline" class="form-control form-control-sm" oninput="triggerLiveUpdate()" />
+                                <input asp-for="SiteTagline" class="form-control form-control-sm" id="siteTaglineInput" oninput="triggerLiveUpdate()" />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-xs fw-semibold">Contact Email</label>
-                                <input asp-for="SiteEmail" type="email" class="form-control form-control-sm" />
+                                <input asp-for="SiteEmail" type="email" class="form-control form-control-sm" id="siteEmailInput" />
                             </div>
                             <div class="mb-2">
                                 <label class="form-label text-xs fw-semibold">Contact Phone</label>
-                                <input asp-for="SitePhone" class="form-control form-control-sm" />
+                                <input asp-for="SitePhone" class="form-control form-control-sm" id="sitePhoneInput" />
                             </div>
                         </div>
                     </div>
@@ -698,165 +780,6 @@
         </div>
 
 
-        <!-- ══════════════════════════════════════
-             RIGHT PANEL: MANAGE SECTIONS
-        ═══════════════════════════════════════ -->
-        <div class="studio-panel">
-            <div class="studio-panel-header">
-                <h5 class="studio-panel-title">
-                    <i data-feather="list" class="w-4 h-4 text-indigo-500"></i> Manage Sections
-                </h5>
-            </div>
-
-            <div class="studio-panel-body">
-                <p class="text-xs text-muted mb-3">Re-order or toggle section visibility across your website.</p>
-
-                <!-- Hidden inputs for section visibility model binding -->
-                <input type="hidden" asp-for="ShowHeader" id="valShowHeader" value="@Model.ShowHeader.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowHeroSection" id="valShowHeroSection" value="@Model.ShowHeroSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowAboutUsSection" id="valShowAboutUsSection" value="@Model.ShowAboutUsSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowServicesSection" id="valShowServicesSection" value="@Model.ShowServicesSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowFeaturedCAsSection" id="valShowFeaturedCAsSection" value="@Model.ShowFeaturedCAsSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowTestimonialsSection" id="valShowTestimonialsSection" value="@Model.ShowTestimonialsSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowBlogSection" id="valShowBlogSection" value="@Model.ShowBlogSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowCtaSection" id="valShowCtaSection" value="@Model.ShowCtaSection.ToString().ToLower()" />
-                <input type="hidden" asp-for="ShowFooter" id="valShowFooter" value="@Model.ShowFooter.ToString().ToLower()" />
-                <input type="hidden" asp-for="SectionOrder" id="valSectionOrder" value="@Model.SectionOrder" />
-
-                <div class="sections-list" id="sectionsList">
-                    @{
-                        var orderKeys = (Model.SectionOrder ?? "header,hero,about,services,portfolio,testimonials,blog,cta,footer")
-                            .Split(',')
-                            .Select(k => k.Trim().ToLower())
-                            .ToList();
-                        
-                        var allKeys = new[] { "header", "hero", "about", "services", "portfolio", "testimonials", "blog", "cta", "footer" };
-                        foreach (var key in allKeys)
-                        {
-                            if (!orderKeys.Contains(key)) orderKeys.Add(key);
-                        }
-                    }
-
-                    @foreach (var key in orderKeys)
-                    {
-                        if (key == "header")
-                        {
-                            <div class="section-item @(!Model.ShowHeader ? "hidden-section" : "")" data-section="header">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Header</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowHeader ? "muted" : "")" onclick="toggleSectionVis('header', 'valShowHeader', this)">
-                                    <i data-feather="@(Model.ShowHeader ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "hero")
-                        {
-                            <div class="section-item @(!Model.ShowHeroSection ? "hidden-section" : "")" data-section="hero">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Hero Section</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowHeroSection ? "muted" : "")" onclick="toggleSectionVis('hero', 'valShowHeroSection', this)">
-                                    <i data-feather="@(Model.ShowHeroSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "about")
-                        {
-                            <div class="section-item @(!Model.ShowAboutUsSection ? "hidden-section" : "")" data-section="about">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>About Us</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowAboutUsSection ? "muted" : "")" onclick="toggleSectionVis('about', 'valShowAboutUsSection', this)">
-                                    <i data-feather="@(Model.ShowAboutUsSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "services")
-                        {
-                            <div class="section-item @(!Model.ShowServicesSection ? "hidden-section" : "")" data-section="services">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Services</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowServicesSection ? "muted" : "")" onclick="toggleSectionVis('services', 'valShowServicesSection', this)">
-                                    <i data-feather="@(Model.ShowServicesSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "portfolio")
-                        {
-                            <div class="section-item @(!Model.ShowFeaturedCAsSection ? "hidden-section" : "")" data-section="portfolio">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Portfolio / Featured CAs</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowFeaturedCAsSection ? "muted" : "")" onclick="toggleSectionVis('portfolio', 'valShowFeaturedCAsSection', this)">
-                                    <i data-feather="@(Model.ShowFeaturedCAsSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "testimonials")
-                        {
-                            <div class="section-item @(!Model.ShowTestimonialsSection ? "hidden-section" : "")" data-section="testimonials">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Testimonials</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowTestimonialsSection ? "muted" : "")" onclick="toggleSectionVis('testimonials', 'valShowTestimonialsSection', this)">
-                                    <i data-feather="@(Model.ShowTestimonialsSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "blog")
-                        {
-                            <div class="section-item @(!Model.ShowBlogSection ? "hidden-section" : "")" data-section="blog">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Blog</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowBlogSection ? "muted" : "")" onclick="toggleSectionVis('blog', 'valShowBlogSection', this)">
-                                    <i data-feather="@(Model.ShowBlogSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "cta")
-                        {
-                            <div class="section-item @(!Model.ShowCtaSection ? "hidden-section" : "")" data-section="cta">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Call To Action</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowCtaSection ? "muted" : "")" onclick="toggleSectionVis('cta', 'valShowCtaSection', this)">
-                                    <i data-feather="@(Model.ShowCtaSection ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                        else if (key == "footer")
-                        {
-                            <div class="section-item @(!Model.ShowFooter ? "hidden-section" : "")" data-section="footer">
-                                <div class="flex items-center">
-                                    <i data-feather="more-vertical" class="drag-handle w-4 h-4"></i>
-                                    <span>Footer</span>
-                                </div>
-                                <button type="button" class="eye-btn @(!Model.ShowFooter ? "muted" : "")" onclick="toggleSectionVis('footer', 'valShowFooter', this)">
-                                    <i data-feather="@(Model.ShowFooter ? "eye" : "eye-off")" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        }
-                    }
-                </div>
-
-                <!-- Add Section Button -->
-                <button type="button" class="btn btn-outline-primary w-full mt-3 font-semibold py-2.5 rounded-xl border-dashed flex items-center justify-center gap-1.5" onclick="showAddSectionModal()">
-                    <i data-feather="plus" class="w-4 h-4"></i> Add Section
-                </button>
-            </div>
-        </div>
-
     </div>
 </form>
 
@@ -911,82 +834,119 @@ function toggleAccordion(header) {
     if (typeof feather !== 'undefined') feather.replace();
 }
 
+// ── Color Pair Sync Helper ─────────────────────
+function setupColorPair(hexInputId, colorPickerId) {
+    var hexInput = document.getElementById(hexInputId);
+    var picker = document.getElementById(colorPickerId);
+    if (!hexInput || !picker) return;
+
+    hexInput.addEventListener('input', function() {
+        var val = this.value.trim();
+        if (!val.startsWith('#')) val = '#' + val;
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+            picker.value = val;
+            triggerLiveUpdate();
+        }
+    });
+
+    picker.addEventListener('input', function() {
+        hexInput.value = this.value.toUpperCase();
+        triggerLiveUpdate();
+    });
+
+    picker.addEventListener('change', function() {
+        hexInput.value = this.value.toUpperCase();
+        triggerLiveUpdate();
+    });
+}
+
+// Set up all color input pairs
+setupColorPair('primaryHexInput', 'primaryColorPicker');
+setupColorPair('secondaryHexInput', 'secondaryColorPicker');
+setupColorPair('headingHexInput', 'headingColorPicker');
+setupColorPair('btnPrimaryBgHexInput', 'btnPrimaryBgPicker');
+setupColorPair('btnPrimaryColorHexInput', 'btnPrimaryColorPicker');
+setupColorPair('headerBgHexInput', 'headerBgPicker');
+setupColorPair('headerFontHexInput', 'headerFontPicker');
+setupColorPair('footerBgHexInput', 'footerBgPicker');
+setupColorPair('footerFontHexInput', 'footerFontPicker');
+setupColorPair('heroBgFromHexInput', 'heroBgFromPicker');
+setupColorPair('heroBgToHexInput', 'heroBgToPicker');
+
 // ── Theme Presets Click Handler ────────────────
 document.querySelectorAll('#presetDots .preset-dot').forEach(function(dot) {
     dot.addEventListener('click', function() {
         document.querySelectorAll('#presetDots .preset-dot').forEach(d => d.classList.remove('active'));
         dot.classList.add('active');
 
-        var primary = dot.dataset.primary;
-        var secondary = dot.dataset.secondary;
+        var d = dot.dataset;
+        function setPair(hexId, pickerId, val) {
+            if (!val) return;
+            var h = document.getElementById(hexId);
+            var p = document.getElementById(pickerId);
+            if (h) h.value = val;
+            if (p) p.value = val;
+        }
 
-        if (primary) {
-            document.getElementById('primaryHexInput').value = primary;
-            document.getElementById('primaryColorPicker').value = primary;
-        }
-        if (secondary) {
-            document.getElementById('secondaryHexInput').value = secondary;
-            document.getElementById('secondaryColorPicker').value = secondary;
-        }
+        setPair('primaryHexInput', 'primaryColorPicker', d.primary);
+        setPair('secondaryHexInput', 'secondaryColorPicker', d.secondary);
+        setPair('headingHexInput', 'headingColorPicker', d.heading || d.primary);
+        setPair('btnPrimaryBgHexInput', 'btnPrimaryBgPicker', d.btnBg || d.primary);
+        setPair('btnPrimaryColorHexInput', 'btnPrimaryColorPicker', d.btnColor || '#FFFFFF');
+        setPair('headerBgHexInput', 'headerBgPicker', d.headerBg || '#FFFFFF');
+        setPair('headerFontHexInput', 'headerFontPicker', d.headerFont || d.primary);
+        setPair('footerBgHexInput', 'footerBgPicker', d.footerBg || '#0d1f33');
+        setPair('footerFontHexInput', 'footerFontPicker', d.footerFont || 'rgba(255,255,255,0.7)');
+        setPair('heroBgFromHexInput', 'heroBgFromPicker', d.heroFrom || '#0a1628');
+        setPair('heroBgToHexInput', 'heroBgToPicker', d.heroTo || '#1a2a4a');
 
         triggerLiveUpdate();
     });
 });
 
-// Hex Input Sync with Color Picker
-document.getElementById('primaryHexInput').addEventListener('input', function() {
-    var hex = this.value.trim();
-    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-        document.getElementById('primaryColorPicker').value = hex;
-        triggerLiveUpdate();
-    }
-});
-
-document.getElementById('secondaryHexInput').addEventListener('input', function() {
-    var hex = this.value.trim();
-    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-        document.getElementById('secondaryColorPicker').value = hex;
-        triggerLiveUpdate();
-    }
-});
-
-// ── Section Visibility Toggle ──────────────────
-function toggleSectionVis(sectionKey, inputId, btn) {
-    var hiddenInput = document.getElementById(inputId);
-    var item = btn.closest('.section-item');
-    var isVisible = hiddenInput.value.toLowerCase() === 'true';
-
-    var newVis = !isVisible;
-    hiddenInput.value = newVis ? 'true' : 'false';
-
-    if (newVis) {
-        item.classList.remove('hidden-section');
-        btn.classList.remove('muted');
-        btn.innerHTML = '<i data-feather="eye" class="w-4 h-4"></i>';
-    } else {
-        item.classList.add('hidden-section');
-        btn.classList.add('muted');
-        btn.innerHTML = '<i data-feather="eye-off" class="w-4 h-4"></i>';
-    }
-
-    if (typeof feather !== 'undefined') feather.replace();
-    triggerLiveUpdate();
+// ── Hex to RGB Helper ──────────────────────────
+function hexToRgb(hex) {
+    if (!hex || typeof hex !== 'string') return '79, 70, 229';
+    hex = hex.trim().replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0] + hex[1]+hex[1] + hex[2]+hex[2];
+    if (hex.length !== 6) return '79, 70, 229';
+    var r = parseInt(hex.substring(0, 2), 16) || 0;
+    var g = parseInt(hex.substring(2, 4), 16) || 0;
+    var b = parseInt(hex.substring(4, 6), 16) || 0;
+    return r + ', ' + g + ', ' + b;
 }
 
-// ── Real-time Live Preview Binding ─────────────
+// ── Real-Time Live Preview Sync ────────────────
 function triggerLiveUpdate() {
     var iframe = document.getElementById('livePreviewIframe');
-    if (!iframe || !iframe.contentWindow) return;
+    if (!iframe) return;
 
     try {
-        var doc = iframe.contentDocument || iframe.contentWindow.document;
-        if (!doc) return;
+        var doc = iframe.contentDocument || (iframe.contentWindow ? iframe.contentWindow.document : null);
+        if (!doc || !doc.head) return;
 
-        var primary = document.getElementById('primaryHexInput').value;
-        var secondary = document.getElementById('secondaryHexInput').value;
-        var fontFamily = document.getElementById('fontFamilySelect').value;
+        var primary       = document.getElementById('primaryHexInput')?.value || '#4F46E5';
+        var secondary     = document.getElementById('secondaryHexInput')?.value || '#10B981';
+        var bodyFont      = document.getElementById('fontFamilySelect')?.value || 'Inter';
+        var headingFont   = document.getElementById('headingFontSelect')?.value || 'Playfair Display';
+        var headingColor  = document.getElementById('headingHexInput')?.value || '#0d1f33';
+        var bodyFontSize  = document.getElementById('bodyFontSizeInput')?.value || '15';
+        var h1Size        = document.getElementById('h1SizeInput')?.value || '48';
+        var h2Size        = document.getElementById('h2SizeInput')?.value || '36';
+        var btnBg         = document.getElementById('btnPrimaryBgHexInput')?.value || primary;
+        var btnColor      = document.getElementById('btnPrimaryColorHexInput')?.value || '#ffffff';
+        var btnRadius     = document.getElementById('btnBorderRadiusInput')?.value || '8';
+        var headerBg      = document.getElementById('headerBgHexInput')?.value || '#ffffff';
+        var headerFont    = document.getElementById('headerFontHexInput')?.value || '#1a3c5e';
+        var footerBg      = document.getElementById('footerBgHexInput')?.value || '#0d1f33';
+        var footerFont    = document.getElementById('footerFontHexInput')?.value || 'rgba(255,255,255,0.7)';
+        var heroBgFrom    = document.getElementById('heroBgFromHexInput')?.value || '#0a1628';
+        var heroBgTo      = document.getElementById('heroBgToHexInput')?.value || '#1a2a4a';
 
-        // Apply dynamic CSS variable updates directly to iframe root
+        var primaryRgb    = hexToRgb(primary);
+        var secondaryRgb  = hexToRgb(secondary);
+        var headerFontRgb = hexToRgb(headerFont);
+
         var styleEl = doc.getElementById('dynamicStudioStyle');
         if (!styleEl) {
             styleEl = doc.createElement('style');
@@ -994,40 +954,259 @@ function triggerLiveUpdate() {
             doc.head.appendChild(styleEl);
         }
 
-        // Hide/show sections based on current visibility values in left/right panels
-        var showHeader = document.getElementById('valShowHeader').value.toLowerCase() === 'true';
-        var showHero = document.getElementById('valShowHeroSection').value.toLowerCase() === 'true';
-        var showAbout = document.getElementById('valShowAboutUsSection').value.toLowerCase() === 'true';
-        var showServices = document.getElementById('valShowServicesSection').value.toLowerCase() === 'true';
-        var showPortfolio = document.getElementById('valShowFeaturedCAsSection').value.toLowerCase() === 'true';
-        var showTestimonials = document.getElementById('valShowTestimonialsSection').value.toLowerCase() === 'true';
-        var showBlog = document.getElementById('valShowBlogSection').value.toLowerCase() === 'true';
-        var showCta = document.getElementById('valShowCtaSection').value.toLowerCase() === 'true';
-        var showFooter = document.getElementById('valShowFooter').value.toLowerCase() === 'true';
-
         styleEl.innerHTML = `
             :root {
                 --primary: ${primary} !important;
+                --primary-light: ${primary} !important;
                 --secondary: ${secondary} !important;
-                --body-font: '${fontFamily}', sans-serif !important;
+                --accent: ${secondary} !important;
+                --accent-light: ${secondary} !important;
+                --dark: ${headingColor} !important;
+                --body-bg: #ffffff !important;
+                --body-color: #374151 !important;
+                --body-font-size: ${bodyFontSize}px !important;
+                --body-font: '${bodyFont}', sans-serif !important;
+                --heading-font: '${headingFont}', serif !important;
+                --heading-color: ${headingColor} !important;
+                --h1-size: ${h1Size}px !important;
+                --h2-size: ${h2Size}px !important;
+                --header-bg: ${headerBg} !important;
+                --header-color: ${headerFont} !important;
+                --footer-bg: ${footerBg} !important;
+                --footer-color: ${footerFont} !important;
+                --btn-bg: ${btnBg} !important;
+                --btn-color: ${btnColor} !important;
+                --btn-radius: ${btnRadius}px !important;
+                --hero-bg-from: ${heroBgFrom} !important;
+                --hero-bg-to: ${heroBgTo} !important;
+                --gradient-hero: linear-gradient(135deg, ${heroBgFrom} 0%, ${heroBgTo} 100%) !important;
+                --gradient-accent: linear-gradient(135deg, ${primary} 0%, ${secondary} 100%) !important;
             }
+
+            /* Body */
             body {
-                font-family: '${fontFamily}', sans-serif !important;
+                font-family: '${bodyFont}', sans-serif !important;
+                font-size: ${bodyFontSize}px !important;
             }
-            .ca-navbar { display: ${showHeader ? 'block' : 'none'} !important; }
-            .hero-v2 { display: ${showHero ? 'block' : 'none'} !important; }
-            .why-choose-section, .expert-band, .how-section { display: ${showAbout ? 'block' : 'none'} !important; }
-            .services-grid-section { display: ${showServices ? 'block' : 'none'} !important; }
-            .professionals-section { display: ${showPortfolio ? 'block' : 'none'} !important; }
-            .testimonials-section { display: ${showTestimonials ? 'block' : 'none'} !important; }
-            .faq-section { display: ${showBlog ? 'block' : 'none'} !important; }
-            .cta-section { display: ${showCta ? 'block' : 'none'} !important; }
-            .ca-footer { display: ${showFooter ? 'block' : 'none'} !important; }
+
+            /* All Headings & Titles */
+            h1, h2, h3, h4, h5, h6,
+            .section-title,
+            .wcu-title,
+            .hero-title,
+            .hero-v2-title,
+            .expert-band-title,
+            .step-card h5,
+            .feature-card h5,
+            .prof-name,
+            .testi-name,
+            .footer-heading,
+            .hcard-title,
+            .service-title {
+                font-family: '${headingFont}', serif !important;
+                color: ${headingColor} !important;
+            }
+
+            h1 { font-size: ${h1Size}px !important; }
+            h2, .section-title, .wcu-title { font-size: ${h2Size}px !important; }
+
+            /* Subheaders / Spans / Highlights */
+            .section-title span,
+            .wcu-title span,
+            .hero-title .highlight,
+            .hero-v2-gold,
+            .cta-section .section-title span {
+                color: ${secondary} !important;
+                background: none !important;
+                -webkit-text-fill-color: ${secondary} !important;
+            }
+
+            /* Subheaders / Descriptions / Paragraphs */
+            .section-desc,
+            .wcu-subtitle,
+            .hero-subtitle,
+            .hero-v2-sub,
+            .expert-band-sub,
+            .service-desc,
+            .wcu-card-desc,
+            .prof-designation,
+            .prof-meta,
+            .testi-text,
+            .testi-role,
+            .footer-tagline,
+            .footer-links a,
+            .footer-copy {
+                font-family: '${bodyFont}', sans-serif !important;
+            }
+
+            /* Section Badges / Accents */
+            .section-badge,
+            .wcu-badge-main,
+            .hero-badge,
+            .popular-badge {
+                color: ${primary} !important;
+                border-color: ${primary} !important;
+                background: rgba(${primaryRgb}, 0.12) !important;
+            }
+            .wcu-line, .wcu-header-icon {
+                background: ${secondary} !important;
+                color: ${secondary} !important;
+            }
+
+            /* Navbar & Header */
+            .ca-navbar {
+                background: ${headerBg} !important;
+                border-bottom: 1px solid rgba(${headerFontRgb}, 0.15) !important;
+            }
+            .ca-navbar.scrolled {
+                background: ${headerBg} !important;
+            }
+            .ca-navbar .nav-link,
+            .ca-navbar .navbar-nav .nav-link {
+                color: ${headerFont} !important;
+                font-family: '${bodyFont}', sans-serif !important;
+            }
+            .ca-navbar .nav-link:hover,
+            .ca-navbar .navbar-nav .nav-link:hover {
+                color: ${secondary} !important;
+                background: rgba(${primaryRgb}, 0.08) !important;
+            }
+            .brand-name {
+                color: ${headerFont} !important;
+            }
+            .brand-ca {
+                color: ${secondary} !important;
+            }
+            .brand-icon {
+                background: linear-gradient(135deg, ${primary}, ${secondary}) !important;
+                color: ${btnColor} !important;
+            }
+
+            /* Buttons */
+            .btn-hero-primary,
+            .btn-primary,
+            .btn-nav-cta,
+            .btn-pricing-primary,
+            .btn-connect,
+            .btn-cta-white {
+                background: ${btnBg} !important;
+                color: ${btnColor} !important;
+                border-radius: ${btnRadius}px !important;
+                border-color: ${btnBg} !important;
+            }
+            .btn-hero-primary:hover,
+            .btn-primary:hover,
+            .btn-nav-cta:hover,
+            .btn-pricing-primary:hover,
+            .btn-connect:hover,
+            .btn-cta-white:hover {
+                filter: brightness(1.1);
+                color: ${btnColor} !important;
+            }
+            .btn-hero-secondary,
+            .btn-cta-outline,
+            .btn-nav-login {
+                border-color: ${primary} !important;
+                color: ${primary} !important;
+                border-radius: ${btnRadius}px !important;
+            }
+
+            /* Cards, Icons & Hover Borders */
+            .service-card:hover,
+            .wcu-card:hover,
+            .prof-card:hover,
+            .testi-card:hover,
+            .feature-card:hover,
+            .pricing-card:hover {
+                border-color: ${primary} !important;
+            }
+            .service-icon,
+            .wcu-card-icon-wrap {
+                border-color: ${secondary} !important;
+                color: ${secondary} !important;
+            }
+            .wcu-card:hover .wcu-card-icon-wrap {
+                background: ${secondary} !important;
+                color: #ffffff !important;
+            }
+            .step-card:nth-child(odd) .step-number {
+                background: ${primary} !important;
+                color: #ffffff !important;
+            }
+            .step-card:nth-child(even) .step-number {
+                background: ${secondary} !important;
+                color: #ffffff !important;
+            }
+            .prof-card-header {
+                background: linear-gradient(135deg, ${primary} 0%, ${secondary} 100%) !important;
+            }
+            .prof-tag {
+                background: rgba(${primaryRgb}, 0.1) !important;
+                color: ${primary} !important;
+                border-color: rgba(${primaryRgb}, 0.2) !important;
+            }
+            .testi-quote,
+            .testi-stars,
+            .prof-rating {
+                color: ${secondary} !important;
+            }
+            .faq-accordion .accordion-button:not(.collapsed) {
+                background: rgba(${primaryRgb}, 0.08) !important;
+                color: ${primary} !important;
+            }
+
+            /* Hero & CTA */
+            .hero-section,
+            .hero-v2,
+            .cta-section {
+                background: linear-gradient(135deg, ${heroBgFrom} 0%, ${heroBgTo} 100%) !important;
+            }
+            .expert-band {
+                background: rgba(${primaryRgb}, 0.05) !important;
+                border-color: rgba(${primaryRgb}, 0.15) !important;
+            }
+
+            /* Footer */
+            .ca-footer {
+                background: ${footerBg} !important;
+                color: ${footerFont} !important;
+            }
+            .footer-heading {
+                color: ${secondary} !important;
+            }
+            .footer-links a {
+                color: ${footerFont} !important;
+            }
+            .footer-links a:hover {
+                color: ${secondary} !important;
+            }
+            .btn-gold-compact {
+                background: ${secondary} !important;
+            }
         `;
+
+        // Live text sync
+        var siteNameInput = document.getElementById('siteNameInput');
+        if (siteNameInput) {
+            var brandElems = doc.querySelectorAll('.brand-name, .footer-brand-name');
+            brandElems.forEach(el => { el.textContent = siteNameInput.value; });
+        }
+        var footerTextInput = document.getElementById('footerTextInput');
+        if (footerTextInput) {
+            var footerTagline = doc.querySelector('.footer-tagline');
+            if (footerTagline) footerTagline.textContent = footerTextInput.value;
+        }
     } catch (e) {
-        // Cross-origin fallback iframe reload
-        iframe.src = iframe.src;
+        console.warn('Live preview sync:', e);
     }
+}
+
+// ── Run Live Update on Iframe Load ─────────────
+var liveIframe = document.getElementById('livePreviewIframe');
+if (liveIframe) {
+    liveIframe.addEventListener('load', function() {
+        triggerLiveUpdate();
+    });
 }
 
 // ── AJAX Form Submission ───────────────────────
@@ -1098,60 +1277,10 @@ function showToast(msg, isError) {
     }, 3000);
 }
 
-function showAddSectionModal() {
-    alert('Select section from library to insert into page.');
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof feather !== 'undefined') feather.replace();
-
-    // Initialize HTML5 Drag and Drop for Section Reordering
-    var list = document.getElementById('sectionsList');
-    var dragEl = null;
-
-    if (list) {
-        list.querySelectorAll('.section-item').forEach(function(item) {
-            item.setAttribute('draggable', 'true');
-
-            item.addEventListener('dragstart', function(e) {
-                dragEl = item;
-                e.dataTransfer.effectAllowed = 'move';
-                item.classList.add('dragging');
-                e.dataTransfer.setData('text/plain', item.dataset.section);
-            });
-
-            item.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                
-                var target = e.target.closest('.section-item');
-                if (target && target !== dragEl) {
-                    var rect = target.getBoundingClientRect();
-                    var next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-                    list.insertBefore(dragEl, next ? target.nextSibling : target);
-                }
-            });
-
-            item.addEventListener('dragend', function(e) {
-                item.classList.remove('dragging');
-                updateSectionOrderInput();
-            });
-        });
-    }
-
-    function updateSectionOrderInput() {
-        var items = list.querySelectorAll('.section-item');
-        var keys = [];
-        items.forEach(function(item) {
-            var sec = item.getAttribute('data-section');
-            if (sec) keys.push(sec);
-        });
-        var orderVal = keys.join(',');
-        var hiddenOrder = document.getElementById('valSectionOrder');
-        if (hiddenOrder) {
-            hiddenOrder.value = orderVal;
-        }
-    }
+    // Initial live update sync
+    setTimeout(triggerLiveUpdate, 500);
 });
 </script>
 }

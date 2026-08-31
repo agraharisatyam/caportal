@@ -19,7 +19,45 @@ namespace caportal.Areas.Admin.Controllers
             _env = env;
         }
 
-        // GET /Admin/Settings
+        // GET /Admin/Settings/ManageSections
+        [HttpGet]
+        public IActionResult ManageSections()
+        {
+            ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
+            return View(_settingsService.Get());
+        }
+
+        // POST /Admin/Settings/SaveSections
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SaveSections(
+            bool ShowHeader, bool ShowHeroSection, bool ShowAboutUsSection,
+            bool ShowServicesSection, bool ShowFeaturedCAsSection, bool ShowTestimonialsSection,
+            bool ShowBlogSection, bool ShowCtaSection, bool ShowFooter,
+            string? SectionOrder)
+        {
+            var settings = _settingsService.Get();
+            settings.ShowHeader             = ShowHeader;
+            settings.ShowHeroSection        = ShowHeroSection;
+            settings.ShowAboutUsSection     = ShowAboutUsSection;
+            settings.ShowServicesSection    = ShowServicesSection;
+            settings.ShowFeaturedCAsSection = ShowFeaturedCAsSection;
+            settings.ShowTestimonialsSection = ShowTestimonialsSection;
+            settings.ShowBlogSection        = ShowBlogSection;
+            settings.ShowCtaSection         = ShowCtaSection;
+            settings.ShowFooter             = ShowFooter;
+            if (!string.IsNullOrEmpty(SectionOrder))
+                settings.SectionOrder = SectionOrder;
+            _settingsService.Save(settings);
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = true, message = "Section settings saved!" });
+
+            TempData["Success"] = "Section settings saved successfully!";
+            return RedirectToAction("ManageSections");
+        }
+
+        // GET /Admin/Settings (Index)
         [HttpGet]
         public IActionResult Index()
         {

@@ -30,13 +30,34 @@ public class SiteSettings
     public string BodyFontFamily  { get; set; } = "Inter";
 
     // ── Hero Section ──────────────────────────────────
+    public string HeroMode        { get; set; } = "image"; // "image" or "content"
+    public string HeroBannerImage { get; set; } = "/images/hero-banner.png";
+    public string HeroBannerMobileImage { get; set; } = "";
+    public string HeroBannerLink  { get; set; } = "";
+    public string HeroBannerAlt   { get; set; } = "CA & Legal Compliance Platform";
     public string HeroBgFrom      { get; set; } = "#0a1628";
     public string HeroBgTo        { get; set; } = "#1a2a4a";
     public string HeroTitleColor  { get; set; } = "#ffffff";
     public string HeroSubColor    { get; set; } = "rgba(255,255,255,0.72)";
     public string HeroAccentColor { get; set; } = "#d4a017";
+    public string HeroBadge       { get; set; } = "⭐ India's #1 Verified CA Network";
     public string HeroTitle       { get; set; } = "CA & Legal Compliance Platform";
-    public string HeroSubtitle    { get; set; } = "Connecting businesses with ICAI-verified Chartered Accountants across India.";
+    public string HeroTitleHighlight { get; set; } = "Verified Chartered Accountants";
+    public string HeroSubtitle    { get; set; } = "Connecting businesses with ICAI-verified Chartered Accountants across India for Tax, Audit, GST & Compliance.";
+    public string HeroPrimaryCtaText { get; set; } = "Find a CA";
+    public string HeroPrimaryCtaUrl  { get; set; } = "/find-expert";
+    public string HeroSecondaryCtaText { get; set; } = "Explore Services";
+    public string HeroSecondaryCtaUrl  { get; set; } = "/#features";
+    public bool   HeroShowSearch  { get; set; } = true;
+    public bool   HeroShowStats   { get; set; } = true;
+    public string HeroStat1Count  { get; set; } = "500+";
+    public string HeroStat1Label  { get; set; } = "Verified CAs";
+    public string HeroStat2Count  { get; set; } = "10,000+";
+    public string HeroStat2Label  { get; set; } = "Clients Served";
+    public string HeroStat3Count  { get; set; } = "99.4%";
+    public string HeroStat3Label  { get; set; } = "Satisfaction Rate";
+    public string HeroStat4Count  { get; set; } = "150+";
+    public string HeroStat4Label  { get; set; } = "Cities Across India";
 
     // ── Accent / Brand Colors ─────────────────────────
     public string AccentColor     { get; set; } = "#d4a017";

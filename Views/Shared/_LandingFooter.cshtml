@@ -21,8 +21,7 @@
                     }
                     else
                     {
-                        <div class="brand-icon" aria-hidden="true">CA</div>
-                        <span class="brand-name"><span>CA</span>Campus</span>
+                        <img src="/images/site-logo-sm.png" alt="@settings.SiteName" class="site-logo-footer" />
                     }
                 </div>
                 <p class="footer-about">@(!string.IsNullOrEmpty(settings.FooterText) ? settings.FooterText : "CA Chartered Campus is your trusted partner for all CA, Tax, Compliance, Audit and Legal services. We help businesses stay compliant and achieve growth with confidence.")</p>
@@ -111,25 +110,18 @@
                         <span>Mon - Sat: 9:00 AM - 8:00 PM</span>
                     </li>
                 </ul>
-            </div>
-        </div>
 
-        <!-- Newsletter Subscription Row -->
-        <div class="footer-newsletter-row">
-            <div class="newsletter-left">
-                <div class="newsletter-icon-circle">
-                  <i style="font-size: 104px;color: gold !important;background: rgba(255, 215, 0, 0.1);padding: 10px;border-radius: 50%;" class="fas fa-mail-bulk"></i>
+                <!-- Compact Newsletter Under Get In Touch -->
+                <div class="footer-compact-newsletter mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.08);">
+                    <h6 class="footer-heading mb-1" style="font-size: 0.8rem; letter-spacing: 0.5px; margin-bottom: 4px !important;">NEWSLETTER</h6>
+                    <p class="footer-newsletter-sub mb-2" style="font-size: 0.76rem; line-height: 1.35; color: rgba(255,255,255,0.6) !important;">Subscribe to get the latest tax &amp; compliance updates.</p>
+                    <form class="compact-newsletter-form d-flex gap-1" onsubmit="event.preventDefault(); alert('Subscribed successfully!'); this.reset();">
+                        <input type="email" placeholder="Enter your email" class="form-control form-control-sm compact-news-input" required />
+                        <button type="submit" class="btn btn-sm btn-gold-compact" title="Subscribe">
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                        </button>
+                    </form>
                 </div>
-                <div class="newsletter-text-wrap">
-                    <h5 class="newsletter-title">SUBSCRIBE TO OUR NEWSLETTER</h5>
-                    <p class="newsletter-desc">Get the latest updates, tips and offers straight to your inbox.</p>
-                </div>
-            </div>
-            <div class="newsletter-right">
-                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!'); this.reset();">
-                    <input type="email" placeholder="Enter your email address" class="newsletter-input" required />
-                    <button type="submit" class="newsletter-btn">Subscribe Now <i class="fas fa-paper-plane ms-2" aria-hidden="true"></i></button>
-                </form>
             </div>
         </div>
     </div>

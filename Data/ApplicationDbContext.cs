@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<SiteSettingsRecord> SiteSettings { get; set; } = null!;
     public DbSet<CoveredService> CoveredServices { get; set; } = null!;
     public DbSet<WhyChooseUsItem> WhyChooseUsItems { get; set; } = null!;
+    public DbSet<HeroBannerSlide> HeroBannerSlides { get; set; } = null!;
 }
 
 public class TodoItem

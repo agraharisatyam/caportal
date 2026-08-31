@@ -165,10 +165,67 @@ namespace caportal.Controllers
                 await db.SaveChangesAsync();
             }
 
+            // Load Hero Banner slides from DB, seed default if empty
+            List<HeroBannerSlide> heroSlides = new();
+            try
+            {
+                var createTableSql = @"
+                    IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = N'HeroBannerSlides')
+                    BEGIN
+                        CREATE TABLE [HeroBannerSlides] (
+                            [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                            [Title] NVARCHAR(200) NOT NULL DEFAULT '',
+                            [Subtitle] NVARCHAR(500) NULL,
+                            [Badge] NVARCHAR(100) NULL,
+                            [ImagePath] NVARCHAR(500) NOT NULL DEFAULT '/images/hero-banner.png',
+                            [MobileImagePath] NVARCHAR(500) NULL,
+                            [LinkUrl] NVARCHAR(500) NULL,
+                            [ButtonText] NVARCHAR(100) NULL,
+                            [ButtonUrl] NVARCHAR(500) NULL,
+                            [SecondaryButtonText] NVARCHAR(100) NULL,
+                            [SecondaryButtonUrl] NVARCHAR(500) NULL,
+                            [DisplayOrder] INT NOT NULL DEFAULT 0,
+                            [IsActive] BIT NOT NULL DEFAULT 1,
+                            [SlideType] NVARCHAR(50) NOT NULL DEFAULT 'image',
+                            [BgGradientFrom] NVARCHAR(50) NULL DEFAULT '#0a1628',
+                            [BgGradientTo] NVARCHAR(50) NULL DEFAULT '#1a2a4a',
+                            [CreatedAt] DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+                        );
+                    END";
+                db.Database.ExecuteSqlRaw(createTableSql);
+
+                heroSlides = await db.HeroBannerSlides.Where(s => s.IsActive).OrderBy(s => s.DisplayOrder).ToListAsync();
+                if (!heroSlides.Any())
+                {
+                    var defaultSlide = new HeroBannerSlide
+                    {
+                        Title = "CA & Legal Compliance Platform",
+                        Subtitle = "Connecting businesses with ICAI-verified Chartered Accountants across India.",
+                        Badge = "⭐ India's #1 Verified CA Network",
+                        ImagePath = !string.IsNullOrEmpty(settings.HeroBannerImage) ? settings.HeroBannerImage : "/images/hero-banner.png",
+                        MobileImagePath = settings.HeroBannerMobileImage,
+                        LinkUrl = settings.HeroBannerLink,
+                        ButtonText = settings.HeroPrimaryCtaText ?? "Find a CA",
+                        ButtonUrl = settings.HeroPrimaryCtaUrl ?? "/find-expert",
+                        DisplayOrder = 1,
+                        IsActive = true,
+                        SlideType = settings.HeroMode ?? "image"
+                    };
+                    db.HeroBannerSlides.Add(defaultSlide);
+                    await db.SaveChangesAsync();
+                    heroSlides = new List<HeroBannerSlide> { defaultSlide };
+                }
+            }
+            catch
+            {
+                // Fallback
+            }
+
             var vm = new HomeViewModel
             {
                 Services = services,
                 WhyChooseUsItems = whyChooseUsItems,
+                HeroBannerSlides = heroSlides,
                 Stats = new SiteStats
                 {
                     TotalCAs          = "Active",
