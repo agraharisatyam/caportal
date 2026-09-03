@@ -995,7 +995,6 @@ function triggerLiveUpdate() {
             .wcu-title,
             .hero-title,
             .hero-v2-title,
-            .expert-band-title,
             .step-card h5,
             .feature-card h5,
             .prof-name,
@@ -1007,6 +1006,43 @@ function triggerLiveUpdate() {
                 color: ${headingColor} !important;
             }
 
+            /* Expert Band — Dark navy background requires white text & button */
+            .expert-band-title {
+                color: #ffffff !important;
+            }
+            .expert-band-sub {
+                color: rgba(255, 255, 255, 0.88) !important;
+            }
+            .expert-band .btn-hero-secondary {
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.5) !important;
+                background: rgba(255, 255, 255, 0.08) !important;
+            }
+
+            /* CTA Section — Dark navy background requires white text & button */
+            .cta-section .section-title {
+                color: #ffffff !important;
+            }
+            .cta-section .section-title span {
+                color: #f0c040 !important;
+                background: linear-gradient(135deg, #ffd700 0%, #d4a017 100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+            }
+            .cta-section .section-desc {
+                color: rgba(255, 255, 255, 0.88) !important;
+            }
+            .cta-section .section-badge {
+                color: #f0c040 !important;
+                border-color: rgba(212, 160, 23, 0.45) !important;
+                background: rgba(212, 160, 23, 0.15) !important;
+            }
+            .cta-section .btn-cta-outline {
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.45) !important;
+                background: rgba(255, 255, 255, 0.08) !important;
+            }
+
             h1 { font-size: ${h1Size}px !important; }
             h2, .section-title, .wcu-title { font-size: ${h2Size}px !important; }
 
@@ -1014,8 +1050,7 @@ function triggerLiveUpdate() {
             .section-title span,
             .wcu-title span,
             .hero-title .highlight,
-            .hero-v2-gold,
-            .cta-section .section-title span {
+            .hero-v2-gold {
                 color: ${secondary} !important;
                 background: none !important;
                 -webkit-text-fill-color: ${secondary} !important;
@@ -1026,7 +1061,6 @@ function triggerLiveUpdate() {
             .wcu-subtitle,
             .hero-subtitle,
             .hero-v2-sub,
-            .expert-band-sub,
             .service-desc,
             .wcu-card-desc,
             .prof-designation,
@@ -1104,7 +1138,6 @@ function triggerLiveUpdate() {
                 color: ${btnColor} !important;
             }
             .btn-hero-secondary,
-            .btn-cta-outline,
             .btn-nav-login {
                 border-color: ${primary} !important;
                 color: ${primary} !important;

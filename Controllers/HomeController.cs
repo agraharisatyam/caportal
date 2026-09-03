@@ -221,6 +221,42 @@ namespace caportal.Controllers
                 // Fallback
             }
 
+            var dbCas = await db.CaProfessionals
+                .Where(c => c.Status == "Active")
+                .OrderByDescending(c => c.IsFeatured)
+                .ThenBy(c => c.DisplayOrder)
+                .ThenByDescending(c => c.Rating)
+                .Take(10)
+                .ToListAsync();
+
+            var dbTestimonials = await db.Testimonials
+                .Where(t => t.IsActive)
+                .OrderBy(t => t.DisplayOrder)
+                .Select(t => new Testimonial
+                {
+                    Text = t.Text,
+                    AuthorName = t.AuthorName,
+                    AuthorRole = t.AuthorRole,
+                    Initials = t.Initials,
+                    Rating = t.Rating
+                })
+                .ToListAsync();
+
+            var dbFaqs = await db.Faqs
+                .Where(f => f.IsActive)
+                .OrderBy(f => f.DisplayOrder)
+                .Select(f => new FaqItem
+                {
+                    Question = f.Question,
+                    Answer = f.Answer
+                })
+                .ToListAsync();
+
+            var dbPricingPlans = await db.PricingPlans
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.DisplayOrder)
+                .ToListAsync();
+
             var vm = new HomeViewModel
             {
                 Services = services,
@@ -228,43 +264,34 @@ namespace caportal.Controllers
                 HeroBannerSlides = heroSlides,
                 Stats = new SiteStats
                 {
-                    TotalCAs          = "Active",
+                    TotalCAs          = $"{Math.Max(500, dbCas.Count)}+",
                     ClientSatisfaction = "98%",
-                    CasesHandled      = "Verified",
+                    CasesHandled      = "50K+",
                     Cities            = "Pan-India"
                 },
-                FeaturedProfessionals =
-                [
-                    new CaProfessional { Id=1,  Name="CA Priya Mehta",    Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit"],          Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsFeatured=true,  JoinedOn=new DateTime(2026,6,1),  Status="Active",  ImagePath="/images/ca/ca-priya-mehta.svg" },
-                    new CaProfessional { Id=2,  Name="CA Rajesh Sharma",  Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA"],           Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsFeatured=true,  JoinedOn=new DateTime(2026,6,5),  Status="Active",  ImagePath="/images/ca/ca-rajesh-sharma.svg" },
-                    new CaProfessional { Id=3,  Name="CA Anita Krishnan", Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC"],              Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsFeatured=true,  JoinedOn=new DateTime(2026,6,10), Status="Active",  ImagePath="/images/ca/ca-anita-krishnan.svg" },
-                    new CaProfessional { Id=4,  Name="CA Vikram Joshi",   Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA"],             Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsFeatured=true,  JoinedOn=new DateTime(2026,6,12), Status="Pending", ImagePath="/images/ca/ca-vikram-joshi.svg" },
-                    new CaProfessional { Id=5,  Name="CA Sunita Patel",   Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST"],                   Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsFeatured=false, JoinedOn=new DateTime(2026,6,15), Status="Active",  ImagePath="/images/ca/ca-priya-mehta.svg" },
-                    new CaProfessional { Id=6,  Name="CA Mohit Agarwal",  Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing"],  Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsFeatured=false, JoinedOn=new DateTime(2026,6,18), Status="Active",  ImagePath="/images/ca/ca-rajesh-sharma.svg" },
-                    new CaProfessional { Id=7,  Name="CA Deepa Nair",     Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance"],             Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsFeatured=false, JoinedOn=new DateTime(2026,6,20), Status="Suspended", ImagePath="/images/ca/ca-anita-krishnan.svg"},
-                    new CaProfessional { Id=8,  Name="CA Arjun Singh",    Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax"],          Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsFeatured=false, JoinedOn=new DateTime(2026,6,25), Status="Active",  ImagePath="/images/ca/ca-vikram-joshi.svg" },
-                    new CaProfessional { Id=9,  Name="CA Kavita Rao",     Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax"],       Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsFeatured=false, JoinedOn=new DateTime(2026,6,28), Status="Pending", ImagePath="/images/ca/ca-priya-mehta.svg" },
-                    new CaProfessional { Id=10, Name="CA Nitin Gupta",    Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA"],              Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsFeatured=false, JoinedOn=new DateTime(2026,6,30), Status="Active",  ImagePath="/images/ca/ca-rajesh-sharma.svg" },
-                ],
-                Testimonials =
-                [
-                    new Testimonial { Text="Found a GST specialist quickly after posting. The CA resolved our entire compliance backlog seamlessly. Outstanding experience.", AuthorName="Suresh G.",  AuthorRole="Business Owner", Initials="SG", Rating=5 },
-                    new Testimonial { Text="As a startup, we needed specialized guidance on equity structuring. CACampus connected us with an expert who guided us through our seed round.", AuthorName="Nisha R.",    AuthorRole="Startup Founder",  Initials="NR", Rating=5 },
-                    new Testimonial { Text="The compliance management process saves us from costly delays every quarter. The CA professionals here are thorough, prompt, and professional.", AuthorName="Mohan K.", AuthorRole="Finance Manager",    Initials="MK", Rating=5 },
-                ],
-                Faqs =
-                [
-                    new FaqItem { Question="How are CA professionals verified on CACampus?",         Answer="Every CA listed undergoes identity and membership verification before approving their profile." },
-                    new FaqItem { Question="Is CACampus free to use for clients?",                   Answer="Yes. Our Starter plan is free — browse and contact CA professionals at no cost. Upgrade for premium features." },
-                    new FaqItem { Question="How long does it take to find a CA for my requirement?", Answer="Clients receive prompt direct responses from empaneled CA professionals based on project requirements." },
-                    new FaqItem { Question="Are payments secure on the platform?",                   Answer="Absolutely. We support transparent, milestone-based billing for clear deliverable tracking." },
-                    new FaqItem { Question="Can CAs from any city join CACampus?",                   Answer="Yes. CACampus is a pan-India platform with empaneled professionals across major business hubs." },
-                ]
+                FeaturedProfessionals = dbCas,
+                Testimonials = dbTestimonials,
+                Faqs = dbFaqs,
+                PricingPlans = dbPricingPlans
             };
             return View(vm);
         }
 
         public IActionResult Privacy() => View();
+
+        [HttpGet("/page/{slug}")]
+        [HttpGet("/pages/{slug}")]
+        public async Task<IActionResult> Page(string slug)
+        {
+            ViewBag.Settings = _settingsService.Get();
+            using var db = _dbFactory.CreateDbContext();
+            var page = await db.ContentPages.FirstOrDefaultAsync(p => p.Slug.ToLower() == slug.ToLower() && p.IsPublished);
+            if (page == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(page);
+        }
 
         [HttpGet("/services/{slug}")]
         public IActionResult ServiceDetail(string slug)
@@ -280,29 +307,14 @@ namespace caportal.Controllers
 
         // ── Find an Expert listing ─────────────────────────────────────────
         [HttpGet("/find-expert")]
-        public IActionResult FindExpert(string? city, string? service, string? exp, string? rating, string? sort, int page = 1)
+        public async Task<IActionResult> FindExpert(string? city, string? service, string? exp, string? rating, string? sort, int page = 1)
         {
             ViewBag.Settings = _settingsService.Get();
 
-            // Full CA roster (same as Index, but exposed for filtering)
-            var allProfessionals = new List<CaProfessional>
-            {
-                new() { Id=1,  Name="CA Priya Mehta",     Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit"],           Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsVerified=true },
-                new() { Id=2,  Name="CA Rajesh Sharma",   Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA"],            Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsVerified=true },
-                new() { Id=3,  Name="CA Anita Krishnan",  Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC","MCA"],          Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsVerified=true },
-                new() { Id=4,  Name="CA Vikram Joshi",    Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA"],              Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsVerified=true },
-                new() { Id=5,  Name="CA Sunita Patel",    Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST"],                    Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsVerified=true },
-                new() { Id=6,  Name="CA Mohit Agarwal",   Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing"],   Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsVerified=true },
-                new() { Id=7,  Name="CA Deepa Nair",      Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance"],              Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsVerified=false },
-                new() { Id=8,  Name="CA Arjun Singh",     Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax"],            Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsVerified=true },
-                new() { Id=9,  Name="CA Kavita Rao",      Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax"],         Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsVerified=true },
-                new() { Id=10, Name="CA Nitin Gupta",     Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA"],               Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsVerified=true },
-                new() { Id=11, Name="CA Rahul Sharma",    Initials="RH", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Company Registration","Audit"], Rating=4.9m, CasesHandled=850, ResponseTime="1h", MembershipNo="ICAI/2012/RH011", IsVerified=true },
-                new() { Id=12, Name="CA Amit Verma",      Initials="AV", Designation="FCA", YearsExp=15, City="Delhi",     Specialisations=["GST","Income Tax","Company Registration","Audit"], Rating=5.0m, CasesHandled=1200, ResponseTime="45m", MembershipNo="ICAI/2009/AV012", IsVerified=true },
-                new() { Id=13, Name="CA Sanjay Kumar",    Initials="SK", Designation="ACA", YearsExp=6,  City="Bangalore", Specialisations=["Startup Finance","Bookkeeping"],       Rating=4.6m, CasesHandled=120, ResponseTime="2h",  MembershipNo="ICAI/2018/SK013", IsVerified=true },
-                new() { Id=14, Name="CA Lakshmi Iyer",    Initials="LI", Designation="FCA", YearsExp=18, City="Chennai",   Specialisations=["Tax Litigation","FEMA","Income Tax"],  Rating=5.0m, CasesHandled=780, ResponseTime="1h",  MembershipNo="ICAI/2006/LI014", IsVerified=true },
-                new() { Id=15, Name="CA Ravi Khurana",    Initials="RK", Designation="ACA", YearsExp=5,  City="Pune",      Specialisations=["GST","ROC Filing"],                   Rating=4.5m, CasesHandled=98,  ResponseTime="3h",  MembershipNo="ICAI/2019/RK015", IsVerified=true },
-            };
+            using var db = _dbFactory.CreateDbContext();
+            var allProfessionals = await db.CaProfessionals
+                .Where(p => p.Status == "Active")
+                .ToListAsync();
 
             // Apply filters
             if (!string.IsNullOrEmpty(city))
@@ -348,63 +360,88 @@ namespace caportal.Controllers
 
         // ── Expert detail profile ──────────────────────────────────────────
         [HttpGet("/expert/{slug}")]
-        public IActionResult ExpertDetail(string slug)
+        public async Task<IActionResult> ExpertDetail(string slug)
         {
             ViewBag.Settings = _settingsService.Get();
 
-            // Parse the id from the slug (format: name-slug-{id})
             var parts = slug.Split('-');
             int expertId = 1;
             if (parts.Length > 0 && int.TryParse(parts[^1], out var parsedId))
                 expertId = parsedId;
 
-            // Build the professional list (same dataset as FindExpert)
-            var allProfessionals = new List<CaProfessional>
-            {
-                new() { Id=1,  Name="CA Priya Mehta",     Initials="PM", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Audit","Tax Planning","FEMA"],              Rating=4.9m, CasesHandled=340, ResponseTime="1h",  MembershipNo="ICAI/2012/PM001", IsVerified=true },
-                new() { Id=2,  Name="CA Rajesh Sharma",   Initials="RS", Designation="ACA", YearsExp=8,  City="Delhi",     Specialisations=["Transfer Pricing","FEMA","GST","International Tax"],           Rating=4.8m, CasesHandled=210, ResponseTime="2h",  MembershipNo="ICAI/2016/RS002", IsVerified=true },
-                new() { Id=3,  Name="CA Anita Krishnan",  Initials="AK", Designation="FCA", YearsExp=15, City="Bangalore", Specialisations=["Forensic Audit","ROC","MCA","Statutory Audit","Compliance"],   Rating=5.0m, CasesHandled=500, ResponseTime="30m", MembershipNo="ICAI/2009/AK003", IsVerified=true },
-                new() { Id=4,  Name="CA Vikram Joshi",    Initials="VJ", Designation="ACA", YearsExp=6,  City="Pune",      Specialisations=["Startup Finance","MCA","Equity Structuring","Fundraising"],    Rating=4.7m, CasesHandled=180, ResponseTime="3h",  MembershipNo="ICAI/2018/VJ004", IsVerified=true },
-                new() { Id=5,  Name="CA Sunita Patel",    Initials="SP", Designation="FCA", YearsExp=10, City="Ahmedabad", Specialisations=["ROC","MCA","GST","Payroll","Labour Compliance"],               Rating=4.6m, CasesHandled=290, ResponseTime="2h",  MembershipNo="ICAI/2014/SP005", IsVerified=true },
-                new() { Id=6,  Name="CA Mohit Agarwal",   Initials="MA", Designation="ACA", YearsExp=9,  City="Kolkata",   Specialisations=["Corporate Tax","Transfer Pricing","Income Tax","Audit"],       Rating=4.8m, CasesHandled=260, ResponseTime="1h",  MembershipNo="ICAI/2011/MA006", IsVerified=true },
-                new() { Id=7,  Name="CA Deepa Nair",      Initials="DN", Designation="ACA", YearsExp=4,  City="Chennai",   Specialisations=["FEMA","RBI Compliance","NRI Taxation"],                       Rating=4.5m, CasesHandled=95,  ResponseTime="4h",  MembershipNo="ICAI/2020/DN007", IsVerified=false },
-                new() { Id=8,  Name="CA Arjun Singh",     Initials="AS", Designation="FCA", YearsExp=11, City="Hyderabad", Specialisations=["GST","Audit","Income Tax","MIS Reporting"],                   Rating=4.7m, CasesHandled=310, ResponseTime="2h",  MembershipNo="ICAI/2017/AS008", IsVerified=true },
-                new() { Id=9,  Name="CA Kavita Rao",      Initials="KR", Designation="FCA", YearsExp=13, City="Jaipur",    Specialisations=["Tax Litigation","Income Tax","ITAT Representation","Appeals"],  Rating=4.9m, CasesHandled=420, ResponseTime="1h",  MembershipNo="ICAI/2015/KR009", IsVerified=true },
-                new() { Id=10, Name="CA Nitin Gupta",     Initials="NG", Designation="ACA", YearsExp=7,  City="Lucknow",   Specialisations=["Internal Audit","MCA","Bookkeeping","Accounting"],             Rating=4.6m, CasesHandled=145, ResponseTime="3h",  MembershipNo="ICAI/2013/NG010", IsVerified=true },
-                new() { Id=11, Name="CA Rahul Sharma",    Initials="RH", Designation="FCA", YearsExp=12, City="Mumbai",    Specialisations=["GST","Income Tax","Company Registration","Audit","TDS"],       Rating=4.9m, CasesHandled=850, ResponseTime="1h",  MembershipNo="ICAI/2012/RH011", IsVerified=true },
-                new() { Id=12, Name="CA Amit Verma",      Initials="AV", Designation="FCA", YearsExp=15, City="Delhi",     Specialisations=["GST","Income Tax","Company Registration","Audit","FEMA"],      Rating=5.0m, CasesHandled=1200, ResponseTime="45m", MembershipNo="ICAI/2009/AV012", IsVerified=true },
-                new() { Id=13, Name="CA Sanjay Kumar",    Initials="SK", Designation="ACA", YearsExp=6,  City="Bangalore", Specialisations=["Startup Finance","Bookkeeping","MCA","Virtual CFO"],           Rating=4.6m, CasesHandled=120, ResponseTime="2h",  MembershipNo="ICAI/2018/SK013", IsVerified=true },
-                new() { Id=14, Name="CA Lakshmi Iyer",    Initials="LI", Designation="FCA", YearsExp=18, City="Chennai",   Specialisations=["Tax Litigation","FEMA","Income Tax","Cross-border Tax"],       Rating=5.0m, CasesHandled=780, ResponseTime="1h",  MembershipNo="ICAI/2006/LI014", IsVerified=true },
-                new() { Id=15, Name="CA Ravi Khurana",    Initials="RK", Designation="ACA", YearsExp=5,  City="Pune",      Specialisations=["GST","ROC Filing","Company Registration"],                    Rating=4.5m, CasesHandled=98,  ResponseTime="3h",  MembershipNo="ICAI/2019/RK015", IsVerified=true },
-            };
-
-            var professional = allProfessionals.FirstOrDefault(p => p.Id == expertId)
-                               ?? allProfessionals.First();
-
-            var imgMap = new Dictionary<int, string>
-            {
-                { 1, "/images/ca/ca-priya-mehta.svg" },
-                { 2, "/images/ca/ca-rajesh-sharma.svg" },
-                { 3, "/images/ca/ca-anita-krishnan.svg" },
-                { 4, "/images/ca/ca-vikram-joshi.svg" },
-                { 5, "/images/ca/ca-priya-mehta.svg" },
-                { 6, "/images/ca/ca-rajesh-sharma.svg" },
-                { 7, "/images/ca/ca-anita-krishnan.svg" },
-                { 8, "/images/ca/ca-vikram-joshi.svg" },
-                { 9, "/images/ca/ca-priya-mehta.svg" },
-                { 10, "/images/ca/ca-rajesh-sharma.svg" },
-                { 11, "/images/ca/ca-rajesh-sharma.svg" },
-                { 12, "/images/ca/ca-rajesh-sharma.svg" },
-                { 13, "/images/ca/ca-vikram-joshi.svg" },
-                { 14, "/images/ca/ca-anita-krishnan.svg" },
-                { 15, "/images/ca/ca-vikram-joshi.svg" },
-            };
-            if (imgMap.TryGetValue(professional.Id, out var imgPath))
-            {
-                professional.ImagePath = imgPath;
-            }
+            using var db = _dbFactory.CreateDbContext();
+            var professional = await db.CaProfessionals.FirstOrDefaultAsync(p => p.Id == expertId)
+                ?? await db.CaProfessionals.FirstOrDefaultAsync(p => p.Status == "Active")
+                ?? new CaProfessional { Name = "Chartered Accountant", City = "Pan-India" };
 
             return View(professional);
+        }
+
+        // ── Consultation booking submission ────────────────────────────────
+        [HttpPost("/expert/book")]
+        public async Task<IActionResult> BookExpert([FromForm] string name, [FromForm] string phone, [FromForm] string? email, [FromForm] string? service, [FromForm] string? description, [FromForm] int expertId)
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone))
+            {
+                return Json(new { success = false, message = "Please provide your full name and mobile number." });
+            }
+
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var expert = await db.CaProfessionals.FindAsync(expertId);
+                var req = new ClientRequest
+                {
+                    ClientName = name.Trim(),
+                    ClientPhone = phone.Trim(),
+                    ClientEmail = email?.Trim() ?? string.Empty,
+                    ServiceRequired = service?.Trim() ?? "CA Consultation",
+                    AssignedCA = expert != null ? expert.Name : "Unassigned",
+                    Description = description?.Trim() ?? string.Empty,
+                    Source = "Expert Profile Booking",
+                    Status = "Pending",
+                    RequestedOn = DateTime.UtcNow
+                };
+                db.ClientRequests.Add(req);
+                await db.SaveChangesAsync();
+                return Json(new { success = true, message = "Consultation requested successfully! Our senior consultation desk will connect with you promptly." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error saving request: " + ex.Message });
+            }
+        }
+
+        // ── Newsletter subscription ────────────────────────────────────────
+        [HttpPost("/newsletter/subscribe")]
+        public async Task<IActionResult> SubscribeNewsletter([FromForm] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+            {
+                return Json(new { success = false, message = "Please enter a valid email address." });
+            }
+
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var normalized = email.Trim().ToLowerInvariant();
+                var existing = await db.NewsletterSubscribers.FirstOrDefaultAsync(s => s.Email.ToLower() == normalized);
+                if (existing == null)
+                {
+                    db.NewsletterSubscribers.Add(new NewsletterSubscriber
+                    {
+                        Email = normalized,
+                        SubscribedAt = DateTime.UtcNow,
+                        IsActive = true
+                    });
+                    await db.SaveChangesAsync();
+                }
+                return Json(new { success = true, message = "Thank you for subscribing to our tax and compliance newsletter!" });
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Unable to subscribe at this moment." });
+            }
         }
 
         // GET /contact
@@ -420,9 +457,39 @@ namespace caportal.Controllers
 
         // POST /contact/submit
         [HttpPost("/contact/submit")]
-        public IActionResult SubmitContact([FromForm] string name, [FromForm] string email, [FromForm] string phone, [FromForm] string city, [FromForm] string clientType, [FromForm] string service, [FromForm] string preferredTime, [FromForm] string message)
+        public async Task<IActionResult> SubmitContact([FromForm] string name, [FromForm] string email, [FromForm] string phone, [FromForm] string city, [FromForm] string clientType, [FromForm] string service, [FromForm] string preferredTime, [FromForm] string message)
         {
-            return Json(new { success = true, message = "Thank you! Our senior CA consultation desk will connect with you within 2 hours." });
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone))
+            {
+                return Json(new { success = false, message = "Please provide your name and phone number." });
+            }
+
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var req = new ClientRequest
+                {
+                    ClientName = name.Trim(),
+                    ClientEmail = email?.Trim() ?? string.Empty,
+                    ClientPhone = phone.Trim(),
+                    City = city?.Trim() ?? string.Empty,
+                    ClientType = clientType?.Trim() ?? "Individual",
+                    ServiceRequired = service?.Trim() ?? "General Consultation",
+                    Description = message?.Trim() ?? string.Empty,
+                    PreferredTime = preferredTime?.Trim() ?? string.Empty,
+                    Source = "Contact Page",
+                    Status = "Pending",
+                    RequestedOn = DateTime.UtcNow
+                };
+                db.ClientRequests.Add(req);
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
+
+            return Json(new { success = true, message = "Thank you! Your enquiry has been registered and our senior CA consultation desk will connect with you within 2 hours." });
         }
 
         // GET /sitemap.xml

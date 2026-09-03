@@ -1,6 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using caportal.Data;
 using caportal.Filters;
-using caportal.Models.ViewModels;
+using caportal.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace caportal.Areas.Admin.Controllers
 {
@@ -8,31 +14,42 @@ namespace caportal.Areas.Admin.Controllers
     [AdminAuthorize]
     public class FaqsController : Controller
     {
-        private static readonly List<FaqItem> _faqs = new()
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+
+        public FaqsController(IDbContextFactory<ApplicationDbContext> dbFactory)
         {
-            new FaqItem { Question="How are CA professionals verified on CACampus?", Answer="Every CA listed undergoes identity and membership verification before approving their profile." },
-            new FaqItem { Question="Is CACampus free to use for clients?", Answer="Yes. Our Starter plan is free — browse and contact CA professionals at no cost. Upgrade for premium features." },
-            new FaqItem { Question="How long does it take to find a CA for my requirement?", Answer="Clients receive prompt direct responses from empaneled CA professionals based on project requirements." },
-            new FaqItem { Question="Are payments secure on the platform?", Answer="Absolutely. We support transparent, milestone-based billing for clear deliverable tracking." },
-            new FaqItem { Question="Can CAs from any city join CACampus?", Answer="Yes. CACampus is a pan-India platform with empaneled professionals across major business hubs." }
-        };
+            _dbFactory = dbFactory;
+        }
 
         // GET /Admin/Faqs
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
-            return View(_faqs);
+            using var db = _dbFactory.CreateDbContext();
+            var faqs = await db.Faqs.Where(f => f.IsActive).OrderBy(f => f.DisplayOrder).ThenBy(f => f.Id).ToListAsync();
+            return View(faqs);
         }
 
         // POST /Admin/Faqs/Save
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Save(string question, string answer)
+        public async Task<IActionResult> Save(string question, string answer, string? category)
         {
             if (!string.IsNullOrWhiteSpace(question) && !string.IsNullOrWhiteSpace(answer))
             {
-                _faqs.Add(new FaqItem { Question = question, Answer = answer });
+                using var db = _dbFactory.CreateDbContext();
+                var maxOrder = await db.Faqs.AnyAsync() ? await db.Faqs.MaxAsync(f => f.DisplayOrder) : 0;
+                var item = new FaqItemEntity
+                {
+                    Question = question.Trim(),
+                    Answer = answer.Trim(),
+                    Category = string.IsNullOrWhiteSpace(category) ? "General" : category.Trim(),
+                    DisplayOrder = maxOrder + 1,
+                    IsActive = true
+                };
+                db.Faqs.Add(item);
+                await db.SaveChangesAsync();
                 TempData["Success"] = "FAQ item added successfully!";
             }
             return RedirectToAction("Index");
@@ -41,12 +58,15 @@ namespace caportal.Areas.Admin.Controllers
         // POST /Admin/Faqs/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int index)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (index >= 0 && index < _faqs.Count)
+            using var db = _dbFactory.CreateDbContext();
+            var item = await db.Faqs.FindAsync(id);
+            if (item != null)
             {
-                _faqs.RemoveAt(index);
-                TempData["Success"] = "FAQ item deleted.";
+                db.Faqs.Remove(item);
+                await db.SaveChangesAsync();
+                TempData["Success"] = "FAQ item deleted successfully.";
             }
             return RedirectToAction("Index");
         }

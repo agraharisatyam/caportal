@@ -1,190 +1,367 @@
-@using caportal.Models
+@using caportal.Models.Entities
 @{
-    ViewData["Title"] = "Clients";
-    var clients = ViewBag.Clients as List<Client> ?? new List<Client>();
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    ViewData["Title"] = "Clients Management";
+    var clients = (ViewBag.Clients as List<Client>) ?? new List<Client>();
+    var activeCAs = (ViewBag.ActiveCAs as List<string>) ?? new List<string>();
+    var services = (ViewBag.Services as List<string>) ?? new List<string>();
 }
 
 <!-- Page Header -->
-<div class="page-header">
+<div class="page-header mb-4">
     <div class="page-block">
-        <div class="page-header-title">
-            <h5 class="mb-0 font-medium">Registered Clients</h5>
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center">
+                    <i data-feather="briefcase" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> 
+                    <span>Client Database & Retainerships</span>
+                </h4>
+                <span class="text-muted small">Manage corporate clients, startups, SMEs, assigned CA partners, and KYC/compliance</span>
+            </div>
+            <div class="flex gap-2">
+                <a href="/Admin/Dashboard/ClientsExportCsv" class="btn btn-outline-success">
+                    <i data-feather="download" class="me-1" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Export CSV
+                </a>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newClientModal">
+                    <i data-feather="plus" class="me-1" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Add New Client
+                </button>
+            </div>
         </div>
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/ajs">Home</a></li>
-            <li class="breadcrumb-item" aria-current="page">Clients</li>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Clients</li>
         </ul>
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="check-circle" class="me-1"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="alert-circle" class="me-1"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <!-- KPI Cards -->
-<div class="grid grid-cols-12 gap-x-6 mb-4">
-    <div class="col-span-12 xl:col-span-3 md:col-span-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <p class="text-muted text-sm mb-1">Total Clients</p>
-                        <h3 class="font-semibold mb-0">@ViewBag.TotalClients</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center text-white text-xl">
-                        <i data-feather="briefcase"></i>
-                    </div>
-                </div>
-                <p class="text-success-500 text-sm mb-0"><i data-feather="trending-up" class="inline w-4 h-4 me-1"></i> Growing steadily</p>
+<div class="grid grid-cols-12 gap-x-6 gap-y-4 mb-4">
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-primary mb-0">@ViewBag.TotalClients</h4>
+                <p class="text-muted text-sm mb-0">Total Clients Enrolled</p>
             </div>
         </div>
     </div>
-    <div class="col-span-12 xl:col-span-3 md:col-span-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <p class="text-muted text-sm mb-1">Active Clients</p>
-                        <h3 class="font-semibold mb-0">@ViewBag.ActiveClients</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-success-500 flex items-center justify-center text-white text-xl">
-                        <i data-feather="check-circle"></i>
-                    </div>
-                </div>
-                <p class="text-success-500 text-sm mb-0"><i data-feather="trending-up" class="inline w-4 h-4 me-1"></i> +@ViewBag.ActiveClients active now</p>
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-success-600 mb-0">@ViewBag.ActiveClients</h4>
+                <p class="text-muted text-sm mb-0">Active Retainerships</p>
             </div>
         </div>
     </div>
-    <div class="col-span-12 xl:col-span-3 md:col-span-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <p class="text-muted text-sm mb-1">Pending</p>
-                        <h3 class="font-semibold mb-0">@ViewBag.PendingClients</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-warning-500 flex items-center justify-center text-white text-xl">
-                        <i data-feather="clock"></i>
-                    </div>
-                </div>
-                <p class="text-warning-500 text-sm mb-0"><i data-feather="alert-circle" class="inline w-4 h-4 me-1"></i> Awaiting onboarding</p>
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-warning-600 mb-0">@ViewBag.PendingClients</h4>
+                <p class="text-muted text-sm mb-0">Pending Onboarding</p>
             </div>
         </div>
     </div>
-    <div class="col-span-12 xl:col-span-3 md:col-span-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <p class="text-muted text-sm mb-1">Top Client Type</p>
-                        @{ var topType = clients.GroupBy(c => c.Type).OrderByDescending(g => g.Count()).FirstOrDefault(); }
-                        <h3 class="font-semibold mb-0">@(topType?.Key ?? "—")</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-danger-500 flex items-center justify-center text-white text-xl">
-                        <i data-feather="pie-chart"></i>
-                    </div>
-                </div>
-                <p class="text-muted text-sm mb-0">@(topType?.Count() ?? 0) clients in this category</p>
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card text-center">
+            <div class="card-body py-3">
+                <h4 class="font-bold text-gold mb-0">100%</h4>
+                <p class="text-muted text-sm mb-0">KYC Verified Base</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Clients Table -->
-<div class="grid grid-cols-12 gap-x-6">
-    <div class="col-span-12">
-        <div class="card">
-            <div class="card-header flex items-center justify-between flex-wrap gap-2">
-                <h5 class="mb-0">All Clients</h5>
-                <div class="flex gap-2 flex-wrap">
-                    <button class="btn btn-sm btn-outline-secondary" onclick="filterType('all')">All</button>
-                    @foreach (var type in new[]{"Corporate","Startup","SME","Individual"})
+<div class="card">
+    <div class="card-header flex items-center justify-between flex-wrap gap-2">
+        <h5 class="mb-0 text-white"><i data-feather="users" class="me-2 text-gold"></i> Client Registry</h5>
+        <div class="flex gap-2 flex-wrap">
+            <button class="btn btn-sm btn-outline-secondary" onclick="filterClientStatus('all')">All (@ViewBag.TotalClients)</button>
+            <button class="btn btn-sm btn-success" onclick="filterClientStatus('Active')">Active</button>
+            <button class="btn btn-sm btn-warning" onclick="filterClientStatus('Pending')">Pending</button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table id="clientTable" class="table table-hover align-middle mb-0" style="width:100%">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th>Company / Name</th>
+                        <th>Category</th>
+                        <th>Contact Coordinates</th>
+                        <th>City</th>
+                        <th>Assigned CA</th>
+                        <th>Primary Service</th>
+                        <th>Status</th>
+                        <th class="text-center" style="width:100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in clients)
                     {
-                        <button class="btn btn-sm btn-outline-primary" onclick="filterType('@type')">@type</button>
-                    }
-                    <button class="btn btn-sm btn-primary ms-2">
-                        <i data-feather="plus" class="inline w-3 h-3 me-1"></i> Add Client
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="clientTable" class="table table-hover" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Company / Name</th>
-                                <th>Type</th>
-                                <th>Contact</th>
-                                <th>City</th>
-                                <th>CA Assigned</th>
-                                <th>Service</th>
-                                <th>Registered</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var c in clients)
-                            {
-                                <tr>
-                                    <td>@c.Id</td>
-                                    <td>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xs font-bold flex-shrink-0">
-                                                @string.Concat(c.CompanyName.Split(' ').Take(2).Select(w => w[0]))
-                                            </div>
-                                            <span class="font-medium">@c.CompanyName</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @{
-                                            var typeColor = c.Type switch {
-                                                "Corporate"  => "bg-primary-500",
-                                                "Startup"    => "bg-purple-500",
-                                                "SME"        => "bg-teal-500",
-                                                "Individual" => "bg-orange-500",
-                                                _            => "bg-secondary"
-                                            };
-                                        }
-                                        <span class="badge @typeColor text-white">@c.Type</span>
-                                    </td>
-                                    <td class="text-sm text-muted">
-                                        <a href="mailto:@c.ContactEmail" class="text-muted">@c.ContactEmail</a>
-                                    </td>
-                                    <td>@c.City</td>
-                                    <td class="text-sm">@c.AssignedCA</td>
-                                    <td><span class="badge bg-secondary">@c.Service</span></td>
-                                    <td class="text-sm">@c.RegisteredOn.ToString("dd MMM yyyy")</td>
-                                    <td>
-                                        @switch (c.Status)
+                        var typeColor = c.Type switch {
+                            "Corporate"  => "bg-primary-500",
+                            "Startup"    => "bg-purple-500",
+                            "SME"        => "bg-teal-500",
+                            "Individual" => "bg-orange-500",
+                            _            => "bg-secondary"
+                        };
+
+                        var initials = string.Concat((c.CompanyName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0]));
+                        if (string.IsNullOrEmpty(initials)) initials = "CL";
+
+                        <tr data-status="@c.Status">
+                            <td><small class="text-muted">#@c.Id</small></td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xs font-bold flex-shrink-0">
+                                        @initials
+                                    </div>
+                                    <div>
+                                        <span class="font-weight-bold text-white d-block">@c.CompanyName</span>
+                                        @if (!string.IsNullOrEmpty(c.ContactPerson))
                                         {
-                                            case "Active":
-                                                <span class="badge bg-success-500 text-white">Active</span>
-                                                break;
-                                            case "Pending":
-                                                <span class="badge bg-warning-500 text-white">Pending</span>
-                                                break;
-                                            case "Inactive":
-                                                <span class="badge bg-danger-500 text-white">Inactive</span>
-                                                break;
+                                            <small class="text-muted"><i data-feather="user" style="width:10px;height:10px;display:inline-block;vertical-align:middle;"></i> @c.ContactPerson</small>
                                         }
-                                    </td>
-                                    <td>
-                                        <div class="flex gap-1">
-                                            <button class="btn btn-sm btn-outline-primary" title="View">
-                                                <i data-feather="eye" class="w-3 h-3"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
-                                                <i data-feather="edit-2" class="w-3 h-3"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" title="Remove">
-                                                <i data-feather="trash-2" class="w-3 h-3"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge @typeColor text-white">@c.Type</span></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(c.ContactEmail))
+                                {
+                                    <a href="mailto:@c.ContactEmail" class="text-muted d-block small"><i data-feather="mail" style="width:11px;height:11px;display:inline-block;vertical-align:middle;"></i> @c.ContactEmail</a>
+                                }
+                                @if (!string.IsNullOrEmpty(c.ContactPhone))
+                                {
+                                    <span class="text-muted d-block small"><i data-feather="phone" style="width:11px;height:11px;display:inline-block;vertical-align:middle;"></i> @c.ContactPhone</span>
+                                }
+                            </td>
+                            <td>@c.City</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(c.AssignedCA) && c.AssignedCA != "Unassigned")
+                                {
+                                    <span class="text-white"><i data-feather="user-check" class="text-gold me-1" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i> @c.AssignedCA</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted font-italic">Unassigned</span>
+                                }
+                            </td>
+                            <td><span class="badge bg-secondary font-weight-bold">@c.Service</span></td>
+                            <td>
+                                @switch (c.Status)
+                                {
+                                    case "Active":
+                                        <span class="badge bg-success text-white">Active</span>
+                                        break;
+                                    case "Pending":
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary text-white">@c.Status</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <button type="button" class="btn btn-xs btn-outline-warning" onclick="openEditClientModal(@c.Id, '@c.CompanyName', '@c.Type', '@c.ContactPerson', '@c.ContactEmail', '@c.ContactPhone', '@c.GstNumber', '@c.PanNumber', '@c.City', '@c.AssignedCA', '@c.Service', '@c.Status')" title="Edit Client">
+                                        <i data-feather="edit-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i>
+                                    </button>
+                                    <form method="post" action="/Admin/Dashboard/ClientDelete" onsubmit="return confirm('Delete client record for @c.CompanyName?');" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@c.Id" />
+                                        <button type="submit" class="btn btn-xs btn-outline-danger" title="Delete">
+                                            <i data-feather="trash-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add New Client -->
+<div class="modal fade" id="newClientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary">
+            <form method="post" action="/Admin/Dashboard/ClientSave">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="0" />
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-gold"><i data-feather="plus-circle" class="me-2"></i> Register New Client</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-            </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label font-weight-bold">Company / Business Name *</label>
+                            <input type="text" name="CompanyName" class="form-control" placeholder="e.g. Acme Tech Innovations Pvt. Ltd." required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label font-weight-bold">Client Category *</label>
+                            <select name="Type" class="form-select">
+                                <option value="Corporate">Corporate</option>
+                                <option value="Startup">Startup</option>
+                                <option value="SME">SME</option>
+                                <option value="Individual">Individual</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Person</label>
+                            <input type="text" name="ContactPerson" class="form-control" placeholder="e.g. Ramesh Chandra (Director)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Email</label>
+                            <input type="email" name="ContactEmail" class="form-control" placeholder="finance@domain.com" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Mobile Phone</label>
+                            <input type="text" name="ContactPhone" class="form-control" placeholder="+91 98765 01234" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">City / Location</label>
+                            <input type="text" name="City" class="form-control" placeholder="e.g. Mumbai" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">GSTIN Number</label>
+                            <input type="text" name="GstNumber" class="form-control" placeholder="27AAAPL1234C1ZV" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">PAN Number</label>
+                            <input type="text" name="PanNumber" class="form-control" placeholder="AAAPL1234C" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Primary Retained Service</label>
+                            <input type="text" name="Service" class="form-control" placeholder="e.g. GST & Tax, Statutory Audit" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Assign CA Partner</label>
+                            <select name="AssignedCA" class="form-select">
+                                <option value="Unassigned">-- Select CA --</option>
+                                @foreach (var ca in activeCAs)
+                                {
+                                    <option value="@ca">@ca</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label font-weight-bold">Account Status</label>
+                            <select name="Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i data-feather="save" class="me-1"></i> Register Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit Client -->
+<div class="modal fade" id="editClientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary">
+            <form method="post" action="/Admin/Dashboard/ClientSave">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="editClientId" />
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-gold"><i data-feather="edit" class="me-2"></i> Edit Client Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label font-weight-bold">Company / Business Name *</label>
+                            <input type="text" name="CompanyName" id="editCompanyName" class="form-control" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label font-weight-bold">Client Category *</label>
+                            <select name="Type" id="editType" class="form-select">
+                                <option value="Corporate">Corporate</option>
+                                <option value="Startup">Startup</option>
+                                <option value="SME">SME</option>
+                                <option value="Individual">Individual</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Person</label>
+                            <input type="text" name="ContactPerson" id="editContactPerson" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Email</label>
+                            <input type="email" name="ContactEmail" id="editContactEmail" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Phone</label>
+                            <input type="text" name="ContactPhone" id="editContactPhone" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">City</label>
+                            <input type="text" name="City" id="editCity" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">GSTIN Number</label>
+                            <input type="text" name="GstNumber" id="editGstNumber" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">PAN Number</label>
+                            <input type="text" name="PanNumber" id="editPanNumber" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Primary Service</label>
+                            <input type="text" name="Service" id="editService" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Assigned CA Partner</label>
+                            <select name="AssignedCA" id="editAssignedCA" class="form-select">
+                                <option value="Unassigned">-- Select CA --</option>
+                                @foreach (var ca in activeCAs)
+                                {
+                                    <option value="@ca">@ca</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label font-weight-bold">Status</label>
+                            <select name="Status" id="editStatus" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i data-feather="save" class="me-1"></i> Update Client</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -199,18 +376,38 @@
         $(function () {
             table = $('#clientTable').DataTable({
                 pageLength: 10,
-                lengthMenu: [10, 25, 50],
-                order: [[7, 'desc']],
+                lengthMenu: [5, 10, 25, 50],
+                order: [[0, 'asc']],
                 responsive: true,
-                columnDefs: [{ orderable: false, targets: [9] }],
-                language: { search: "Search Clients:" }
+                columnDefs: [{ orderable: false, targets: [8] }]
             });
             if (typeof feather !== 'undefined') feather.replace();
         });
 
-        function filterType(type) {
-            if (type === 'all') { table.column(2).search('').draw(); }
-            else { table.column(2).search(type).draw(); }
+        function filterClientStatus(status) {
+            if (status === 'all') {
+                table.column(7).search('').draw();
+            } else {
+                table.column(7).search(status).draw();
+            }
+        }
+
+        function openEditClientModal(id, company, type, person, email, phone, gst, pan, city, ca, service, status) {
+            $('#editClientId').val(id);
+            $('#editCompanyName').val(company);
+            $('#editType').val(type);
+            $('#editContactPerson').val(person);
+            $('#editContactEmail').val(email);
+            $('#editContactPhone').val(phone);
+            $('#editGstNumber').val(gst);
+            $('#editPanNumber').val(pan);
+            $('#editCity').val(city);
+            $('#editAssignedCA').val(ca);
+            $('#editService').val(service);
+            $('#editStatus').val(status);
+
+            var modal = new bootstrap.Modal(document.getElementById('editClientModal'));
+            modal.show();
         }
     </script>
 }

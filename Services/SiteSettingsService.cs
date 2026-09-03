@@ -97,7 +97,6 @@ h1, h2, h3, h4, h5, h6,
 .wcu-title,
 .hero-title,
 .hero-v2-title,
-.expert-band-title,
 .step-card h5,
 .feature-card h5,
 .prof-name,
@@ -109,6 +108,43 @@ h1, h2, h3, h4, h5, h6,
   color: {s.HeadingColor} !important;
 }}
 
+/* Expert Band — Dark navy background requires white text & button */
+.expert-band-title {{
+  color: #ffffff !important;
+}}
+.expert-band-sub {{
+  color: rgba(255, 255, 255, 0.88) !important;
+}}
+.expert-band .btn-hero-secondary {{
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}}
+
+/* CTA Section — Dark navy background requires white text & button */
+.cta-section .section-title {{
+  color: #ffffff !important;
+}}
+.cta-section .section-title span {{
+  color: #f0c040 !important;
+  background: linear-gradient(135deg, #ffd700 0%, #d4a017 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}}
+.cta-section .section-desc {{
+  color: rgba(255, 255, 255, 0.88) !important;
+}}
+.cta-section .section-badge {{
+  color: #f0c040 !important;
+  border-color: rgba(212, 160, 23, 0.45) !important;
+  background: rgba(212, 160, 23, 0.15) !important;
+}}
+.cta-section .btn-cta-outline {{
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}}
+
 h1 {{ font-size: {s.H1Size}px !important; }}
 h2, .section-title, .wcu-title {{ font-size: {s.H2Size}px !important; }}
 h3 {{ font-size: {s.H3Size}px !important; }}
@@ -117,8 +153,7 @@ h3 {{ font-size: {s.H3Size}px !important; }}
 .section-title span,
 .wcu-title span,
 .hero-title .highlight,
-.hero-v2-gold,
-.cta-section .section-title span {{
+.hero-v2-gold {{
   color: {s.SecondaryColor} !important;
   background: none !important;
   -webkit-text-fill-color: {s.SecondaryColor} !important;
@@ -129,7 +164,6 @@ h3 {{ font-size: {s.H3Size}px !important; }}
 .wcu-subtitle,
 .hero-subtitle,
 .hero-v2-sub,
-.expert-band-sub,
 .service-desc,
 .wcu-card-desc,
 .prof-designation,
@@ -201,7 +235,6 @@ h3 {{ font-size: {s.H3Size}px !important; }}
   color: {s.BtnPrimaryColor} !important;
 }}
 .btn-hero-secondary,
-.btn-cta-outline,
 .btn-nav-login {{
   border-color: {s.PrimaryColor} !important;
   color: {s.PrimaryColor} !important;

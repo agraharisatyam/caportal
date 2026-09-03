@@ -1,67 +1,66 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using caportal.Data;
 using caportal.Filters;
+using caportal.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace caportal.Areas.Admin.Controllers
 {
-    public class ClientRequestItem
-    {
-        public int Id { get; set; }
-        public string ClientName { get; set; } = "";
-        public string ClientEmail { get; set; } = "";
-        public string ClientPhone { get; set; } = "";
-        public string City { get; set; } = "";
-        public string ServiceRequired { get; set; } = "";
-        public string AssignedCA { get; set; } = "Unassigned";
-        public string Status { get; set; } = "Pending"; // Pending, Assigned, Completed
-        public DateTime RequestedOn { get; set; } = DateTime.UtcNow;
-        public string Description { get; set; } = "";
-    }
-
     [Area("Admin")]
     [AdminAuthorize]
     public class RequestsController : Controller
     {
-        private static readonly List<ClientRequestItem> _requests = new()
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+
+        public RequestsController(IDbContextFactory<ApplicationDbContext> dbFactory)
         {
-            new ClientRequestItem { Id=1, ClientName="Rahul Sharma", ClientEmail="rahul@techventures.in", ClientPhone="+91 98765 11111", City="Mumbai", ServiceRequired="GST Return Filing", AssignedCA="CA Priya Mehta", Status="Assigned", RequestedOn=DateTime.Now.AddHours(-3), Description="Need urgent GSTR-1 and GSTR-3B filing for Q2." },
-            new ClientRequestItem { Id=2, ClientName="Amit Verma", ClientEmail="amit.v@gmail.com", ClientPhone="+91 98765 22222", City="Delhi", ServiceRequired="Income Tax Return (ITR)", AssignedCA="CA Rajesh Sharma", Status="Pending", RequestedOn=DateTime.Now.AddHours(-5), Description="ITR-3 filing for proprietorship business." },
-            new ClientRequestItem { Id=3, ClientName="Sneha Gupta", ClientEmail="sneha@greenleaf.in", ClientPhone="+91 98765 33333", City="Bangalore", ServiceRequired="Private Limited Incorporation", AssignedCA="CA Anita Krishnan", Status="Completed", RequestedOn=DateTime.Now.AddDays(-1), Description="Need DIN, DSC, and name approval for new startup." },
-            new ClientRequestItem { Id=4, ClientName="Karan Mehta", ClientEmail="karan@sunrise.in", ClientPhone="+91 98765 44444", City="Pune", ServiceRequired="Statutory Audit", AssignedCA="CA Vikram Joshi", Status="Assigned", RequestedOn=DateTime.Now.AddDays(-2), Description="Annual financial audit for FY 2025-26." },
-            new ClientRequestItem { Id=5, ClientName="Priya Singh", ClientEmail="priya@skyhigh.in", ClientPhone="+91 98765 55555", City="Ahmedabad", ServiceRequired="Trademark Registration", AssignedCA="Unassigned", Status="Pending", RequestedOn=DateTime.Now.AddDays(-3), Description="Brand name logo trademark search and filing." }
-        };
+            _dbFactory = dbFactory;
+        }
 
         // GET /Admin/Requests
         [HttpGet]
-        public IActionResult Index(string? status)
+        public async Task<IActionResult> Index(string? status)
         {
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
             ViewBag.CurrentStatus = status ?? "All";
 
-            var items = _requests.AsEnumerable();
+            using var db = _dbFactory.CreateDbContext();
+            var allRequests = await db.ClientRequests.OrderByDescending(r => r.RequestedOn).ToListAsync();
+
+            ViewBag.TotalCount = allRequests.Count;
+            ViewBag.PendingCount = allRequests.Count(r => r.Status.Equals("Pending", StringComparison.OrdinalIgnoreCase));
+            ViewBag.AssignedCount = allRequests.Count(r => r.Status.Equals("Assigned", StringComparison.OrdinalIgnoreCase));
+            ViewBag.CompletedCount = allRequests.Count(r => r.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase));
+
+            var filtered = allRequests.AsEnumerable();
             if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
             {
-                items = items.Where(r => r.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(r => r.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
             }
 
-            ViewBag.TotalCount = _requests.Count;
-            ViewBag.PendingCount = _requests.Count(r => r.Status == "Pending");
-            ViewBag.AssignedCount = _requests.Count(r => r.Status == "Assigned");
-            ViewBag.CompletedCount = _requests.Count(r => r.Status == "Completed");
+            // Also load active CAs for quick assignment dropdown in view
+            ViewBag.ActiveCAs = await db.CaProfessionals.Where(c => c.Status == "Active").OrderBy(c => c.Name).Select(c => c.Name).ToListAsync();
 
-            return View(items.OrderByDescending(r => r.RequestedOn).ToList());
+            return View(filtered.ToList());
         }
 
         // POST /Admin/Requests/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateStatus(int id, string status, string? assignedCa)
+        public async Task<IActionResult> UpdateStatus(int id, string status, string? assignedCa)
         {
-            var req = _requests.FirstOrDefault(r => r.Id == id);
+            using var db = _dbFactory.CreateDbContext();
+            var req = await db.ClientRequests.FindAsync(id);
             if (req != null)
             {
                 req.Status = status;
                 if (!string.IsNullOrEmpty(assignedCa))
                     req.AssignedCA = assignedCa;
+                await db.SaveChangesAsync();
                 TempData["Success"] = $"Request #{id} updated to {status}.";
             }
             return RedirectToAction("Index");
@@ -70,15 +69,37 @@ namespace caportal.Areas.Admin.Controllers
         // POST /Admin/Requests/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var req = _requests.FirstOrDefault(r => r.Id == id);
+            using var db = _dbFactory.CreateDbContext();
+            var req = await db.ClientRequests.FindAsync(id);
             if (req != null)
             {
-                _requests.Remove(req);
-                TempData["Success"] = $"Request #{id} deleted.";
+                db.ClientRequests.Remove(req);
+                await db.SaveChangesAsync();
+                TempData["Success"] = $"Request #{id} deleted successfully.";
             }
             return RedirectToAction("Index");
+        }
+
+        // GET /Admin/Requests/ExportCsv
+        [HttpGet]
+        public async Task<IActionResult> ExportCsv()
+        {
+            using var db = _dbFactory.CreateDbContext();
+            var requests = await db.ClientRequests.OrderByDescending(r => r.RequestedOn).ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("ID,Client Name,Email,Phone,City,Client Type,Service Required,Assigned CA,Status,Source,Description,Requested On");
+
+            foreach (var r in requests)
+            {
+                var cleanDesc = (r.Description ?? "").Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ");
+                sb.AppendLine($"\"{r.Id}\",\"{r.ClientName}\",\"{r.ClientEmail}\",\"{r.ClientPhone}\",\"{r.City}\",\"{r.ClientType}\",\"{r.ServiceRequired}\",\"{r.AssignedCA}\",\"{r.Status}\",\"{r.Source}\",\"{cleanDesc}\",\"{r.RequestedOn:yyyy-MM-dd HH:mm:ss}\"");
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", $"CACampus_Leads_{DateTime.UtcNow:yyyyMMdd_HHmm}.csv");
         }
     }
 }

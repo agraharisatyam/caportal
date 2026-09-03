@@ -1,0 +1,33 @@
+@model caportal.Models.Entities.ContentPage
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["MetaDescription"] = Model.MetaDescription;
+    var settings = ViewBag.Settings as caportal.Models.Entities.SiteSettingsRecord;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="display-6 fw-bold mb-3">@Model.Title</h1>
+                    <div class="text-muted small mb-4 pb-3 border-bottom d-flex items-center gap-3">
+                        <span><i class="bi bi-calendar-event me-1"></i> Last updated: @Model.LastUpdated.ToString("MMMM dd, yyyy")</span>
+                        <span><i class="bi bi-shield-check text-success me-1"></i> CACampus Verified</span>
+                    </div>
+
+                    <div class="page-rendered-content text-secondary lh-lg fs-5">
+                        @Html.Raw(Model.HtmlContent)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

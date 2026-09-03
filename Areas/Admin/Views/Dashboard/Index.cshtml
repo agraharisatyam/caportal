@@ -212,7 +212,7 @@
         <div class="card h-100">
             <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="mb-0 text-white"><i data-feather="list" class="me-1 text-gold"></i> Recent Orders</h5>
-                <a href="#!" class="btn btn-sm btn-outline-primary"><i data-feather="eye" class="me-1"></i> View All Orders</a>
+                <a href="/Admin/Orders" class="btn btn-sm btn-outline-primary"><i data-feather="eye" class="me-1"></i> View All Orders</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -436,13 +436,20 @@
             var textCol = '#a0aec0';
             var borderCol = 'rgba(212,175,55,0.12)';
 
+            var dynamicMonths = @Html.Raw(ViewBag.ChartRevenueMonths ?? "['Jan','Feb','Mar','Apr','May','Jun']");
+            var dynamicRevenue = @Html.Raw(ViewBag.ChartRevenueData ?? "[1000000, 1500000, 1200000, 2200000, 1800000, 2458760]");
+            var dynamicLeadLabels = @Html.Raw(ViewBag.ChartLeadLabels ?? "['Website', 'Direct', 'Google', 'Social Media', 'Other']");
+            var dynamicLeadData = @Html.Raw(ViewBag.ChartLeadData ?? "[528, 315, 226, 126, 63]");
+            var dynamicPayLabels = @Html.Raw(ViewBag.ChartPayLabels ?? "['Paid', 'Pending', 'Refunded']");
+            var dynamicPayData = @Html.Raw(ViewBag.ChartPayData ?? "[75, 20, 5]");
+
             // Apex Line Chart: Revenue Overview
             var optionsRevenue = {
                 chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent' },
                 stroke: { curve: 'smooth', width: 3, colors: ['#d4a017'] },
                 fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [0, 90, 100], colorStops: [{ offset: 0, color: '#d4a017', opacity: 0.4 }, { offset: 100, color: '#d4a017', opacity: 0.0 }] } },
-                series: [{ name: 'Revenue (₹)', data: [1000000, 1500000, 1200000, 2200000, 1800000, 2458760] }],
-                xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], labels: { style: { colors: textCol } } },
+                series: [{ name: 'Revenue (₹)', data: dynamicRevenue }],
+                xaxis: { categories: dynamicMonths, labels: { style: { colors: textCol } } },
                 yaxis: { labels: { formatter: function(val) { return '₹ ' + (val/100000).toFixed(0) + 'L'; }, style: { colors: textCol } } },
                 grid: { borderColor: borderCol },
                 theme: { mode: 'dark' },
@@ -452,10 +459,11 @@
             revChart.render();
 
             // Apex Donut Chart: Leads Source
+            var totalLeadsSum = dynamicLeadData.reduce(function(a, b) { return a + b; }, 0);
             var optionsLeads = {
                 chart: { type: 'donut', height: 260 },
-                series: [528, 315, 226, 126, 63],
-                labels: ['Website', 'Direct', 'Google', 'Social Media', 'Other'],
+                series: dynamicLeadData,
+                labels: dynamicLeadLabels,
                 colors: ['#d4a017', '#f0c040', '#28a745', '#17a2b8', '#6c757d'],
                 plotOptions: {
                     pie: {
@@ -464,7 +472,7 @@
                                 show: true,
                                 name: { show: true, color: textCol },
                                 value: { show: true, color: '#ffffff', formatter: function(val) { return val; } },
-                                total: { show: true, label: 'Total Leads', color: textCol, formatter: function(w) { return '1,258'; } }
+                                total: { show: true, label: 'Total Leads', color: textCol, formatter: function(w) { return totalLeadsSum.toLocaleString(); } }
                             }
                         }
                     }
@@ -478,8 +486,8 @@
             // Apex Donut Chart: Payments Overview
             var optionsPayments = {
                 chart: { type: 'donut', height: 260 },
-                series: [75, 20, 5],
-                labels: ['Paid', 'Pending', 'Failed'],
+                series: dynamicPayData,
+                labels: dynamicPayLabels,
                 colors: ['#28a745', '#ffc107', '#dc3545'],
                 plotOptions: {
                     pie: {
@@ -487,8 +495,8 @@
                             labels: {
                                 show: true,
                                 name: { show: true, color: textCol },
-                                value: { show: true, color: '#ffffff', formatter: function(val) { return val + '%'; } },
-                                total: { show: true, label: 'Settled', color: '#28a745', formatter: function(w) { return '75%'; } }
+                                value: { show: true, color: '#ffffff', formatter: function(val) { return val; } },
+                                total: { show: true, label: 'Payment Status', color: '#28a745', formatter: function(w) { return 'Tracked'; } }
                             }
                         }
                     }

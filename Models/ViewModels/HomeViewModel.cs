@@ -11,6 +11,7 @@ public class HomeViewModel
     public List<CoveredService> Services { get; set; } = [];
     public List<WhyChooseUsItem> WhyChooseUsItems { get; set; } = [];
     public List<HeroBannerSlide> HeroBannerSlides { get; set; } = [];
+    public List<PricingPlanEntity> PricingPlans { get; set; } = [];
 }
 
 public class SiteStats

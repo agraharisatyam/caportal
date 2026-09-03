@@ -1,0 +1,221 @@
+@model caportal.Models.Entities.CaProfessional
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "Add New CA Professional" : $"Edit — {Model.Name}";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="page-block">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <div>
+                <h4 class="mb-0 font-weight-bold text-black flex items-center">
+                    <i data-feather="user-check" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> 
+                    <span>@(isNew ? "Add New CA Professional" : $"Edit CA: {Model.Name}")</span>
+                </h4>
+                <span class="text-muted small">Manage verified Chartered Accountant profile, credentials, and visibility</span>
+            </div>
+            <a href="/Admin/Dashboard/CaList" class="btn btn-sm btn-outline-secondary">
+                <i data-feather="arrow-left" class="me-1" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Back to CA List
+            </a>
+        </div>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
+            <li class="breadcrumb-item"><a href="/Admin/Dashboard/CaList">CA List</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(isNew ? "Create" : "Edit")</li>
+        </ul>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="check-circle" class="me-1"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="alert-circle" class="me-1"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form method="post" action="/Admin/Dashboard/CaSave" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="ImagePath" value="@Model.ImagePath" />
+
+    <div class="grid grid-cols-12 gap-x-6 gap-y-4">
+        <!-- Left: Main Information -->
+        <div class="col-span-12 lg:col-span-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0 text-gold"><i data-feather="info" class="me-2"></i> Core Professional Credentials</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label font-weight-bold">Full Name (with CA prefix) *</label>
+                            <input type="text" name="Name" class="form-control" value="@Model.Name" placeholder="e.g. CA Priya Mehta" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label font-weight-bold">Designation *</label>
+                            <select name="Designation" class="form-select">
+                                <option value="FCA" selected="@(Model.Designation == "FCA")">FCA (Fellow Chartered Accountant)</option>
+                                <option value="ACA" selected="@(Model.Designation == "ACA")">ACA (Associate Chartered Accountant)</option>
+                                <option value="FCA, DISA" selected="@(Model.Designation == "FCA, DISA")">FCA, DISA</option>
+                                <option value="CPA / FCA" selected="@(Model.Designation == "CPA / FCA")">CPA / FCA</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">ICAI Membership Number *</label>
+                            <input type="text" name="MembershipNo" class="form-control" value="@Model.MembershipNo" placeholder="e.g. ICAI/2012/PM001" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Operating City / Region *</label>
+                            <input type="text" name="City" class="form-control" value="@Model.City" placeholder="e.g. Mumbai, Delhi, Bangalore" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label font-weight-bold">Years of Experience *</label>
+                            <input type="number" name="YearsExp" class="form-control" value="@Model.YearsExp" min="1" max="50" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label font-weight-bold">Cases Handled</label>
+                            <input type="number" name="CasesHandled" class="form-control" value="@Model.CasesHandled" min="0" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label font-weight-bold">Consultation Fee (₹)</label>
+                            <input type="number" name="ConsultationFee" class="form-control" value="@Model.ConsultationFee" min="0" step="50" placeholder="499" />
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label font-weight-bold">Specialisations (Comma separated) *</label>
+                            <input type="text" name="specialisationsInput" class="form-control" value="@(string.Join(", ", Model.Specialisations ?? Array.Empty<string>()))" placeholder="e.g. GST, Income Tax, ROC, Audit, Transfer Pricing, Startup Finance" required />
+                            <small class="text-muted">Separate multiple skills or practice areas with commas.</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label font-weight-bold">Professional Biography & Expertise Overview</label>
+                            <textarea name="Bio" class="form-control" rows="5" placeholder="Write a detailed summary of this CA's background, past audits, corporate experience, and strengths...">@Model.Bio</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direct Contact Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0 text-white"><i data-feather="phone" class="me-2 text-gold"></i> Direct Contact Coordinates</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Official Email</label>
+                            <input type="email" name="Email" class="form-control" value="@Model.Email" placeholder="ca.priya@cacharteredcampus.com" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Contact Phone / WhatsApp</label>
+                            <input type="text" name="Phone" class="form-control" value="@Model.Phone" placeholder="+91 98201 11223" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Average Response Time</label>
+                            <input type="text" name="ResponseTime" class="form-control" value="@Model.ResponseTime" placeholder="e.g. 1h, 30m, 2h" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-weight-bold">Display Order Priority</label>
+                            <input type="number" name="DisplayOrder" class="form-control" value="@Model.DisplayOrder" min="0" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Photo, Status, Visibility -->
+        <div class="col-span-12 lg:col-span-4">
+            <!-- Profile Photo Upload -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0 text-gold"><i data-feather="camera" class="me-2"></i> Profile Avatar</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <img id="avatarPreview" src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/images/ca/ca-priya-mehta.svg" : Model.ImagePath)" alt="CA Avatar" class="rounded-circle shadow-sm border border-2 border-primary mx-auto" style="width:120px;height:120px;object-fit:cover;" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold d-block">Upload New Photo</label>
+                        <input type="file" name="photo" id="photoInput" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this)" />
+                        <small class="text-muted d-block mt-1">Recommended: 400x400 JPG, PNG, or SVG</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status & Flags -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0 text-white"><i data-feather="settings" class="me-2 text-gold"></i> Status & Badges</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Account Status *</label>
+                        <select name="Status" class="form-select">
+                            <option value="Active" selected="@(Model.Status == "Active")">🟢 Active (Visible & Booking Open)</option>
+                            <option value="Pending" selected="@(Model.Status == "Pending")">🟡 Pending Verification</option>
+                            <option value="Suspended" selected="@(Model.Status == "Suspended")">🔴 Suspended</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Rating (Out of 5.0)</label>
+                        <input type="number" name="Rating" class="form-control" value="@Model.Rating" step="0.1" min="1.0" max="5.0" />
+                    </div>
+
+                    <hr class="my-3" />
+
+                    <div class="form-check form-switch mb-3">
+                        <input type="checkbox" name="IsVerified" class="form-check-input" id="isVerifiedSwitch" value="true" @(Model.IsVerified ? "checked" : "") />
+                        <label class="form-check-label font-weight-bold" for="isVerifiedSwitch">
+                            <i data-feather="check-circle" class="text-success inline-block me-1" style="width:14px;height:14px;"></i> ICAI Verified Badge
+                        </label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input type="checkbox" name="IsFeatured" class="form-check-input" id="isFeaturedSwitch" value="true" @(Model.IsFeatured ? "checked" : "") />
+                        <label class="form-check-label font-weight-bold" for="isFeaturedSwitch">
+                            <i data-feather="star" class="text-warning inline-block me-1" style="width:14px;height:14px;"></i> Feature on Homepage
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card">
+                <div class="card-body">
+                    <button type="submit" class="btn btn-primary w-100 mb-2 py-2 font-weight-bold">
+                        <i data-feather="save" class="me-1"></i> @(isNew ? "Create CA Professional" : "Save Changes")
+                    </button>
+                    <a href="/Admin/Dashboard/CaList" class="btn btn-outline-secondary w-100">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        if (typeof feather !== 'undefined') feather.replace();
+    </script>
+}

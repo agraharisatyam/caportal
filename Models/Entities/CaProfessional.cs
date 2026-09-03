@@ -17,5 +17,10 @@ public class CaProfessional
     public bool IsVerified { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
     public string ImagePath { get; set; } = string.Empty;
-    public DateTime JoinedOn { get; set; }
+    public string Bio { get; set; } = string.Empty;
+    public int ConsultationFee { get; set; } = 499;
+    public string Phone { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; } = 0;
+    public DateTime JoinedOn { get; set; } = DateTime.UtcNow;
 }

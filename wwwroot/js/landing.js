@@ -63,6 +63,32 @@
         });
     }, { passive: true });
 
+    // ── Hero Carousel Arrow Click Handler ──────
+    document.addEventListener('click', function (e) {
+        const prevBtn = e.target.closest('.hero-arrow-left, .hero-nav-prev');
+        const nextBtn = e.target.closest('.hero-arrow-right, .hero-nav-next');
+        const carouselEl = document.getElementById('homeHeroCarousel');
+        if (!carouselEl) return;
+
+        if (prevBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
+                bootstrap.Carousel.getOrCreateInstance(carouselEl).prev();
+            } else if (typeof jQuery !== 'undefined') {
+                jQuery(carouselEl).carousel('prev');
+            }
+        } else if (nextBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
+                bootstrap.Carousel.getOrCreateInstance(carouselEl).next();
+            } else if (typeof jQuery !== 'undefined') {
+                jQuery(carouselEl).carousel('next');
+            }
+        }
+    });
+
     // ── Smooth scroll for anchor links ────────
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {

@@ -82,4 +82,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+// ── Ensure Database Schema & Seed Data ────────────────────────────────────
+await DbInitializer.InitializeAsync(app);
+caportal.Services.Repositories.BlogRepository.Configure(app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>());
+
 app.Run();

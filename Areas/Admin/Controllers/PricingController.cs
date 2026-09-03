@@ -1,59 +1,64 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using caportal.Data;
 using caportal.Filters;
+using caportal.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace caportal.Areas.Admin.Controllers
 {
-    public class PricingPlanItem
-    {
-        public int Id { get; set; }
-        public string PlanName { get; set; } = "";
-        public string PriceDisplay { get; set; } = "";
-        public string BillingCycle { get; set; } = "/month";
-        public string Description { get; set; } = "";
-        public List<string> Features { get; set; } = new();
-        public bool IsPopular { get; set; } = false;
-    }
-
     [Area("Admin")]
     [AdminAuthorize]
     public class PricingController : Controller
     {
-        private static readonly List<PricingPlanItem> _plans = new()
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+
+        public PricingController(IDbContextFactory<ApplicationDbContext> dbFactory)
         {
-            new PricingPlanItem { Id=1, PlanName="Starter Plan", PriceDisplay="₹ 0", BillingCycle="Free", Description="For individuals and small business enquiries.", Features=new(){ "Browse Verified CAs", "Contact up to 3 CAs", "Standard Support" }, IsPopular=false },
-            new PricingPlanItem { Id=2, PlanName="Professional", PriceDisplay="₹ 1,499", BillingCycle="/month", Description="For growing businesses needing active compliance.", Features=new(){ "Unlimited CA Contacts", "Direct Call & WhatsApp", "Priority Milestone Tracking", "Dedicated Account Manager" }, IsPopular=true },
-            new PricingPlanItem { Id=3, PlanName="Enterprise", PriceDisplay="₹ 4,999", BillingCycle="/month", Description="For corporates requiring complete outsourced CA & legal team.", Features=new(){ "Custom CA Retainership", "Dedicated Senior FCA", "End-to-End Audit & Tax", "24/7 SLA Guarantee" }, IsPopular=false }
-        };
+            _dbFactory = dbFactory;
+        }
 
         // GET /Admin/Pricing
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
-            return View(_plans);
+            using var db = _dbFactory.CreateDbContext();
+            var plans = await db.PricingPlans.Where(p => p.IsActive).OrderBy(p => p.DisplayOrder).ThenBy(p => p.Id).ToListAsync();
+            return View(plans);
         }
 
         // POST /Admin/Pricing/Save
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Save(string planName, string priceDisplay, string billingCycle, string description, string featuresText, bool isPopular)
+        public async Task<IActionResult> Save(string planName, string priceDisplay, string billingCycle, string description, string featuresText, bool isPopular)
         {
             if (!string.IsNullOrWhiteSpace(planName))
             {
-                var featureList = featuresText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+                var featureList = (featuresText ?? "")
+                    .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .ToList();
 
-                _plans.Add(new PricingPlanItem
+                using var db = _dbFactory.CreateDbContext();
+                var maxOrder = await db.PricingPlans.AnyAsync() ? await db.PricingPlans.MaxAsync(p => p.DisplayOrder) : 0;
+                var plan = new PricingPlanEntity
                 {
-                    Id = _plans.Count + 1,
-                    PlanName = planName,
-                    PriceDisplay = priceDisplay,
-                    BillingCycle = billingCycle,
-                    Description = description,
+                    PlanName = planName.Trim(),
+                    PriceDisplay = priceDisplay?.Trim() ?? "₹ 0",
+                    BillingCycle = string.IsNullOrWhiteSpace(billingCycle) ? "/month" : billingCycle.Trim(),
+                    Description = description?.Trim() ?? string.Empty,
                     Features = featureList,
-                    IsPopular = isPopular
-                });
+                    IsPopular = isPopular,
+                    DisplayOrder = maxOrder + 1,
+                    IsActive = true
+                };
 
-                TempData["Success"] = $"Pricing Plan '{planName}' added!";
+                db.PricingPlans.Add(plan);
+                await db.SaveChangesAsync();
+                TempData["Success"] = $"Pricing Plan '{planName}' added successfully!";
             }
             return RedirectToAction("Index");
         }
@@ -61,12 +66,14 @@ namespace caportal.Areas.Admin.Controllers
         // POST /Admin/Pricing/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var p = _plans.FirstOrDefault(x => x.Id == id);
+            using var db = _dbFactory.CreateDbContext();
+            var p = await db.PricingPlans.FindAsync(id);
             if (p != null)
             {
-                _plans.Remove(p);
+                db.PricingPlans.Remove(p);
+                await db.SaveChangesAsync();
                 TempData["Success"] = $"Plan '{p.PlanName}' removed.";
             }
             return RedirectToAction("Index");

@@ -618,20 +618,57 @@ function toggleFaq(el) {
         answer.style.display = 'block';
     }
 }
-function handleBooking() {
+async function handleBooking() {
     const name = document.getElementById('bookName').value.trim();
     const phone = document.getElementById('bookPhone').value.trim();
+    const email = document.getElementById('bookEmail').value.trim();
     const svc = document.getElementById('bookService').value;
+    const desc = document.getElementById('bookDesc').value.trim();
+
     if (!name || !phone || !svc) {
         alert('Please fill in Name, Mobile, and Service fields.');
         return;
     }
+
     const btn = document.querySelector('.btn-book-full');
-    btn.innerHTML = '<i class="fas fa-check"></i> Request Sent!';
-    btn.style.background = '#22c55e';
-    setTimeout(() => {
-        btn.innerHTML = '<i class="fas fa-calendar-check"></i> Book Consultation';
-        btn.style.background = '';
-    }, 3000);
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+    try {
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        formData.append('service', svc);
+        formData.append('description', desc);
+        formData.append('expertId', '@Model.Id');
+
+        const res = await fetch('/expert/book', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Request Booked!';
+            btn.style.background = '#22c55e';
+            alert(data.message);
+            document.getElementById('bookName').value = '';
+            document.getElementById('bookPhone').value = '';
+            document.getElementById('bookEmail').value = '';
+            document.getElementById('bookDesc').value = '';
+        } else {
+            alert(data.message || 'Error booking consultation.');
+        }
+    } catch (err) {
+        alert('Network error. Please try again.');
+    } finally {
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+        }, 3500);
+    }
 }
 </script>

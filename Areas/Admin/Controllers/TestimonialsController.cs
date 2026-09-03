@@ -1,6 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using caportal.Data;
 using caportal.Filters;
-using caportal.Models.ViewModels;
+using caportal.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace caportal.Areas.Admin.Controllers
 {
@@ -8,25 +14,27 @@ namespace caportal.Areas.Admin.Controllers
     [AdminAuthorize]
     public class TestimonialsController : Controller
     {
-        private static readonly List<Testimonial> _testimonials = new()
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+
+        public TestimonialsController(IDbContextFactory<ApplicationDbContext> dbFactory)
         {
-            new Testimonial { Text="Found a GST specialist quickly after posting. The CA resolved our entire compliance backlog seamlessly. Outstanding experience.", AuthorName="Suresh G.", AuthorRole="Business Owner", Initials="SG", Rating=5 },
-            new Testimonial { Text="As a startup, we needed specialized guidance on equity structuring. CACampus connected us with an expert who guided us through our seed round.", AuthorName="Nisha R.", AuthorRole="Startup Founder", Initials="NR", Rating=5 },
-            new Testimonial { Text="The compliance management process saves us from costly delays every quarter. The CA professionals here are thorough, prompt, and professional.", AuthorName="Mohan K.", AuthorRole="Finance Manager", Initials="MK", Rating=5 }
-        };
+            _dbFactory = dbFactory;
+        }
 
         // GET /Admin/Testimonials
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
-            return View(_testimonials);
+            using var db = _dbFactory.CreateDbContext();
+            var testimonials = await db.Testimonials.Where(t => t.IsActive).OrderBy(t => t.DisplayOrder).ThenBy(t => t.Id).ToListAsync();
+            return View(testimonials);
         }
 
         // POST /Admin/Testimonials/Save
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Save(string text, string authorName, string authorRole, int rating)
+        public async Task<IActionResult> Save(string text, string authorName, string authorRole, int rating)
         {
             if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(authorName))
             {
@@ -34,15 +42,21 @@ namespace caportal.Areas.Admin.Controllers
                     ? $"{authorName.Split(' ')[0][0]}{authorName.Split(' ')[1][0]}".ToUpper()
                     : authorName[..Math.Min(2, authorName.Length)].ToUpper();
 
-                _testimonials.Add(new Testimonial
+                using var db = _dbFactory.CreateDbContext();
+                var maxOrder = await db.Testimonials.AnyAsync() ? await db.Testimonials.MaxAsync(t => t.DisplayOrder) : 0;
+                var item = new TestimonialEntity
                 {
-                    Text = text,
-                    AuthorName = authorName,
-                    AuthorRole = authorRole,
+                    Text = text.Trim(),
+                    AuthorName = authorName.Trim(),
+                    AuthorRole = authorRole?.Trim() ?? string.Empty,
                     Initials = initials,
-                    Rating = rating > 0 ? rating : 5
-                });
-                TempData["Success"] = $"Testimonial by '{authorName}' added!";
+                    Rating = rating > 0 ? rating : 5,
+                    DisplayOrder = maxOrder + 1,
+                    IsActive = true
+                };
+                db.Testimonials.Add(item);
+                await db.SaveChangesAsync();
+                TempData["Success"] = $"Testimonial by '{authorName}' added successfully!";
             }
             return RedirectToAction("Index");
         }
@@ -50,13 +64,15 @@ namespace caportal.Areas.Admin.Controllers
         // POST /Admin/Testimonials/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int index)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (index >= 0 && index < _testimonials.Count)
+            using var db = _dbFactory.CreateDbContext();
+            var item = await db.Testimonials.FindAsync(id);
+            if (item != null)
             {
-                var name = _testimonials[index].AuthorName;
-                _testimonials.RemoveAt(index);
-                TempData["Success"] = $"Testimonial by '{name}' removed.";
+                db.Testimonials.Remove(item);
+                await db.SaveChangesAsync();
+                TempData["Success"] = $"Testimonial removed successfully.";
             }
             return RedirectToAction("Index");
         }
