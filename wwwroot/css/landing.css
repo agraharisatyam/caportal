@@ -5022,3 +5022,37 @@ section.cta-section a.btn-cta-outline:hover i {
     }
 }
 
+/* ── Suppress Somee.com Server Ads & Host Banners ──────────────────────── */
+center,
+center:has(a[href*="somee.com"]),
+center:has(a[href*="Somee.com"]),
+a[href*="somee.com"],
+a[href*="Somee.com"],
+div[style*="z-index: 2147483647"],
+div[style*="z-index:2147483647"],
+div[style*="opacity: 0.9"][style*="bottom: 0px"],
+div[onmouseover*="S_ssac"],
+div[onmouseover*="s_ssac"],
+body > center,
+html > center,
+body > div[style*="height: 65px"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    width: 0 !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -99999px !important;
+    left: -99999px !important;
+    clip: rect(0, 0, 0, 0) !important;
+    overflow: hidden !important;
+}
+
+
