@@ -176,7 +176,7 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" /></noscript>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecDqYW1uqWOV/firPRuAzG4Bg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
     <link rel="stylesheet" href="/site-dynamic.css" />
 </head>
@@ -697,7 +697,7 @@
                 }
             </ul>
 
-            <!-- Desktop right side: phone + admin + CTAs -->
+            <!-- Desktop right side: phone + CTAs -->
             <div class="d-none d-lg-flex align-items-center gap-2">
                 <a href="tel:@navPhone.Replace(" ","")" class="nav-link nav-phone">
                     <i class="fas fa-phone-alt me-1"></i> @navPhone
@@ -728,7 +728,37 @@
                     @foreach (var item in menuItems.Where(m => m.IsActive).OrderBy(m => m.Order))
                     {
                         <li>
-                            <a class="nav-link" href="@(string.IsNullOrEmpty(item.Url) ? (item.MegaMenuType == "Services" ? "/#features" : "/find-expert") : item.Url)" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>@item.DisplayName</a>
+                            <a class="nav-link" href="@(string.IsNullOrEmpty(item.Url) ? (item.MegaMenuType == "Services" ? "/#features" : "/find-expert") : item.Url)" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                @if (item.DisplayName.Contains("Contact"))
+                                {
+                                    <i class="fas fa-headset me-2 text-warning"></i>
+                                }
+                                else if (item.DisplayName == "Home")
+                                {
+                                    <i class="fas fa-home me-2 text-warning"></i>
+                                }
+                                else if (item.DisplayName == "Services")
+                                {
+                                    <i class="fas fa-layer-group me-2 text-warning"></i>
+                                }
+                                else if (item.DisplayName == "Find an Expert")
+                                {
+                                    <i class="fas fa-user-tie me-2 text-warning"></i>
+                                }
+                                else if (item.DisplayName == "How It Works")
+                                {
+                                    <i class="fas fa-list-ol me-2 text-warning"></i>
+                                }
+                                else if (item.DisplayName == "Pricing")
+                                {
+                                    <i class="fas fa-tags me-2 text-warning"></i>
+                                }
+                                else if (item.DisplayName == "Blog")
+                                {
+                                    <i class="fas fa-newspaper me-2 text-warning"></i>
+                                }
+                                @item.DisplayName
+                            </a>
                         </li>
                     }
                 </ul>
@@ -736,10 +766,9 @@
                     <a href="tel:@navPhone.Replace(" ","")" class="btn btn-outline-secondary btn-sm flex-fill text-center">
                         <i class="fas fa-phone-alt me-1"></i> @navPhone
                     </a>
-                    <a href="/Admin/Auth/Login" class="btn btn-outline-light btn-sm flex-fill text-center">
-                        <i class="fas fa-lock me-1"></i> Admin
+                    <a href="/contact" class="btn-nav-cta btn btn-sm flex-fill text-center">
+                        <i class="fas fa-headset me-1"></i> Contact Us
                     </a>
-                    <a href="#" class="btn-nav-cta btn btn-sm flex-fill text-center">Consult Now</a>
                 </div>
             </div>
         </div>
@@ -908,7 +937,7 @@
         </div>
         <div class="ca-trigger-content">
             <span class="ca-trigger-status"><span class="ca-status-dot"></span> Online</span>
-            <span class="ca-trigger-label">Connect Us</span>
+            <span class="ca-trigger-label">Contact Us</span>
         </div>
         <span class="ca-notification-badge" title="Experts available">1</span>
     </button>

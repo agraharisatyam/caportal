@@ -2281,17 +2281,28 @@ section { padding: 3.5rem 0; }
     transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.ca-icon-main {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem !important;
+    color: #0d1f33 !important;
+    line-height: 1 !important;
+}
+
 .ca-icon-close {
     display: none;
     font-size: 1.3rem;
 }
 
 .ca-connect-trigger.active .ca-icon-main {
-    display: none;
+    display: none !important;
 }
 
 .ca-connect-trigger.active .ca-icon-close {
-    display: block;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 .ca-connect-trigger.active .ca-trigger-icon-box {
@@ -5054,5 +5065,446 @@ body > div[style*="height: 65px"] {
     clip: rect(0, 0, 0, 0) !important;
     overflow: hidden !important;
 }
+
+/* ==========================================================================
+   HOMEPAGE MOBILE VIEW ENHANCEMENTS (2 Cards Per Row & Mobile Polish)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+
+    /* Prevent accidental horizontal overflow */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+
+    /* ── 1. General Section Spacing & Typography ── */
+    .services-grid-section,
+    .professionals-section,
+    .why-choose-section,
+    .how-section,
+    .testimonials-section,
+    .faq-section,
+    .cta-section {
+        padding: 44px 0 !important;
+    }
+
+    .section-title {
+        font-size: 1.65rem !important;
+        line-height: 1.28 !important;
+        margin-bottom: 8px !important;
+        letter-spacing: -0.3px !important;
+    }
+
+    .section-badge {
+        font-size: 0.72rem !important;
+        padding: 3px 10px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .section-desc {
+        font-size: 0.84rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 22px !important;
+        padding: 0 8px !important;
+    }
+
+    /* ── 2. Services Grid — 2 Cards Per Row ── */
+    .services-grid-section .service-card {
+        padding: 14px 10px !important;
+        border-radius: 12px !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        height: 100% !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+    }
+
+    .services-grid-section .service-icon {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.15rem !important;
+        border-radius: 10px !important;
+        margin: 0 auto 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .services-grid-section .service-card:has(img) .service-icon,
+    .services-grid-section .service-icon:has(img) {
+        width: 100% !important;
+        margin: 0 auto 6px !important;
+    }
+
+    .services-grid-section .service-icon img {
+        height: 64px !important;
+        max-height: 64px !important;
+        width: 100% !important;
+        object-fit: contain !important;
+        margin: 0 auto 4px !important;
+    }
+
+    .services-grid-section .service-title {
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        color: #0d1f33 !important;
+        line-height: 1.25 !important;
+        margin-bottom: 4px !important;
+        min-height: 32px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    .services-grid-section .service-desc {
+        font-size: 0.68rem !important;
+        color: #64748b !important;
+        line-height: 1.35 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* ── 3. Featured CA Professionals — 2 Cards Per Row ── */
+    .prof-card {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.05) !important;
+        border: 1px solid #e2e8f0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        background: #ffffff !important;
+    }
+
+    .prof-card-header {
+        padding: 14px 6px 10px !important;
+        position: relative !important;
+        text-align: center !important;
+    }
+
+    .prof-avatar {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.15rem !important;
+        border-width: 2px !important;
+        margin: 0 auto !important;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.18) !important;
+    }
+
+    .prof-verified {
+        position: absolute !important;
+        top: 6px !important;
+        right: 6px !important;
+        font-size: 0.58rem !important;
+        padding: 2px 5px !important;
+        border-radius: 20px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 2px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+    }
+
+    .prof-verified i {
+        font-size: 0.52rem !important;
+    }
+
+    .prof-name {
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        margin-top: 6px !important;
+        margin-bottom: 2px !important;
+        line-height: 1.22 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        color: #ffffff !important;
+    }
+
+    .prof-designation {
+        font-size: 0.66rem !important;
+        color: rgba(255,255,255,0.7) !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .prof-card-body {
+        padding: 8px 6px 10px !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        text-align: center !important;
+    }
+
+    .prof-tag {
+        font-size: 0.6rem !important;
+        padding: 2px 5px !important;
+        margin: 1px !important;
+        border-radius: 20px !important;
+        display: inline-block !important;
+        max-width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .prof-rating {
+        font-size: 0.72rem !important;
+        margin-top: 4px !important;
+    }
+
+    .prof-meta {
+        font-size: 0.65rem !important;
+        margin-top: 5px !important;
+        padding-top: 5px !important;
+        line-height: 1.25 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        color: #64748b !important;
+    }
+
+    .btn-connect {
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+        padding: 6px 3px !important;
+        margin-top: 6px !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+    }
+
+    .btn-connect i {
+        font-size: 0.68rem !important;
+    }
+
+    /* ── 4. Why Choose Us — 2 Cards Per Row ── */
+    .wcu-header {
+        margin-bottom: 24px !important;
+    }
+
+    .wcu-title {
+        font-size: 1.65rem !important;
+        margin-bottom: 6px !important;
+    }
+
+    .wcu-subtitle {
+        font-size: 0.82rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .wcu-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .wcu-card {
+        padding: 14px 8px !important;
+        border-radius: 12px !important;
+        background: rgba(17, 24, 39, 0.85) !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .wcu-card-icon-wrap {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.15rem !important;
+        margin-bottom: 8px !important;
+        padding: 4px !important;
+    }
+
+    .wcu-custom-icon {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .wcu-card-title {
+        font-size: 0.76rem !important;
+        margin-bottom: 4px !important;
+        line-height: 1.25 !important;
+    }
+
+    .wcu-card-desc {
+        font-size: 0.68rem !important;
+        line-height: 1.35 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 3 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* ── 5. Hero & Search Bar Mobile Optimization ── */
+    .hero-v2-search {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 6px !important;
+        border-radius: 12px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .hero-v2-search-inner {
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+
+    .hero-v2-field {
+        width: 100% !important;
+        min-width: 100% !important;
+        padding: 8px 10px !important;
+    }
+
+    .hero-v2-field-border {
+        width: 100% !important;
+        border-left: none !important;
+        border-top: 1px solid rgba(255,255,255,0.12) !important;
+    }
+
+    .hero-v2-search-btn {
+        width: 100% !important;
+        padding: 10px 16px !important;
+        border-radius: 8px !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .hero-v2-title {
+        font-size: 1.65rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .hero-v2-sub {
+        font-size: 0.88rem !important;
+        margin-bottom: 16px !important;
+    }
+
+    /* ── 6. Expert Band Mobile ── */
+    .expert-band {
+        padding: 26px 0 !important;
+    }
+
+    .expert-band-title {
+        font-size: 1.35rem !important;
+        text-align: center !important;
+        margin-bottom: 6px !important;
+    }
+
+    .expert-band-sub {
+        font-size: 0.82rem !important;
+        text-align: center !important;
+        margin-bottom: 14px !important;
+    }
+
+    .expert-band .col-lg-5 {
+        text-align: center !important;
+    }
+
+    .expert-band .btn-hero-primary,
+    .expert-band .btn-hero-secondary {
+        font-size: 0.82rem !important;
+        padding: 8px 16px !important;
+        margin: 4px !important;
+        display: inline-flex !important;
+    }
+
+    /* ── 7. How It Works (Steps) Mobile ── */
+    .step-connector {
+        display: none !important;
+    }
+
+    .step-card {
+        padding: 18px 14px !important;
+        border-radius: 14px !important;
+        text-align: center !important;
+    }
+
+    .step-number {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.1rem !important;
+        margin: 0 auto 0.75rem !important;
+    }
+
+    .step-card h5 {
+        font-size: 0.95rem !important;
+        margin-bottom: 6px !important;
+    }
+
+    .step-card p {
+        font-size: 0.78rem !important;
+        line-height: 1.45 !important;
+    }
+
+    /* ── 8. Testimonials Mobile ── */
+    .testi-card {
+        padding: 18px 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .testi-quote {
+        font-size: 2rem !important;
+        margin-bottom: 2px !important;
+    }
+
+    .testi-text {
+        font-size: 0.82rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .testi-avatar {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .testi-name {
+        font-size: 0.85rem !important;
+    }
+
+    .testi-role {
+        font-size: 0.72rem !important;
+    }
+
+    /* ── 9. CTA Section Mobile ── */
+    .cta-section {
+        padding: 44px 0 !important;
+    }
+
+    .cta-content .section-title {
+        font-size: 1.5rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .cta-content .section-desc {
+        font-size: 0.84rem !important;
+        margin-bottom: 16px !important;
+    }
+
+    .btn-cta-white,
+    .btn-cta-outline {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        font-size: 0.84rem !important;
+        padding: 10px 16px !important;
+    }
+}
+
 
 
