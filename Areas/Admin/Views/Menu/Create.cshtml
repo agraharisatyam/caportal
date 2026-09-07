@@ -58,13 +58,15 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold">Mega Menu Dropdown Type</label>
-                        <select name="MegaMenuType" class="form-control">
+                        <label class="form-label font-weight-bold">Menu / Dropdown Type</label>
+                        <select name="MegaMenuType" class="form-control" id="megaMenuTypeSelect">
                             <option value="None">None (Standard Link)</option>
-                            <option value="Services">Services (TaxNiti 6-column Mega Dropdown)</option>
-                            <option value="FindExpert">Find an Expert (2-column Category Dropdown)</option>
+                            <option value="CustomDropdown">Custom Dropdown (Add &amp; Manage Custom Child Links)</option>
+                            <option value="Services">Services (Dynamic Mega-Menu loaded from Database)</option>
+                            <option value="TaxLegal">Tax &amp; Legal (5-column Tax, GST &amp; Legal Mega-Menu)</option>
+                            <option value="FindExpert">Find an Expert (CA Specialties &amp; City Dropdown)</option>
                         </select>
-                        <small class="text-muted text-xs d-block mt-1">Mega-dropdowns contain pre-compiled category panels.</small>
+                        <small class="text-muted text-xs d-block mt-1">If you choose Custom Dropdown, you can add and manage child links after creating.</small>
                     </div>
 
                     <div class="mb-3 form-check">

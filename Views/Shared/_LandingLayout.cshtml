@@ -194,10 +194,21 @@
         var navTagline  = navSettings?.SiteTagline ?? "Verified CA Network";
         var navPhone    = navSettings?.SitePhone ?? "+91 98765 43210";
 
-        var menuItems    = caportal.Services.Repositories.MenuRepository.GetAll();
-        var servicesItem = menuItems.FirstOrDefault(m => m.MegaMenuType == "Services");
-        var findExpertItem = menuItems.FirstOrDefault(m => m.MegaMenuType == "FindExpert");
-        var homeItem     = menuItems.FirstOrDefault(m => m.DisplayName == "Home" || m.Url == "/");
+        var menuItems = caportal.Services.Repositories.MenuRepository.GetAll();
+        var dbFactory = Context.RequestServices.GetService(typeof(Microsoft.EntityFrameworkCore.IDbContextFactory<caportal.Data.ApplicationDbContext>)) as Microsoft.EntityFrameworkCore.IDbContextFactory<caportal.Data.ApplicationDbContext>;
+        List<caportal.Models.Entities.CoveredService> dynamicServices = new();
+        if (dbFactory != null)
+        {
+            try
+            {
+                using var db = dbFactory.CreateDbContext();
+                dynamicServices = db.CoveredServices
+                    .Include(s => s.SubServices.Where(ss => ss.IsActive).OrderBy(ss => ss.DisplayOrder))
+                    .OrderBy(s => s.DisplayOrder)
+                    .ToList();
+            }
+            catch { }
+        }
     }
     <div class="container">
         <div class="navbar-inner">
@@ -216,484 +227,540 @@
 
             <!-- Desktop Nav links -->
             <ul class="navbar-nav flex-row gap-0 d-none d-lg-flex mb-0 align-items-center" role="list">
-                @if (homeItem != null && homeItem.IsActive)
+                @foreach (var item in menuItems.Where(m => m.IsActive).OrderBy(m => m.Order))
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" href="@homeItem.Url" @(homeItem.OpenInNewTab ? "target=\"_blank\"" : "")>@homeItem.DisplayName</a>
-                    </li>
-                }
+                    if (item.MegaMenuType == "Services")
+                    {
+                        <!-- DYNAMIC SERVICES MEGA-MENU (6-column from DropdownItems / DB) -->
+                        <li class="nav-item nav-dropdown" id="servicesNav">
+                            <a class="nav-link nav-link-dropdown" href="@(string.IsNullOrEmpty(item.Url) ? "#features" : item.Url)">
+                                @item.DisplayName <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                            </a>
+                            <div class="nav-mega-menu nav-mega-menu--full" role="menu" style="flex-wrap: wrap; row-gap: 20px;">
+                                @if (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive))
+                                {
+                                    var serviceGroups = item.DropdownItems
+                                        .Where(d => d.IsActive)
+                                        .OrderBy(d => d.Order)
+                                        .GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "General Services" : d.Category.Trim())
+                                        .ToList();
 
-                @if (servicesItem == null || servicesItem.IsActive)
-                {
-                    <!-- SERVICES mega-menu — TaxNiti style 6-column -->
-                    <li class="nav-item nav-dropdown" id="servicesNav">
-                        <a class="nav-link nav-link-dropdown" href="#features">
-                            @(servicesItem?.DisplayName ?? "Services") <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
-                        </a>
-                    <div class="nav-mega-menu nav-mega-menu--full" role="menu">
-                        <div class="mega-col">
-                            <div class="mega-col-header">
-                                <div class="mega-col-icon">
-                                    <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                        <rect x="8" y="20" width="32" height="22" rx="2"/>
-                                        <path d="M16 20V14a8 8 0 0 1 16 0v6"/>
-                                        <line x1="24" y1="30" x2="24" y2="34"/>
-                                        <rect x="18" y="6" width="12" height="8" rx="1"/>
-                                        <line x1="8" y1="28" x2="40" y2="28"/>
-                                    </svg>
-                                </div>
-                                <div class="mega-col-title">Business Registration</div>
+                                    @foreach (var grp in serviceGroups)
+                                    {
+                                        var catIcon = grp.Key switch
+                                        {
+                                            "Business Registration" => "fas fa-building",
+                                            "GST & Tax" => "fas fa-file-invoice-dollar",
+                                            "MCA & Compliance" => "fas fa-landmark",
+                                            "Trademark & IPR" => "fas fa-shield-alt",
+                                            "Accounting & Audit" => "fas fa-calculator",
+                                            "Other Services" => "fas fa-briefcase",
+                                            _ => "fas fa-concierge-bell"
+                                        };
+                                        <div class="mega-col" style="min-width: 175px; flex: 1 1 0;">
+                                            <div class="mega-col-header">
+                                                <div class="mega-col-icon">
+                                                    <i class="@catIcon" style="font-size: 1.5rem; color: #d4a017;"></i>
+                                                </div>
+                                                <div class="mega-col-title">
+                                                    @grp.Key
+                                                </div>
+                                            </div>
+                                            <ul class="mega-list">
+                                                @foreach (var sub in grp.OrderBy(x => x.Order))
+                                                {
+                                                    <li>
+                                                        <a href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "") title="@sub.Title">
+                                                            @if (!string.IsNullOrEmpty(sub.Icon))
+                                                            {
+                                                                <i class="@sub.Icon me-1 text-gold" style="font-size: 0.8rem;"></i>
+                                                            }
+                                                            @sub.Title
+                                                            @if (!string.IsNullOrEmpty(sub.Badge))
+                                                            {
+                                                                <span class="badge bg-warning-subtle text-warning ms-1" style="font-size: 0.65rem; padding: 1px 4px;">@sub.Badge</span>
+                                                            }
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                }
+                                else if (dynamicServices != null && dynamicServices.Count > 0)
+                                {
+                                    @foreach (var s in dynamicServices)
+                                    {
+                                        <div class="mega-col" style="min-width: 175px; flex: 1 1 0;">
+                                            <div class="mega-col-header">
+                                                <div class="mega-col-icon">
+                                                    <i class="@s.Icon" style="font-size: 1.5rem; color: #d4a017;"></i>
+                                                </div>
+                                                <div class="mega-col-title">
+                                                    <a href="/services/@s.Id" style="color: inherit; text-decoration: none;">@s.Title</a>
+                                                </div>
+                                            </div>
+                                            <ul class="mega-list">
+                                                @if (s.SubServices != null && s.SubServices.Any(ss => ss.IsActive))
+                                                {
+                                                    @foreach (var sub in s.SubServices.Where(ss => ss.IsActive).OrderBy(ss => ss.DisplayOrder).Take(11))
+                                                    {
+                                                        <li>
+                                                            <a href="/services/@s.Id#subservice-@sub.Id" title="@sub.Title">
+                                                                @sub.Title
+                                                                @if (sub.IsPopular)
+                                                                {
+                                                                    <span class="badge bg-warning-subtle text-warning ms-1" style="font-size: 0.65rem; padding: 1px 4px;">Hot</span>
+                                                                }
+                                                                else if (sub.IsNew)
+                                                                {
+                                                                    <span class="badge bg-success-subtle text-success ms-1" style="font-size: 0.65rem; padding: 1px 4px;">New</span>
+                                                                }
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (s.SubServices.Count(ss => ss.IsActive) > 11)
+                                                    {
+                                                        <li><a href="/services/@s.Id" class="text-warning fw-bold">View All (@s.SubServices.Count(ss => ss.IsActive)) &rarr;</a></li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li><a href="/services/@s.Id">Consultation &amp; Advisory</a></li>
+                                                    <li><a href="/services/@s.Id">Compliance &amp; Filings</a></li>
+                                                    <li><a href="/services/@s.Id">Documentation &amp; Support</a></li>
+                                                    <li><a href="/services/@s.Id" class="text-warning fw-bold">Learn More &rarr;</a></li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                }
                             </div>
-                            <ul class="mega-list">
-                                <li><a href="/services/startup-registration">Startup Registration</a></li>
-                                <li><a href="/services/proprietorship-registration">Proprietorship Registration</a></li>
-                                <li><a href="/services/partnership-registration">Partnership Registration</a></li>
-                                <li><a href="/services/llp-registration">LLP Registration</a></li>
-                                <li><a href="/services/private-limited-company">Private Limited Company</a></li>
-                                <li><a href="/services/opc-registration">OPC Registration</a></li>
-                                <li><a href="/services/public-limited-company">Public Limited Company</a></li>
-                                <li><a href="/services/section-8-company">Section 8 Company</a></li>
-                                <li><a href="/services/producer-company">Producer Company</a></li>
-                                <li><a href="/services/indian-subsidiary">Indian Subsidiary</a></li>
-                                <li><a href="/services/shop-establishment">Shop &amp; Establishment</a></li>
-                                <li><a href="/services/trade-licence">Trade Licence</a></li>
-                                <li><a href="/services/msme-registration">MSME Registration</a></li>
-                                <li><a href="/services/virtual-office">Virtual Office</a></li>
-                            </ul>
-                        </div>
-                        <div class="mega-col">
-                            <div class="mega-col-header">
-                                <div class="mega-col-icon">
-                                    <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                        <rect x="6" y="10" width="36" height="28" rx="3"/>
-                                        <path d="M6 18h36"/>
-                                        <path d="M16 10v8"/>
-                                        <path d="M32 10v8"/>
-                                        <text x="14" y="34" font-size="10" fill="#d4a017" stroke="none" font-weight="bold">GST</text>
-                                    </svg>
-                                </div>
-                                <div class="mega-col-title">GST &amp; Tax</div>
-                            </div>
-                            <ul class="mega-list">
-                                <li><a href="/services/gst-registration">GST Registration</a></li>
-                                <li><a href="/services/gst-return-filing">GST Return Filing</a></li>
-                                <li><a href="/services/gst-amendment">GST Amendment</a></li>
-                                <li><a href="/services/gst-cancellation">GST Cancellation</a></li>
-                                <li><a href="/services/gst-revocation">GST Revocation</a></li>
-                                <li><a href="/services/gst-notice-reply">GST Notice Reply</a></li>
-                                <li><a href="/services/gst-refund">GST Refund</a></li>
-                                <li><a href="/services/gstr-9-filing">GSTR-9 Filing</a></li>
-                                <li><a href="/services/gstr-10-filing">GSTR-10 Filing</a></li>
-                                <li><a href="/services/lut-filing">LUT Filing</a></li>
-                                <li><a href="/services/e-way-bill-services">E-Way Bill Services</a></li>
-                                <li><a href="/services/itr-filing">ITR Filing</a></li>
-                                <li><a href="/services/tax-planning">Tax Planning</a></li>
-                                <li><a href="/services/pan-tan-tds">PAN / TAN / TDS</a></li>
-                            </ul>
-                        </div>
-                        <div class="mega-col">
-                            <div class="mega-col-header">
-                                <div class="mega-col-icon">
-                                    <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                        <path d="M24 6l16 8v10c0 10-7 18-16 20C8 42 8 24 8 24V14l16-8z"/>
-                                        <polyline points="17,24 22,29 31,20"/>
-                                    </svg>
-                                </div>
-                                <div class="mega-col-title">MCA &amp; Compliance</div>
-                            </div>
-                            <ul class="mega-list">
-                                <li><a href="/services/roc-filing">ROC Filing</a></li>
-                                <li><a href="/services/annual-compliance">Annual Compliance</a></li>
-                                <li><a href="/services/director-kyc">Director KYC</a></li>
-                                <li><a href="/services/din-application">DIN Application</a></li>
-                                <li><a href="/services/dsc-digital-signature">Digital Signature (DSC)</a></li>
-                                <li><a href="/services/registered-office-change">Registered Office Change</a></li>
-                                <li><a href="/services/director-appointment">Director Appointment</a></li>
-                                <li><a href="/services/share-transfer">Share Transfer</a></li>
-                                <li><a href="/services/company-closure">Company Closure</a></li>
-                                <li><a href="/services/pf-registration">PF Registration</a></li>
-                                <li><a href="/services/esic-registration">ESIC Registration</a></li>
-                                <li><a href="/services/payroll-management">Payroll Management</a></li>
-                                <li><a href="/services/labour-compliance">Labour Compliance</a></li>
-                            </ul>
-                        </div>
-                        <div class="mega-col">
-                            <div class="mega-col-header">
-                                <div class="mega-col-icon">
-                                    <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                        <circle cx="24" cy="24" r="18"/>
-                                        <circle cx="24" cy="24" r="10"/>
-                                        <text x="17" y="28" font-size="9" fill="#d4a017" stroke="none" font-weight="bold">TM</text>
-                                    </svg>
-                                </div>
-                                <div class="mega-col-title">Trademark &amp; IPR</div>
-                            </div>
-                            <ul class="mega-list">
-                                <li><a href="/services/trademark-search">Trademark Search</a></li>
-                                <li><a href="/services/trademark-registration">Trademark Registration</a></li>
-                                <li><a href="/services/trademark-objection">Trademark Objection</a></li>
-                                <li><a href="/services/trademark-hearing">Trademark Hearing</a></li>
-                                <li><a href="/services/trademark-renewal">Trademark Renewal</a></li>
-                                <li><a href="/services/trademark-assignment">Trademark Assignment</a></li>
-                                <li><a href="/services/logo-registration">Logo Registration</a></li>
-                                <li><a href="/services/copyright-registration">Copyright Registration</a></li>
-                                <li><a href="/services/patent-registration">Patent Registration</a></li>
-                                <li><a href="/services/design-registration">Design Registration</a></li>
-                                <li><a href="/services/brand-protection">Brand Protection</a></li>
-                            </ul>
-                        </div>
-                        <div class="mega-col">
-                            <div class="mega-col-header">
-                                <div class="mega-col-icon">
-                                    <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                        <rect x="6" y="6" width="14" height="36" rx="2"/>
-                                        <rect x="28" y="18" width="14" height="24" rx="2"/>
-                                        <line x1="6" y1="42" x2="42" y2="42"/>
-                                        <line x1="13" y1="14" x2="13" y2="14" stroke-width="3"/>
-                                        <line x1="35" y1="26" x2="35" y2="26" stroke-width="3"/>
-                                    </svg>
-                                </div>
-                                <div class="mega-col-title">Accounting &amp; Audit</div>
-                            </div>
-                            <ul class="mega-list">
-                                <li><a href="/services/bookkeeping">Bookkeeping</a></li>
-                                <li><a href="/services/accounting">Accounting</a></li>
-                                <li><a href="/services/financial-statements">Financial Statements</a></li>
-                                <li><a href="/services/mis-reporting">MIS Reporting</a></li>
-                                <li><a href="/services/internal-audit">Internal Audit</a></li>
-                                <li><a href="/services/statutory-audit">Statutory Audit</a></li>
-                                <li><a href="/services/gst-audit">GST Audit</a></li>
-                                <li><a href="/services/tax-audit">Tax Audit</a></li>
-                                <li><a href="/services/stock-audit">Stock Audit</a></li>
-                                <li><a href="/services/virtual-cfo">Virtual CFO</a></li>
-                            </ul>
-                        </div>
-                        <div class="mega-col">
-                            <div class="mega-col-header">
-                                <div class="mega-col-icon">
-                                    <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                        <circle cx="18" cy="16" r="8"/>
-                                        <circle cx="34" cy="28" r="6"/>
-                                        <path d="M6 42c0-7 5-12 12-12h6"/>
-                                        <path d="M28 42c0-4 3-8 6-8"/>
-                                    </svg>
-                                </div>
-                                <div class="mega-col-title">Other Services</div>
-                            </div>
-                            <ul class="mega-list">
-                                <li><a href="/services/ngo-registration">NGO Registration</a></li>
-                                <li><a href="/services/trust-registration">Trust Registration</a></li>
-                                <li><a href="/services/startup-funding">Startup Funding</a></li>
-                                <li><a href="/services/project-finance">Project Finance</a></li>
-                                <li><a href="/services/business-loan">Business Loan</a></li>
-                                <li><a href="/services/iso-certification">ISO Certification</a></li>
-                                <li><a href="/services/fssai-licence">FSSAI Licence</a></li>
-                                <li><a href="/services/iec-registration">IEC Registration</a></li>
-                                <li><a href="/services/nri-taxation">NRI Taxation</a></li>
-                                <li><a href="/services/legal-documentation">Legal Documentation</a></li>
-                                <li><a href="/services/agreements">Agreements</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </li>
+                        </li>
+                    }
+                    else if (item.MegaMenuType == "TaxLegal")
+                    {
+                        <!-- TAX & LEGAL MEGA-MENU -->
+                        var taxItems = item.DropdownItems?.Where(d => d.IsActive).OrderBy(d => d.Order).ToList() ?? new();
+                        var dtLinks = taxItems.Where(d => d.Category == "Direct Tax Services").ToList();
+                        var gstLinks = taxItems.Where(d => d.Category == "GST Services").ToList();
+                        var panLinks = taxItems.Where(d => d.Category == "PAN / TAN / TDS / TCS").ToList();
+                        var legLinks = taxItems.Where(d => d.Category == "Legal Services").ToList();
+                        var iprLinks = taxItems.Where(d => d.Category == "IPR & Legal Protection").ToList();
 
-                <!-- TAX & LEGAL mega-menu -->
-                <li class="nav-item nav-dropdown" id="taxLegalNav">
-                    <a class="nav-link nav-link-dropdown" href="#features">
-                        Tax &amp; Legal <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
-                    </a>
-                    <div class="nav-mega-menu nav-mega-menu--full" role="menu">
-                        <div class="mega-columns-wrap">
-                            <!-- Col 1: Direct Tax Services -->
-                            <div class="mega-col">
-                                <div class="mega-col-header">
-                                    <div class="mega-col-icon">
-                                        <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                            <path d="M14 2h20a2 2 0 0 1 2 2v40a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
-                                            <line x1="20" y1="12" x2="28" y2="12"/>
-                                            <line x1="20" y1="20" x2="28" y2="20"/>
-                                            <circle cx="20" cy="30" r="2"/>
-                                            <circle cx="28" cy="34" r="2"/>
-                                            <line x1="18" y1="36" x2="30" y2="28"/>
-                                        </svg>
+                        <li class="nav-item nav-dropdown" id="taxLegalNav">
+                            <a class="nav-link nav-link-dropdown" href="@(string.IsNullOrEmpty(item.Url) ? "#features" : item.Url)">
+                                @item.DisplayName <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                            </a>
+                            <div class="nav-mega-menu nav-mega-menu--full" role="menu">
+                                <div class="mega-columns-wrap">
+                                    <!-- Col 1: Direct Tax Services -->
+                                    <div class="mega-col">
+                                        <div class="mega-col-header">
+                                            <div class="mega-col-icon">
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
+                                                    <path d="M14 2h20a2 2 0 0 1 2 2v40a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+                                                    <line x1="20" y1="12" x2="28" y2="12"/>
+                                                    <line x1="20" y1="20" x2="28" y2="20"/>
+                                                    <circle cx="20" cy="30" r="2"/>
+                                                    <circle cx="28" cy="34" r="2"/>
+                                                    <line x1="18" y1="36" x2="30" y2="28"/>
+                                                </svg>
+                                            </div>
+                                            <div class="mega-col-title">Direct Tax Services</div>
+                                        </div>
+                                        <ul class="mega-list">
+                                            @if (dtLinks.Count > 0)
+                                            {
+                                                @foreach (var sub in dtLinks)
+                                                {
+                                                    <li><a href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>@sub.Title @if(!string.IsNullOrEmpty(sub.Badge)){<span class="badge bg-warning-subtle text-warning ms-1" style="font-size:0.65rem;padding:1px 4px;">@sub.Badge</span>}</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li><a href="/services/itr-filing">Income Tax Return (ITR) Filing</a></li>
+                                                <li><a href="/services/gst-notice-reply">Income Tax Notice Reply</a></li>
+                                                <li><a href="/services/tax-planning">Tax Planning &amp; Advisory</a></li>
+                                                <li><a href="/services/tax-audit">Tax Audit</a></li>
+                                                <li><a href="/services/tax-planning">Advance Tax Planning</a></li>
+                                                <li><a href="/services/tax-planning">Tax Consultation</a></li>
+                                                <li><a href="/services/tax-planning">Capital Gains Tax</a></li>
+                                                <li><a href="/services/nri-taxation">NRI Taxation</a></li>
+                                                <li><a href="/services/pan-tan-tds">Form 15CA / 15CB</a></li>
+                                            }
+                                        </ul>
+                                        <a href="/services/tax-planning" class="mega-column-card">
+                                            <div class="mega-card-icon">
+                                                <i class="fas fa-calculator" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="mega-card-text">
+                                                <div class="mega-card-title">Tax Planning</div>
+                                                <div class="mega-card-sub">Smart strategies for maximum savings.</div>
+                                            </div>
+                                            <div class="mega-card-arrow">
+                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                            </div>
+                                        </a>
                                     </div>
-                                    <div class="mega-col-title">Direct Tax Services</div>
-                                </div>
-                                <ul class="mega-list">
-                                    <li><a href="/services/itr-filing">Income Tax Return (ITR) Filing</a></li>
-                                    <li><a href="/services/gst-notice-reply">Income Tax Notice Reply</a></li>
-                                    <li><a href="/services/tax-planning">Tax Planning &amp; Advisory</a></li>
-                                    <li><a href="/services/tax-audit">Tax Audit</a></li>
-                                    <li><a href="/services/tax-planning">Advance Tax Planning</a></li>
-                                    <li><a href="/services/tax-planning">Tax Consultation</a></li>
-                                    <li><a href="/services/tax-planning">Capital Gains Tax</a></li>
-                                    <li><a href="/services/nri-taxation">NRI Taxation</a></li>
-                                    <li><a href="/services/pan-tan-tds">Form 15CA / 15CB</a></li>
-                                </ul>
-                                <a href="/services/tax-planning" class="mega-column-card">
-                                    <div class="mega-card-icon">
-                                        <i class="fas fa-calculator" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="mega-card-text">
-                                        <div class="mega-card-title">Tax Planning</div>
-                                        <div class="mega-card-sub">Smart strategies for maximum savings.</div>
-                                    </div>
-                                    <div class="mega-card-arrow">
-                                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                                    </div>
-                                </a>
-                            </div>
 
-                            <!-- Col 2: GST Services -->
-                            <div class="mega-col">
-                                <div class="mega-col-header">
-                                    <div class="mega-col-icon">
-                                        <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                            <path d="M14 2h20a2 2 0 0 1 2 2v40a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
-                                            <text x="13" y="27" font-size="10" fill="#d4a017" stroke="none" font-weight="bold">GST</text>
-                                        </svg>
+                                    <!-- Col 2: GST Services -->
+                                    <div class="mega-col">
+                                        <div class="mega-col-header">
+                                            <div class="mega-col-icon">
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
+                                                    <rect x="6" y="10" width="36" height="28" rx="3"/>
+                                                    <path d="M6 18h36"/>
+                                                    <path d="M16 10v8"/>
+                                                    <path d="M32 10v8"/>
+                                                    <text x="14" y="34" font-size="10" fill="#d4a017" stroke="none" font-weight="bold">GST</text>
+                                                </svg>
+                                            </div>
+                                            <div class="mega-col-title">GST Services</div>
+                                        </div>
+                                        <ul class="mega-list">
+                                            @if (gstLinks.Count > 0)
+                                            {
+                                                @foreach (var sub in gstLinks)
+                                                {
+                                                    <li><a href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>@sub.Title @if(!string.IsNullOrEmpty(sub.Badge)){<span class="badge bg-warning-subtle text-warning ms-1" style="font-size:0.65rem;padding:1px 4px;">@sub.Badge</span>}</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li><a href="/services/gst-registration">GST Registration</a></li>
+                                                <li><a href="/services/gst-return-filing">GST Return Filing (GSTR)</a></li>
+                                                <li><a href="/services/gstr-9-filing">GSTR-9 Annual Return</a></li>
+                                                <li><a href="/services/gstr-10-filing">GSTR-10 Final Return</a></li>
+                                                <li><a href="/services/gst-amendment">GST Amendment</a></li>
+                                                <li><a href="/services/gst-cancellation">GST Cancellation</a></li>
+                                                <li><a href="/services/gst-revocation">GST Revocation</a></li>
+                                                <li><a href="/services/gst-notice-reply">GST Notice Reply</a></li>
+                                                <li><a href="/services/gst-refund">GST Refund</a></li>
+                                                <li><a href="/services/lut-filing">LUT Filing</a></li>
+                                                <li><a href="/services/e-way-bill-services">E-Way Bill Services</a></li>
+                                            }
+                                        </ul>
+                                        <a href="/services/gst-return-filing" class="mega-column-card">
+                                            <div class="mega-card-icon">
+                                                <i class="fas fa-desktop" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="mega-card-text">
+                                                <div class="mega-card-title">GST Compliance</div>
+                                                <div class="mega-card-sub">Timely filing &amp; full compliance.</div>
+                                            </div>
+                                            <div class="mega-card-arrow">
+                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                            </div>
+                                        </a>
                                     </div>
-                                    <div class="mega-col-title">GST Services</div>
-                                </div>
-                                <ul class="mega-list">
-                                    <li><a href="/services/gst-registration">GST Registration</a></li>
-                                    <li><a href="/services/gst-return-filing">GST Return Filing (GSTR)</a></li>
-                                    <li><a href="/services/gstr-9-filing">GSTR-9 Annual Return</a></li>
-                                    <li><a href="/services/gstr-10-filing">GSTR-10 Final Return</a></li>
-                                    <li><a href="/services/gst-amendment">GST Amendment</a></li>
-                                    <li><a href="/services/gst-cancellation">GST Cancellation</a></li>
-                                    <li><a href="/services/gst-revocation">GST Revocation</a></li>
-                                    <li><a href="/services/gst-notice-reply">GST Notice Reply</a></li>
-                                    <li><a href="/services/gst-refund">GST Refund</a></li>
-                                    <li><a href="/services/lut-filing">LUT Filing</a></li>
-                                    <li><a href="/services/e-way-bill-services">E-Way Bill Services</a></li>
-                                    <li><a href="/services/e-way-bill-services">E-Invoicing Setup</a></li>
-                                    <li><a href="/services/gst-audit">GST Audit Support</a></li>
-                                    <li><a href="/services/gst-registration">GST Software Setup</a></li>
-                                    <li><a href="/services/gst-registration">GST Foreign Registration</a></li>
-                                </ul>
-                                <a href="/services/gst-return-filing" class="mega-column-card">
-                                    <div class="mega-card-icon">
-                                        <i class="fas fa-desktop" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="mega-card-text">
-                                        <div class="mega-card-title">GST Compliance</div>
-                                        <div class="mega-card-sub">Timely filing &amp; full compliance.</div>
-                                    </div>
-                                    <div class="mega-card-arrow">
-                                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                                    </div>
-                                </a>
-                            </div>
 
-                            <!-- Col 3: PAN / TAN / TDS -->
-                            <div class="mega-col">
-                                <div class="mega-col-header">
-                                    <div class="mega-col-icon">
-                                        <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                            <rect x="6" y="10" width="36" height="28" rx="4"/>
-                                            <circle cx="16" cy="24" r="5"/>
-                                            <line x1="28" y1="20" x2="38" y2="20"/>
-                                            <line x1="28" y1="28" x2="38" y2="28"/>
-                                        </svg>
+                                    <!-- Col 3: PAN / TAN / TDS -->
+                                    <div class="mega-col">
+                                        <div class="mega-col-header">
+                                            <div class="mega-col-icon">
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
+                                                    <rect x="6" y="10" width="36" height="28" rx="4"/>
+                                                    <circle cx="16" cy="24" r="5"/>
+                                                    <line x1="28" y1="20" x2="38" y2="20"/>
+                                                    <line x1="28" y1="28" x2="38" y2="28"/>
+                                                </svg>
+                                            </div>
+                                            <div class="mega-col-title">PAN / TAN / TDS / TCS</div>
+                                        </div>
+                                        <ul class="mega-list">
+                                            @if (panLinks.Count > 0)
+                                            {
+                                                @foreach (var sub in panLinks)
+                                                {
+                                                    <li><a href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>@sub.Title @if(!string.IsNullOrEmpty(sub.Badge)){<span class="badge bg-warning-subtle text-warning ms-1" style="font-size:0.65rem;padding:1px 4px;">@sub.Badge</span>}</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li><a href="/services/pan-tan-tds">PAN Registration</a></li>
+                                                <li><a href="/services/pan-tan-tds">PAN Correction / Update</a></li>
+                                                <li><a href="/services/pan-tan-tds">TAN Registration</a></li>
+                                                <li><a href="/services/pan-tan-tds">TDS Registration</a></li>
+                                                <li><a href="/services/pan-tan-tds">TDS Return Filing</a></li>
+                                                <li><a href="/services/pan-tan-tds">TCS Registration</a></li>
+                                                <li><a href="/services/pan-tan-tds">Form 16 / 16A</a></li>
+                                                <li><a href="/services/pan-tan-tds">TDS Certificate</a></li>
+                                            }
+                                        </ul>
+                                        <a href="/services/pan-tan-tds" class="mega-column-card">
+                                            <div class="mega-card-icon">
+                                                <i class="fas fa-id-card" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="mega-card-text">
+                                                <div class="mega-card-title">Hassle-Free Registrations</div>
+                                                <div class="mega-card-sub">PAN, TAN, TDS - We handle it all.</div>
+                                            </div>
+                                            <div class="mega-card-arrow">
+                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                            </div>
+                                        </a>
                                     </div>
-                                    <div class="mega-col-title">PAN / TAN / TDS / TCS</div>
-                                </div>
-                                <ul class="mega-list">
-                                    <li><a href="/services/pan-tan-tds">PAN Registration</a></li>
-                                    <li><a href="/services/pan-tan-tds">PAN Correction / Update</a></li>
-                                    <li><a href="/services/pan-tan-tds">TAN Registration</a></li>
-                                    <li><a href="/services/pan-tan-tds">TDS Registration</a></li>
-                                    <li><a href="/services/pan-tan-tds">TDS Return Filing</a></li>
-                                    <li><a href="/services/pan-tan-tds">TCS Registration</a></li>
-                                    <li><a href="/services/pan-tan-tds">Form 16 / 16A</a></li>
-                                    <li><a href="/services/pan-tan-tds">TDS Certificate</a></li>
-                                </ul>
-                                <a href="/services/pan-tan-tds" class="mega-column-card">
-                                    <div class="mega-card-icon">
-                                        <i class="fas fa-id-card" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="mega-card-text">
-                                        <div class="mega-card-title">Hassle-Free Registrations</div>
-                                        <div class="mega-card-sub">PAN, TAN, TDS - We handle it all.</div>
-                                    </div>
-                                    <div class="mega-card-arrow">
-                                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                                    </div>
-                                </a>
-                            </div>
 
-                            <!-- Col 4: Legal Services -->
-                            <div class="mega-col">
-                                <div class="mega-col-header">
-                                    <div class="mega-col-icon">
-                                        <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                            <line x1="24" y1="6" x2="24" y2="42"/>
-                                            <line x1="12" y1="12" x2="36" y2="12"/>
-                                            <line x1="16" y1="12" x2="10" y2="28"/>
-                                            <line x1="16" y1="12" x2="22" y2="28"/>
-                                            <path d="M8 28h16a8 8 0 0 1-16 0z"/>
-                                            <line x1="32" y1="12" x2="26" y2="28"/>
-                                            <line x1="32" y1="12" x2="38" y2="28"/>
-                                            <path d="M26 28h16a8 8 0 0 1-16 0z"/>
-                                        </svg>
+                                    <!-- Col 4: Legal Services -->
+                                    <div class="mega-col">
+                                        <div class="mega-col-header">
+                                            <div class="mega-col-icon">
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
+                                                    <line x1="24" y1="6" x2="24" y2="42"/>
+                                                    <line x1="12" y1="12" x2="36" y2="12"/>
+                                                    <line x1="16" y1="12" x2="10" y2="28"/>
+                                                    <line x1="16" y1="12" x2="22" y2="28"/>
+                                                    <path d="M8 28h16a8 8 0 0 1-16 0z"/>
+                                                    <line x1="32" y1="12" x2="26" y2="28"/>
+                                                    <line x1="32" y1="12" x2="38" y2="28"/>
+                                                    <path d="M26 28h16a8 8 0 0 1-16 0z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="mega-col-title">Legal Services</div>
+                                        </div>
+                                        <ul class="mega-list">
+                                            @if (legLinks.Count > 0)
+                                            {
+                                                @foreach (var sub in legLinks)
+                                                {
+                                                    <li><a href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>@sub.Title @if(!string.IsNullOrEmpty(sub.Badge)){<span class="badge bg-warning-subtle text-warning ms-1" style="font-size:0.65rem;padding:1px 4px;">@sub.Badge</span>}</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li><a href="/services/legal-documentation">Legal Documentation</a></li>
+                                                <li><a href="/services/agreements">Drafting &amp; Vetting</a></li>
+                                                <li><a href="/services/partnership-registration">Partnership Deed</a></li>
+                                                <li><a href="/services/share-transfer">Shareholders Agreement</a></li>
+                                                <li><a href="/services/agreements">Business Contracts</a></li>
+                                                <li><a href="/services/legal-documentation">Legal Notice</a></li>
+                                                <li><a href="/services/legal-documentation">Power of Attorney</a></li>
+                                                <li><a href="/services/legal-documentation">Affidavit / Declaration</a></li>
+                                            }
+                                        </ul>
+                                        <a href="/services/legal-documentation" class="mega-column-card">
+                                            <div class="mega-card-icon">
+                                                <i class="fas fa-file-contract" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="mega-card-text">
+                                                <div class="mega-card-title">Legally Secure Business</div>
+                                                <div class="mega-card-sub">Strong drafting. Secure tomorrow.</div>
+                                            </div>
+                                            <div class="mega-card-arrow">
+                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                            </div>
+                                        </a>
                                     </div>
-                                    <div class="mega-col-title">Legal Services</div>
-                                </div>
-                                <ul class="mega-list">
-                                    <li><a href="/services/legal-documentation">Legal Documentation</a></li>
-                                    <li><a href="/services/agreements">Drafting &amp; Vetting</a></li>
-                                    <li><a href="/services/partnership-registration">Partnership Deed</a></li>
-                                    <li><a href="/services/share-transfer">Shareholders Agreement</a></li>
-                                    <li><a href="/services/agreements">Business Contracts</a></li>
-                                    <li><a href="/services/legal-documentation">Legal Notice</a></li>
-                                    <li><a href="/services/legal-documentation">Power of Attorney</a></li>
-                                    <li><a href="/services/legal-documentation">Affidavit / Declaration</a></li>
-                                    <li><a href="/services/legal-documentation">Will Drafting</a></li>
-                                    <li><a href="/services/agreements">Employment Agreements</a></li>
-                                    <li><a href="/services/agreements">Rent Agreement</a></li>
-                                </ul>
-                                <a href="/services/legal-documentation" class="mega-column-card">
-                                    <div class="mega-card-icon">
-                                        <i class="fas fa-file-contract" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="mega-card-text">
-                                        <div class="mega-card-title">Legally Secure Business</div>
-                                        <div class="mega-card-sub">Strong drafting. Secure tomorrow.</div>
-                                    </div>
-                                    <div class="mega-card-arrow">
-                                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                                    </div>
-                                </a>
-                            </div>
 
-                            <!-- Col 5: IPR & Legal Protection -->
-                            <div class="mega-col">
-                                <div class="mega-col-header">
-                                    <div class="mega-col-icon">
-                                        <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
-                                            <path d="M24 4c10 0 16 4 16 4s0 16-16 28C8 24 8 8 8 8s6-4 16-4z"/>
-                                            <circle cx="24" cy="20" r="5"/>
-                                            <path d="M25.5 19a2 2 0 0 0-3 0v2a2 2 0 0 0 3 0"/>
-                                        </svg>
+                                    <!-- Col 5: IPR & Legal Protection -->
+                                    <div class="mega-col">
+                                        <div class="mega-col-header">
+                                            <div class="mega-col-icon">
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
+                                                    <path d="M24 4c10 0 16 4 16 4s0 16-16 28C8 24 8 8 8 8s6-4 16-4z"/>
+                                                    <circle cx="24" cy="20" r="5"/>
+                                                    <path d="M25.5 19a2 2 0 0 0-3 0v2a2 2 0 0 0 3 0"/>
+                                                </svg>
+                                            </div>
+                                            <div class="mega-col-title">IPR &amp; Legal Protection</div>
+                                        </div>
+                                        <ul class="mega-list">
+                                            @if (iprLinks.Count > 0)
+                                            {
+                                                @foreach (var sub in iprLinks)
+                                                {
+                                                    <li><a href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>@sub.Title @if(!string.IsNullOrEmpty(sub.Badge)){<span class="badge bg-warning-subtle text-warning ms-1" style="font-size:0.65rem;padding:1px 4px;">@sub.Badge</span>}</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li><a href="/services/trademark-search">Trademark Search</a></li>
+                                                <li><a href="/services/trademark-registration">Trademark Registration</a></li>
+                                                <li><a href="/services/trademark-objection">Trademark Objection Reply</a></li>
+                                                <li><a href="/services/trademark-hearing">Trademark Hearing</a></li>
+                                                <li><a href="/services/trademark-renewal">Trademark Renewal</a></li>
+                                                <li><a href="/services/logo-registration">Logo Registration</a></li>
+                                                <li><a href="/services/copyright-registration">Copyright Registration</a></li>
+                                                <li><a href="/services/patent-registration">Patent Registration</a></li>
+                                            }
+                                        </ul>
+                                        <a href="/services/brand-protection" class="mega-column-card">
+                                            <div class="mega-card-icon">
+                                                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="mega-card-text">
+                                                <div class="mega-card-title">Protect Your Brand</div>
+                                                <div class="mega-card-sub">Secure your ideas &amp; assets.</div>
+                                            </div>
+                                            <div class="mega-card-arrow">
+                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                            </div>
+                                        </a>
                                     </div>
-                                    <div class="mega-col-title">IPR &amp; Legal Protection</div>
                                 </div>
-                                <ul class="mega-list">
-                                    <li><a href="/services/trademark-search">Trademark Search</a></li>
-                                    <li><a href="/services/trademark-registration">Trademark Registration</a></li>
-                                    <li><a href="/services/trademark-objection">Trademark Objection Reply</a></li>
-                                    <li><a href="/services/trademark-hearing">Trademark Hearing</a></li>
-                                    <li><a href="/services/trademark-renewal">Trademark Renewal</a></li>
-                                    <li><a href="/services/trademark-assignment">Trademark Assignment</a></li>
-                                    <li><a href="/services/logo-registration">Logo Registration</a></li>
-                                    <li><a href="/services/copyright-registration">Copyright Registration</a></li>
-                                    <li><a href="/services/patent-registration">Patent Registration</a></li>
-                                    <li><a href="/services/design-registration">Design Registration</a></li>
-                                    <li><a href="/services/brand-protection">Brand Protection Services</a></li>
-                                </ul>
-                                <a href="/services/brand-protection" class="mega-column-card">
-                                    <div class="mega-card-icon">
-                                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="mega-card-text">
-                                        <div class="mega-card-title">Protect Your Brand</div>
-                                        <div class="mega-card-sub">Secure your ideas &amp; assets.</div>
-                                    </div>
-                                    <div class="mega-card-arrow">
-                                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
 
-                        <!-- Mega Bottom bar -->
-                        <div class="mega-bottom-bar">
-                            <div class="mega-bar-left">
-                                <div class="mega-bar-avatar">
-                                    <i class="fas fa-headset" aria-hidden="true"></i>
-                                </div>
-                                <div class="mega-bar-text">
-                                    <h6 class="mega-bar-title">Need Help with Tax or Legal Matters?</h6>
-                                    <p class="mega-bar-sub">Talk to our CA &amp; Legal Experts for the right advice.</p>
-                                </div>
-                            </div>
-                            <div class="mega-bar-center">
-                                <div class="mega-badge-item">
-                                    <i class="fas fa-user-check" aria-hidden="true"></i>
-                                    <div>
-                                        <span class="badge-lbl">Experienced Experts</span>
-                                        <span class="badge-val">15+ Years of Experience</span>
+                                <!-- Mega Bottom bar -->
+                                <div class="mega-bottom-bar">
+                                    <div class="mega-bar-left">
+                                        <div class="mega-bar-avatar">
+                                            <i class="fas fa-headset" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="mega-bar-text">
+                                            <h6 class="mega-bar-title">Need Help with Tax or Legal Matters?</h6>
+                                            <p class="mega-bar-sub">Talk to our CA &amp; Legal Experts for the right advice.</p>
+                                        </div>
+                                    </div>
+                                    <div class="mega-bar-center">
+                                        <div class="mega-badge-item">
+                                            <i class="fas fa-user-check" aria-hidden="true"></i>
+                                            <div>
+                                                <span class="badge-lbl">Experienced Experts</span>
+                                                <span class="badge-val">15+ Years of Experience</span>
+                                            </div>
+                                        </div>
+                                        <div class="mega-badge-item">
+                                            <i class="fas fa-lock" aria-hidden="true"></i>
+                                            <div>
+                                                <span class="badge-lbl">100% Confidential</span>
+                                                <span class="badge-val">Your Data is Safe</span>
+                                            </div>
+                                        </div>
+                                        <div class="mega-badge-item">
+                                            <i class="fas fa-clock" aria-hidden="true"></i>
+                                            <div>
+                                                <span class="badge-lbl">Quick &amp; Reliable</span>
+                                                <span class="badge-val">On-time, Everytime</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mega-bar-right">
+                                        <a href="/contact" class="mega-bar-btn">Book Free Consultation <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i></a>
                                     </div>
                                 </div>
-                                <div class="mega-badge-item">
-                                    <i class="fas fa-lock" aria-hidden="true"></i>
-                                    <div>
-                                        <span class="badge-lbl">100% Confidential</span>
-                                        <span class="badge-val">Your Data is Safe</span>
-                                    </div>
-                                </div>
-                                <div class="mega-badge-item">
-                                    <i class="fas fa-clock" aria-hidden="true"></i>
-                                    <div>
-                                        <span class="badge-lbl">Quick &amp; Reliable</span>
-                                        <span class="badge-val">On-time, Everytime</span>
-                                    </div>
-                                </div>
                             </div>
-                            <div class="mega-bar-right">
-                                <a href="#" class="mega-bar-btn">Book Free Consultation <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                }
+                        </li>
+                    }
+                    else if (item.MegaMenuType == "FindExpert")
+                    {
+                        <!-- FIND AN EXPERT MEGA-MENU -->
+                        var feItems = item.DropdownItems?.Where(d => d.IsActive).OrderBy(d => d.Order).ToList() ?? new();
+                        var browseLinks = feItems.Where(d => d.Category == "Browse CAs").ToList();
+                        var specLinks = feItems.Where(d => d.Category == "By Specialisation").ToList();
 
-                @if (findExpertItem == null || findExpertItem.IsActive)
-                {
-                    <!-- FIND AN EXPERT -->
-                    <li class="nav-item nav-dropdown" id="findExpertNav">
-                        <a class="nav-link nav-link-dropdown" href="/find-expert">
-                            @(findExpertItem?.DisplayName ?? "Find an Expert") <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
-                        </a>
-                    <div class="nav-mega-menu" role="menu" style="min-width:520px;">
-                        <div class="row g-0">
-                            <div class="col-6">
-                                <div class="mega-section-title">Browse CAs</div>
-                                <a href="/find-expert" class="mega-item" role="menuitem"><i class="fas fa-search"></i>Browse All CAs</a>
-                                <a href="/find-expert?sort=rating" class="mega-item" role="menuitem"><i class="fas fa-star"></i>Top Rated CAs</a>
-                                <a href="/find-expert?sort=exp" class="mega-item" role="menuitem"><i class="fas fa-briefcase"></i>Most Experienced</a>
-                                <a href="/find-expert?exp=0-5" class="mega-item" role="menuitem"><i class="fas fa-rocket"></i>Fresh Talent (0–5 Yrs)</a>
-                                <div class="mega-section-title" style="margin-top:.8rem;">By City</div>
-                                <a href="/find-expert?city=Mumbai" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Mumbai</a>
-                                <a href="/find-expert?city=Delhi" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Delhi</a>
-                                <a href="/find-expert?city=Bangalore" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Bangalore</a>
-                                <a href="/find-expert?city=Pune" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Pune</a>
-                                <a href="/find-expert?city=Hyderabad" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Hyderabad</a>
+                        <li class="nav-item nav-dropdown" id="findExpertNav">
+                            <a class="nav-link nav-link-dropdown" href="@(string.IsNullOrEmpty(item.Url) ? "/find-expert" : item.Url)">
+                                @item.DisplayName <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                            </a>
+                            <div class="nav-mega-menu" role="menu" style="min-width:520px;">
+                                <div class="row g-0">
+                                    <div class="col-6">
+                                        <div class="mega-section-title">Browse CAs</div>
+                                        @if (browseLinks.Count > 0)
+                                        {
+                                            @foreach (var sub in browseLinks)
+                                            {
+                                                <a href="@sub.Url" class="mega-item" role="menuitem" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                                    @if (!string.IsNullOrEmpty(sub.Icon))
+                                                    {
+                                                        <i class="@sub.Icon"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-search"></i>
+                                                    }
+                                                    @sub.Title
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <a href="/find-expert" class="mega-item" role="menuitem"><i class="fas fa-search"></i>Browse All CAs</a>
+                                            <a href="/find-expert?sort=rating" class="mega-item" role="menuitem"><i class="fas fa-star"></i>Top Rated CAs</a>
+                                            <a href="/find-expert?sort=exp" class="mega-item" role="menuitem"><i class="fas fa-briefcase"></i>Most Experienced</a>
+                                            <a href="/find-expert?exp=0-5" class="mega-item" role="menuitem"><i class="fas fa-rocket"></i>Fresh Talent (0–5 Yrs)</a>
+                                            <div class="mega-section-title" style="margin-top:.8rem;">By City</div>
+                                            <a href="/find-expert?city=Mumbai" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Mumbai</a>
+                                            <a href="/find-expert?city=Delhi" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Delhi</a>
+                                            <a href="/find-expert?city=Bangalore" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Bangalore</a>
+                                            <a href="/find-expert?city=Pune" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Pune</a>
+                                            <a href="/find-expert?city=Hyderabad" class="mega-item" role="menuitem"><i class="fas fa-map-marker-alt"></i>Hyderabad</a>
+                                        }
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mega-section-title">By Specialisation</div>
+                                        @if (specLinks.Count > 0)
+                                        {
+                                            @foreach (var sub in specLinks)
+                                            {
+                                                <a href="@sub.Url" class="mega-item" role="menuitem" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                                    @if (!string.IsNullOrEmpty(sub.Icon))
+                                                    {
+                                                        <i class="@sub.Icon"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-file-invoice-dollar"></i>
+                                                    }
+                                                    @sub.Title
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <a href="/find-expert?service=GST+Filing" class="mega-item" role="menuitem"><i class="fas fa-file-invoice-dollar"></i>GST Filing</a>
+                                            <a href="/find-expert?service=Income+Tax" class="mega-item" role="menuitem"><i class="fas fa-landmark"></i>Income Tax</a>
+                                            <a href="/find-expert?service=Audit" class="mega-item" role="menuitem"><i class="fas fa-chart-line"></i>Audit &amp; Assurance</a>
+                                            <a href="/find-expert?service=Company+Registration" class="mega-item" role="menuitem"><i class="fas fa-building"></i>Company Registration</a>
+                                            <a href="/find-expert?service=Transfer+Pricing" class="mega-item" role="menuitem"><i class="fas fa-handshake"></i>Transfer Pricing</a>
+                                            <a href="/find-expert?service=FEMA" class="mega-item" role="menuitem"><i class="fas fa-globe"></i>FEMA &amp; RBI</a>
+                                            <a href="/find-expert?service=Startup+Finance" class="mega-item" role="menuitem"><i class="fas fa-rocket"></i>Startup Finance</a>
+                                            <a href="/find-expert?service=Tax+Litigation" class="mega-item" role="menuitem"><i class="fas fa-balance-scale"></i>Tax Litigation</a>
+                                            <a href="/find-expert?service=ROC+Filing" class="mega-item" role="menuitem"><i class="fas fa-folder-open"></i>ROC &amp; MCA</a>
+                                            <a href="/find-expert?service=Bookkeeping" class="mega-item" role="menuitem"><i class="fas fa-book"></i>Bookkeeping &amp; Accounting</a>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <div class="mega-section-title">By Specialisation</div>
-                                <a href="/find-expert?service=GST+Filing" class="mega-item" role="menuitem"><i class="fas fa-file-invoice-dollar"></i>GST Filing</a>
-                                <a href="/find-expert?service=Income+Tax" class="mega-item" role="menuitem"><i class="fas fa-landmark"></i>Income Tax</a>
-                                <a href="/find-expert?service=Audit" class="mega-item" role="menuitem"><i class="fas fa-chart-line"></i>Audit &amp; Assurance</a>
-                                <a href="/find-expert?service=Company+Registration" class="mega-item" role="menuitem"><i class="fas fa-building"></i>Company Registration</a>
-                                <a href="/find-expert?service=Transfer+Pricing" class="mega-item" role="menuitem"><i class="fas fa-handshake"></i>Transfer Pricing</a>
-                                <a href="/find-expert?service=FEMA" class="mega-item" role="menuitem"><i class="fas fa-globe"></i>FEMA &amp; RBI</a>
-                                <a href="/find-expert?service=Startup+Finance" class="mega-item" role="menuitem"><i class="fas fa-rocket"></i>Startup Finance</a>
-                                <a href="/find-expert?service=Tax+Litigation" class="mega-item" role="menuitem"><i class="fas fa-balance-scale"></i>Tax Litigation</a>
-                                <a href="/find-expert?service=ROC+Filing" class="mega-item" role="menuitem"><i class="fas fa-folder-open"></i>ROC &amp; MCA</a>
-                                <a href="/find-expert?service=Bookkeeping" class="mega-item" role="menuitem"><i class="fas fa-book"></i>Bookkeeping &amp; Accounting</a>
+                        </li>
+                    }
+                    else if (item.MegaMenuType == "CustomDropdown" || (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive)))
+                    {
+                        <!-- CUSTOM DROPDOWN -->
+                        <li class="nav-item nav-dropdown" id="customNav_@item.Id">
+                            <a class="nav-link nav-link-dropdown" href="@(string.IsNullOrEmpty(item.Url) ? "#" : item.Url)">
+                                @item.DisplayName <i class="fas fa-chevron-down ms-1" style="font-size:.65rem;"></i>
+                            </a>
+                            <div class="nav-mega-menu shadow-lg border" role="menu" style="min-width: 260px; padding: 10px 8px; border-radius: 12px;">
+                                @if (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive))
+                                {
+                                    @foreach (var child in item.DropdownItems.Where(d => d.IsActive).OrderBy(d => d.Order))
+                                    {
+                                        <a href="@child.Url" @(child.OpenInNewTab ? "target=\"_blank\"" : "") class="dropdown-item d-flex align-items-center justify-content-between px-3 py-2 rounded text-dark text-decoration-none" style="font-size: 0.88rem; transition: background .15s;">
+                                            <span>
+                                                @if (!string.IsNullOrEmpty(child.Icon))
+                                                {
+                                                    <i class="@child.Icon me-2 text-warning" style="width: 16px; text-align: center;"></i>
+                                                }
+                                                @child.Title
+                                            </span>
+                                            @if (!string.IsNullOrEmpty(child.Badge))
+                                            {
+                                                <span class="badge bg-warning-subtle text-warning ms-2 text-xs">@child.Badge</span>
+                                            }
+                                        </a>
+                                    }
+                                }
                             </div>
-                        </div>
-                    </div>
-                </li>
-                }
-
-                @foreach (var item in menuItems.Where(m => m.MegaMenuType == "None" && (m.DisplayName != "Home" && m.Url != "/") && m.IsActive).OrderBy(m => m.Order))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="@item.Url" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>@item.DisplayName</a>
-                    </li>
+                        </li>
+                    }
+                    else
+                    {
+                        <!-- STANDARD LINK -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="@item.Url" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>@item.DisplayName</a>
+                        </li>
+                    }
                 }
             </ul>
 
@@ -727,39 +794,209 @@
                 <ul class="navbar-nav gap-1 mb-3">
                     @foreach (var item in menuItems.Where(m => m.IsActive).OrderBy(m => m.Order))
                     {
-                        <li>
-                            <a class="nav-link" href="@(string.IsNullOrEmpty(item.Url) ? (item.MegaMenuType == "Services" ? "/#features" : "/find-expert") : item.Url)" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>
-                                @if (item.DisplayName.Contains("Contact"))
-                                {
-                                    <i class="fas fa-headset me-2 text-warning"></i>
-                                }
-                                else if (item.DisplayName == "Home")
-                                {
-                                    <i class="fas fa-home me-2 text-warning"></i>
-                                }
-                                else if (item.DisplayName == "Services")
-                                {
-                                    <i class="fas fa-layer-group me-2 text-warning"></i>
-                                }
-                                else if (item.DisplayName == "Find an Expert")
-                                {
-                                    <i class="fas fa-user-tie me-2 text-warning"></i>
-                                }
-                                else if (item.DisplayName == "How It Works")
-                                {
-                                    <i class="fas fa-list-ol me-2 text-warning"></i>
-                                }
-                                else if (item.DisplayName == "Pricing")
-                                {
-                                    <i class="fas fa-tags me-2 text-warning"></i>
-                                }
-                                else if (item.DisplayName == "Blog")
-                                {
-                                    <i class="fas fa-newspaper me-2 text-warning"></i>
-                                }
-                                @item.DisplayName
-                            </a>
-                        </li>
+                        if (item.MegaMenuType == "Services")
+                        {
+                            <li class="nav-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a class="nav-link flex-grow-1" href="@(string.IsNullOrEmpty(item.Url) ? "/#features" : item.Url)">
+                                        <i class="fas fa-layer-group me-2 text-warning"></i> @item.DisplayName
+                                    </a>
+                                    <button class="btn btn-sm text-dark p-1 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileServicesSub" aria-expanded="false">
+                                        <i class="fas fa-chevron-down text-muted" style="font-size: .75rem;"></i>
+                                    </button>
+                                </div>
+                                <div class="collapse ps-3 pe-2 py-2 bg-light rounded my-1" id="mobileServicesSub">
+                                    @if (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive))
+                                    {
+                                        var mGroups = item.DropdownItems
+                                            .Where(d => d.IsActive)
+                                            .OrderBy(d => d.Order)
+                                            .GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "Services" : d.Category.Trim());
+
+                                        @foreach (var grp in mGroups)
+                                        {
+                                            <div class="fw-bold text-dark small mt-2 mb-1">
+                                                <i class="fas fa-chevron-right text-warning me-1" style="font-size: 0.65rem;"></i> @grp.Key
+                                            </div>
+                                            @foreach (var sub in grp.OrderBy(x => x.Order).Take(6))
+                                            {
+                                                <a class="d-block text-muted small py-1 ps-2 text-decoration-none" href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                                    • @sub.Title
+                                                    @if (!string.IsNullOrEmpty(sub.Badge))
+                                                    {
+                                                        <span class="badge bg-warning-subtle text-warning ms-1" style="font-size: 0.6rem;">@sub.Badge</span>
+                                                    }
+                                                </a>
+                                            }
+                                        }
+                                    }
+                                    else if (dynamicServices != null && dynamicServices.Count > 0)
+                                    {
+                                        @foreach (var s in dynamicServices)
+                                        {
+                                            <div class="fw-bold text-dark small mt-2 mb-1">
+                                                <i class="@s.Icon me-1 text-warning"></i> @s.Title
+                                            </div>
+                                            @if (s.SubServices != null && s.SubServices.Any(ss => ss.IsActive))
+                                            {
+                                                @foreach (var sub in s.SubServices.Where(ss => ss.IsActive).Take(4))
+                                                {
+                                                    <a class="d-block text-muted small py-1 ps-2 text-decoration-none" href="/services/@s.Id#subservice-@sub.Id">
+                                                        • @sub.Title
+                                                    </a>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </li>
+                        }
+                        else if (item.MegaMenuType == "TaxLegal")
+                        {
+                            <li class="nav-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a class="nav-link flex-grow-1" href="@(string.IsNullOrEmpty(item.Url) ? "/#features" : item.Url)">
+                                        <i class="fas fa-balance-scale me-2 text-warning"></i> @item.DisplayName
+                                    </a>
+                                    <button class="btn btn-sm text-dark p-1 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileTaxLegalSub" aria-expanded="false">
+                                        <i class="fas fa-chevron-down text-muted" style="font-size: .75rem;"></i>
+                                    </button>
+                                </div>
+                                <div class="collapse ps-3 pe-2 py-2 bg-light rounded my-1" id="mobileTaxLegalSub">
+                                    @if (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive))
+                                    {
+                                        var mTaxGroups = item.DropdownItems
+                                            .Where(d => d.IsActive)
+                                            .OrderBy(d => d.Order)
+                                            .GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "Tax & Legal" : d.Category.Trim());
+
+                                        @foreach (var grp in mTaxGroups)
+                                        {
+                                            <div class="fw-bold text-dark small mt-2 mb-1">
+                                                <i class="fas fa-chevron-right text-warning me-1" style="font-size: 0.65rem;"></i> @grp.Key
+                                            </div>
+                                            @foreach (var sub in grp.OrderBy(x => x.Order).Take(5))
+                                            {
+                                                <a class="d-block text-muted small py-1 ps-2 text-decoration-none" href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                                    • @sub.Title
+                                                </a>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/services/itr-filing">• Income Tax Return (ITR) Filing</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/services/gst-registration">• GST Registration &amp; Filing</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/services/pan-tan-tds">• PAN / TAN / TDS Compliance</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/services/legal-documentation">• Legal Documentation &amp; Drafting</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/services/trademark-registration">• Trademark &amp; IPR Protection</a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                        else if (item.MegaMenuType == "FindExpert")
+                        {
+                            <li class="nav-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a class="nav-link flex-grow-1" href="/find-expert">
+                                        <i class="fas fa-user-tie me-2 text-warning"></i> @item.DisplayName
+                                    </a>
+                                    <button class="btn btn-sm text-dark p-1 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileExpertSub" aria-expanded="false">
+                                        <i class="fas fa-chevron-down text-muted" style="font-size: .75rem;"></i>
+                                    </button>
+                                </div>
+                                <div class="collapse ps-3 pe-2 py-2 bg-light rounded my-1" id="mobileExpertSub">
+                                    @if (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive))
+                                    {
+                                        var mExpGroups = item.DropdownItems
+                                            .Where(d => d.IsActive)
+                                            .OrderBy(d => d.Order)
+                                            .GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "Find an Expert" : d.Category.Trim());
+
+                                        @foreach (var grp in mExpGroups)
+                                        {
+                                            <div class="fw-bold text-dark small mt-2 mb-1">
+                                                <i class="fas fa-chevron-right text-warning me-1" style="font-size: 0.65rem;"></i> @grp.Key
+                                            </div>
+                                            @foreach (var sub in grp.OrderBy(x => x.Order).Take(5))
+                                            {
+                                                <a class="d-block text-muted small py-1 ps-2 text-decoration-none" href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                                    • @sub.Title
+                                                </a>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/find-expert">• Browse All CAs</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/find-expert?sort=rating">• Top Rated CAs</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/find-expert?city=Mumbai">• CAs in Mumbai</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/find-expert?city=Delhi">• CAs in Delhi</a>
+                                        <a class="d-block text-muted small py-1 text-decoration-none" href="/find-expert?city=Bangalore">• CAs in Bangalore</a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                        else if (item.MegaMenuType == "CustomDropdown" || (item.DropdownItems != null && item.DropdownItems.Any(d => d.IsActive)))
+                        {
+                            <li class="nav-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a class="nav-link flex-grow-1" href="@(string.IsNullOrEmpty(item.Url) ? "#" : item.Url)">
+                                        <i class="fas fa-list-ul me-2 text-warning"></i> @item.DisplayName
+                                    </a>
+                                    <button class="btn btn-sm text-dark p-1 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileCustomSub_@item.Id" aria-expanded="false">
+                                        <i class="fas fa-chevron-down text-muted" style="font-size: .75rem;"></i>
+                                    </button>
+                                </div>
+                                <div class="collapse ps-3 pe-2 py-2 bg-light rounded my-1" id="mobileCustomSub_@item.Id">
+                                    @if (item.DropdownItems != null)
+                                    {
+                                        @foreach (var sub in item.DropdownItems.Where(d => d.IsActive).OrderBy(d => d.Order))
+                                        {
+                                            <a class="d-block text-muted small py-1 text-decoration-none" href="@sub.Url" @(sub.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                                @if (!string.IsNullOrEmpty(sub.Icon))
+                                                {
+                                                    <i class="@sub.Icon me-1 text-gold"></i>
+                                                }
+                                                • @sub.Title
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a class="nav-link" href="@item.Url" @(item.OpenInNewTab ? "target=\"_blank\"" : "")>
+                                    @if (item.DisplayName.Contains("Contact"))
+                                    {
+                                        <i class="fas fa-headset me-2 text-warning"></i>
+                                    }
+                                    else if (item.DisplayName == "Home")
+                                    {
+                                        <i class="fas fa-home me-2 text-warning"></i>
+                                    }
+                                    else if (item.DisplayName == "How It Works")
+                                    {
+                                        <i class="fas fa-list-ol me-2 text-warning"></i>
+                                    }
+                                    else if (item.DisplayName == "Pricing")
+                                    {
+                                        <i class="fas fa-tags me-2 text-warning"></i>
+                                    }
+                                    else if (item.DisplayName == "Blog")
+                                    {
+                                        <i class="fas fa-newspaper me-2 text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-link me-2 text-warning"></i>
+                                    }
+                                    @item.DisplayName
+                                </a>
+                            </li>
+                        }
                     }
                 </ul>
                 <div class="d-flex gap-2 flex-wrap">

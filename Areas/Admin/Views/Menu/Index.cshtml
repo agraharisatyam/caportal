@@ -1,7 +1,7 @@
 @model List<caportal.Models.Entities.NavbarMenuItem>
 @{
     Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
-    ViewData["Title"] = "Menu Editor";
+    ViewData["Title"] = "Menu & Dropdown Editor";
 }
 
 <!-- Page Header -->
@@ -11,11 +11,15 @@
             <div>
                 <h4 class="mb-0 font-weight-bold text-black flex items-center">
                     <i data-feather="menu" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i>
-                    <span>Menu Editor</span>
+                    <span>Menu &amp; Dropdown Editor</span>
                 </h4>
-                <span class="text-muted small">Configure the header navigation bar options for the public platform</span>
+                <span class="text-muted small">Configure header navigation links, dynamic mega-menus, and custom dropdowns</span>
             </div>
-            <div>
+            <div class="d-flex gap-2">
+                <a href="/" target="_blank" class="btn btn-outline-secondary flex items-center gap-1">
+                    <i data-feather="external-link" style="width: 16px; height: 16px;"></i>
+                    <span>Preview Site</span>
+                </a>
                 <a href="/Admin/Menu/Create" class="btn btn-primary flex items-center gap-1">
                     <i data-feather="plus" style="width: 16px; height: 16px;"></i>
                     <span>Add Menu Item</span>
@@ -44,15 +48,18 @@
     </div>
 }
 
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 text-white font-weight-bold">Navigation Menu Bar Links</h5>
-        <span class="badge bg-primary">@Model.Count Links</span>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-dark d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 text-white font-weight-bold">
+            <i data-feather="navigation" class="me-2" style="width:18px;height:18px;"></i> Header Navigation Menu
+        </h5>
+        <span class="badge bg-primary px-3 py-2 fs-6">@Model.Count Links Configured</span>
     </div>
     <div class="card-body p-0">
         @if (Model.Count == 0)
         {
             <div class="text-center py-5 text-muted">
+                <i data-feather="compass" style="width: 48px; height: 48px;" class="mb-3 text-secondary"></i>
                 <p class="mb-3">No navigation items defined yet.</p>
                 <a href="/Admin/Menu/Create" class="btn btn-sm btn-primary"><i data-feather="plus" class="me-1"></i> Create First Link</a>
             </div>
@@ -63,72 +70,111 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 80px;" class="text-center">Order</th>
-                            <th>Link Text</th>
-                            <th>URL Path</th>
-                            <th>Type</th>
-                            <th style="width: 120px;" class="text-center">Status</th>
-                            <th style="width: 180px;" class="text-center">Actions</th>
+                            <th style="width: 70px;" class="text-center">Order</th>
+                            <th>Menu Label</th>
+                            <th>Target URL</th>
+                            <th>Dropdown / Menu Type</th>
+                            <th style="width: 110px;" class="text-center">Status</th>
+                            <th style="width: 220px;" class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.OrderBy(m => m.Order))
                         {
                             <tr>
-                                <td class="text-center font-weight-bold text-dark">@item.Order</td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border px-2 py-1 font-monospace">@item.Order</span>
+                                </td>
                                 <td>
-                                    <strong class="text-dark">@item.DisplayName</strong>
+                                    <strong class="text-dark fs-6">@item.DisplayName</strong>
                                     @if (item.OpenInNewTab)
                                     {
-                                        <small class="badge bg-info-subtle text-info text-xs ms-1">New Tab</small>
+                                        <span class="badge bg-info-subtle text-info text-xs ms-1" title="Opens in new tab"><i data-feather="external-link" style="width:10px;height:10px;"></i> New Tab</span>
                                     }
                                 </td>
-                                <td class="small text-secondary">
-                                    @if (item.MegaMenuType != "None")
+                                <td class="small">
+                                    @if (item.MegaMenuType == "Services")
                                     {
-                                        <span class="text-muted italic">Pre-built Mega-dropdown</span>
+                                        <span class="text-muted"><i class="fas fa-database me-1 text-warning"></i> Auto (Dynamic DB Services)</span>
+                                    }
+                                    else if (item.MegaMenuType == "TaxLegal")
+                                    {
+                                        <span class="text-muted"><i class="fas fa-layer-group me-1 text-info"></i> Tax &amp; Legal Mega-dropdown</span>
+                                    }
+                                    else if (item.MegaMenuType == "FindExpert")
+                                    {
+                                        <span class="text-muted"><i class="fas fa-user-tie me-1 text-success"></i> Expert Categories</span>
                                     }
                                     else
                                     {
-                                        @item.Url
+                                        <code class="text-primary">@item.Url</code>
                                     }
                                 </td>
                                 <td>
                                     @if (item.MegaMenuType == "Services")
                                     {
-                                        <span class="badge bg-warning-subtle text-warning">Mega Dropdown (Services)</span>
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
+                                            <i class="fas fa-bolt me-1"></i> Dynamic Mega-Menu (Services)
+                                        </span>
+                                    }
+                                    else if (item.MegaMenuType == "TaxLegal")
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">
+                                            <i class="fas fa-balance-scale me-1"></i> Mega-Menu (Tax &amp; Legal)
+                                        </span>
                                     }
                                     else if (item.MegaMenuType == "FindExpert")
                                     {
-                                        <span class="badge bg-success-subtle text-success">Mega Dropdown (Find Expert)</span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                            <i class="fas fa-user-check me-1"></i> Mega-Menu (Find Expert)
+                                        </span>
+                                    }
+                                    else if (item.MegaMenuType == "CustomDropdown" || (item.DropdownItems != null && item.DropdownItems.Count > 0))
+                                    {
+                                        <span class="badge border px-2 py-1" style="background:#ede9fe; color:#6d28d9; border-color:#ddd6fe !important;">
+                                            <i class="fas fa-list-ul me-1"></i> Custom Dropdown (@(item.DropdownItems?.Count ?? 0) links)
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-light text-muted">Standard Link</span>
+                                        <span class="badge bg-light text-muted border px-2 py-1">
+                                            <i class="fas fa-link me-1"></i> Standard Link
+                                        </span>
                                     }
                                 </td>
                                 <td class="text-center">
-                                    @if (item.IsActive)
-                                    {
-                                        <span class="badge bg-success">Active</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">Inactive</span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <a href="/Admin/Menu/Edit/@item.Id" class="btn btn-xs btn-outline-warning me-1">
-                                        <i data-feather="edit-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i> Edit
-                                    </a>
-                                    
-                                    <form method="post" action="/Admin/Menu/Delete" onsubmit="return confirm('Are you sure you want to delete \'@item.DisplayName\'?');" class="d-inline">
+                                    <form method="post" action="/Admin/Menu/ToggleActive" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn btn-xs btn-outline-danger">
-                                            <i data-feather="trash-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i> Delete
-                                        </button>
+                                        @if (item.IsActive)
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-success py-0 px-2 fs-xs rounded-pill" title="Click to disable">Active</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2 fs-xs rounded-pill" title="Click to enable">Inactive</button>
+                                        }
                                     </form>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/Admin/Menu/Edit/@item.Id" class="btn btn-outline-warning" title="Edit Menu Item & Dropdown Settings">
+                                            <i data-feather="edit-2" style="width:13px;height:13px;vertical-align:middle;"></i> Edit
+                                        </a>
+                                        @if (item.MegaMenuType == "CustomDropdown" || (item.DropdownItems != null && item.DropdownItems.Count > 0))
+                                        {
+                                            <a href="/Admin/Menu/Edit/@item.Id#dropdownItemsCard" class="btn btn-outline-primary" title="Manage Dropdown Links">
+                                                <i data-feather="list" style="width:13px;height:13px;vertical-align:middle;"></i> Links (@(item.DropdownItems?.Count ?? 0))
+                                            </a>
+                                        }
+                                        <form method="post" action="/Admin/Menu/Delete" onsubmit="return confirm('Are you sure you want to delete \'@item.DisplayName\'?');" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete Menu Item">
+                                                <i data-feather="trash-2" style="width:13px;height:13px;vertical-align:middle;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -138,3 +184,4 @@
         }
     </div>
 </div>
+

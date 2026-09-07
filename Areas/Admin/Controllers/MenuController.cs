@@ -77,5 +77,113 @@ namespace caportal.Areas.Admin.Controllers
             TempData["Success"] = "Menu item deleted successfully!";
             return RedirectToAction("Index");
         }
+
+        // POST /Admin/Menu/ToggleActive
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ToggleActive(int id)
+        {
+            var item = MenuRepository.GetById(id);
+            if (item != null)
+            {
+                item.IsActive = !item.IsActive;
+                MenuRepository.Update(item);
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, isActive = item.IsActive });
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        // ── Child Dropdown Items Endpoints ──
+
+        // POST /Admin/Menu/AddDropdownItem
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddDropdownItem(int menuId, NavbarDropdownItem item)
+        {
+            if (string.IsNullOrWhiteSpace(item.Title) || string.IsNullOrWhiteSpace(item.Url))
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = "Title and URL are required." });
+                }
+                TempData["Error"] = "Title and URL are required.";
+                return RedirectToAction("Edit", new { id = menuId });
+            }
+
+            var created = MenuRepository.AddDropdownItem(menuId, item);
+            if (created != null)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, item = created, message = "Dropdown link added successfully!" });
+                }
+                TempData["Success"] = "Dropdown link added successfully!";
+            }
+            else
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = "Failed to add dropdown item. Menu not found." });
+                }
+                TempData["Error"] = "Failed to add dropdown item.";
+            }
+
+            return RedirectToAction("Edit", new { id = menuId });
+        }
+
+        // POST /Admin/Menu/UpdateDropdownItem
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateDropdownItem(int menuId, NavbarDropdownItem item)
+        {
+            var ok = MenuRepository.UpdateDropdownItem(menuId, item);
+            if (ok)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, message = "Dropdown link updated successfully!" });
+                }
+                TempData["Success"] = "Dropdown link updated successfully!";
+            }
+            else
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = "Dropdown item not found." });
+                }
+                TempData["Error"] = "Failed to update dropdown link.";
+            }
+
+            return RedirectToAction("Edit", new { id = menuId });
+        }
+
+        // POST /Admin/Menu/DeleteDropdownItem
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteDropdownItem(int menuId, int itemId)
+        {
+            var ok = MenuRepository.DeleteDropdownItem(menuId, itemId);
+            if (ok)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, message = "Dropdown link deleted!" });
+                }
+                TempData["Success"] = "Dropdown link deleted successfully!";
+            }
+            else
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = "Failed to delete item." });
+                }
+                TempData["Error"] = "Failed to delete dropdown item.";
+            }
+
+            return RedirectToAction("Edit", new { id = menuId });
+        }
     }
 }

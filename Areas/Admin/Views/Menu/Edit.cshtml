@@ -2,6 +2,7 @@
 @{
     Layout = "~/Areas/Admin/Views/Shared/_DattaLayout.cshtml";
     ViewData["Title"] = $"Edit Menu Item — {Model.DisplayName}";
+    var dropdownItems = Model.DropdownItems ?? new List<caportal.Models.Entities.NavbarDropdownItem>();
 }
 
 <!-- Page Header -->
@@ -13,7 +14,7 @@
                     <i data-feather="edit-2" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> 
                     <span>Edit Menu Item: @Model.DisplayName</span>
                 </h4>
-                <span class="text-muted small">Update settings for this navigation link</span>
+                <span class="text-muted small">Update navigation link settings, mega-menu, or child dropdown items</span>
             </div>
             <div>
                 <a href="/Admin/Menu" class="btn btn-outline-secondary flex items-center gap-1">
@@ -25,16 +26,34 @@
         <ul class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
             <li class="breadcrumb-item"><a href="/Admin/Menu">Menu Editor</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Menu Item</li>
+            <li class="breadcrumb-item active" aria-current="page">Edit: @Model.DisplayName</li>
         </ul>
     </div>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0 text-gold font-weight-bold">Link Settings</h5>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="check-circle" class="me-1"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i data-feather="alert-circle" class="me-1"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Main Menu Settings Form -->
+    <div class="col-lg-5 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0 text-white font-weight-bold">
+                    <i data-feather="settings" class="me-2" style="width:16px;height:16px;"></i> Menu Item Configuration
+                </h5>
             </div>
             <div class="card-body">
                 <form method="post" action="/Admin/Menu/Edit">
@@ -42,30 +61,32 @@
                     <input type="hidden" name="Id" value="@Model.Id" />
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold">Display Name *</label>
-                        <input type="text" name="DisplayName" class="form-control" placeholder="e.g. Services, About Us" value="@Model.DisplayName" required />
+                        <label class="form-label font-weight-bold">Display Label *</label>
+                        <input type="text" name="DisplayName" class="form-control" placeholder="e.g. Services, Resources, About Us" value="@Model.DisplayName" required />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold">URL / Link *</label>
-                        <input type="text" name="Url" class="form-control" placeholder="e.g. /about, #pricing, /find-expert" value="@Model.Url" required />
-                        <small class="text-muted text-xs d-block mt-1">Use <code>/</code> relative paths or <code>#</code> scroll anchors. Mega-menus ignore this URL value.</small>
+                        <label class="form-label font-weight-bold">Target URL / Link *</label>
+                        <input type="text" name="Url" class="form-control" placeholder="e.g. /, /about, #pricing, /find-expert" value="@Model.Url" required />
+                        <small class="text-muted text-xs d-block mt-1">Use <code>/</code> relative paths or <code>#</code> scroll anchors. Mega-menus use their own category destinations.</small>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold">Display Order</label>
+                        <label class="form-label font-weight-bold">Display Order (Left to Right)</label>
                         <input type="number" name="Order" class="form-control" value="@Model.Order" min="1" required />
-                        <small class="text-muted text-xs d-block mt-1">Used to sort the links left-to-right (lower numbers display first)</small>
+                        <small class="text-muted text-xs d-block mt-1">Lower numbers appear first on the navbar.</small>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold">Mega Menu Dropdown Type</label>
-                        <select name="MegaMenuType" class="form-control">
-                            <option value="None" selected="@(Model.MegaMenuType == "None" ? "selected" : null)">None (Standard Link)</option>
-                            <option value="Services" selected="@(Model.MegaMenuType == "Services" ? "selected" : null)">Services (TaxNiti 6-column Mega Dropdown)</option>
-                            <option value="FindExpert" selected="@(Model.MegaMenuType == "FindExpert" ? "selected" : null)">Find an Expert (2-column Category Dropdown)</option>
+                        <label class="form-label font-weight-bold">Menu / Dropdown Type</label>
+                        <select name="MegaMenuType" class="form-control" id="megaMenuTypeSelect">
+                            <option value="None" selected="@(Model.MegaMenuType == "None" ? "selected" : null)">Standard Link (No Mega-Menu)</option>
+                            <option value="CustomDropdown" selected="@(Model.MegaMenuType == "CustomDropdown" ? "selected" : null)">Custom Dropdown (Manage Child Links)</option>
+                            <option value="Services" selected="@(Model.MegaMenuType == "Services" ? "selected" : null)">Services (Dynamic Mega-Menu loaded from Database)</option>
+                            <option value="TaxLegal" selected="@(Model.MegaMenuType == "TaxLegal" ? "selected" : null)">Tax &amp; Legal (5-column Tax, GST &amp; Legal Mega-Menu)</option>
+                            <option value="FindExpert" selected="@(Model.MegaMenuType == "FindExpert" ? "selected" : null)">Find an Expert (CA Specialties &amp; City Dropdown)</option>
                         </select>
-                        <small class="text-muted text-xs d-block mt-1">Mega-dropdowns contain pre-compiled category panels.</small>
+                        <small class="text-muted text-xs d-block mt-1">Controls how this item behaves when hovered or clicked on the site.</small>
                     </div>
 
                     <div class="mb-3 form-check">
@@ -77,7 +98,7 @@
                     <div class="mb-4 form-check">
                         <input type="checkbox" name="IsActive" id="activeCheck" class="form-check-input" value="true" @(Model.IsActive ? "checked" : "") />
                         <input type="hidden" name="IsActive" value="false" />
-                        <label class="form-check-label font-weight-bold" for="activeCheck">Active (Display in navigation)</label>
+                        <label class="form-check-label font-weight-bold" for="activeCheck">Active (Display on website)</label>
                     </div>
 
                     <div class="d-flex gap-2">
@@ -92,4 +113,425 @@
             </div>
         </div>
     </div>
+
+    <!-- Dropdown / Mega Menu Info & Child Items -->
+    <div class="col-lg-7 mb-4">
+        @if (Model.MegaMenuType == "Services")
+        {
+            <div class="card shadow-sm border-0 border-warning border-start border-4 mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <h6 class="font-weight-bold text-dark mb-1">
+                                <i class="fas fa-bolt text-warning me-2"></i> Services Mega-Menu (Dynamic 6-Column Layout)
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                This mega menu is loaded with all 73 CA services organized across 6 high-converting categories. Every link below can be edited, reordered, deactivated, or deleted. Any new link you add will automatically appear in the website header!
+                            </p>
+                        </div>
+                        <a href="/Admin/Services" class="btn btn-outline-warning btn-sm font-weight-bold">
+                            <i class="fas fa-briefcase me-1"></i> Manage Service Detail Pages
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (Model.MegaMenuType == "TaxLegal")
+        {
+            <div class="card shadow-sm border-0 border-info border-start border-4 mb-4">
+                <div class="card-body">
+                    <h6 class="font-weight-bold text-dark mb-1">
+                        <i class="fas fa-balance-scale text-info me-2"></i> Tax &amp; Legal Mega-Menu
+                    </h6>
+                    <p class="text-muted small mb-0">
+                        Renders the high-converting 5-column Mega-Menu covering Direct Tax, GST, PAN/TAN/TDS, Legal Drafting, and Brand/IPR Protection. You can manage and edit all sub-links below!
+                    </p>
+                </div>
+            </div>
+        }
+        else if (Model.MegaMenuType == "FindExpert")
+        {
+            <div class="card shadow-sm border-0 border-success border-start border-4 mb-4">
+                <div class="card-body">
+                    <h6 class="font-weight-bold text-dark mb-1">
+                        <i class="fas fa-user-tie text-success me-2"></i> Find an Expert Mega-Menu
+                    </h6>
+                    <p class="text-muted small mb-0">
+                        Renders the 2-column menu enabling clients to browse Chartered Accountants by City and by Specialisation. Edit or add options below.
+                    </p>
+                </div>
+            </div>
+        }
+
+        @{
+            var distinctCategories = dropdownItems
+                .Where(d => !string.IsNullOrWhiteSpace(d.Category))
+                .Select(d => d.Category!.Trim())
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+        }
+
+        <!-- Dropdown Child Links Manager Card -->
+        <div class="card shadow-sm border-0" id="dropdownItemsCard">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                <div>
+                    <h5 class="mb-0 font-weight-bold text-dark">
+                        <i data-feather="list" class="me-2" style="width:16px;height:16px;"></i> Mega-Menu Options &amp; Child Links
+                        <span class="badge bg-primary ms-2">@dropdownItems.Count</span>
+                    </h5>
+                    <small class="text-muted">Links rendered inside the dropdown when users hover over "@Model.DisplayName"</small>
+                </div>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDropdownItemModal">
+                    <i data-feather="plus" style="width:14px;height:14px;"></i> Add Option
+                </button>
+            </div>
+
+            @if (dropdownItems.Count > 0)
+            {
+                <div class="px-3 pt-3 pb-2 border-bottom bg-white">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        @if (distinctCategories.Count > 1)
+                        {
+                            <div class="d-flex align-items-center gap-1 flex-wrap" id="categoryFilterContainer">
+                                <button type="button" class="btn btn-xs btn-dark cat-filter-btn active" data-cat="all">
+                                    All (@dropdownItems.Count)
+                                </button>
+                                @foreach (var cat in distinctCategories)
+                                {
+                                    var count = dropdownItems.Count(d => d.Category == cat);
+                                    <button type="button" class="btn btn-xs btn-outline-secondary cat-filter-btn" data-cat="@cat.ToLower()">
+                                        @cat (@count)
+                                    </button>
+                                }
+                            </div>
+                        }
+                        <div class="ms-auto" style="min-width: 220px;">
+                            <input type="text" id="filterDropdownItemsSearch" class="form-control form-control-sm" placeholder="🔍 Search options..." />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="card-body p-0">
+                @if (dropdownItems.Count == 0)
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i data-feather="corner-down-right" style="width:36px;height:36px;" class="mb-2 text-secondary"></i>
+                        <p class="mb-2 font-weight-bold">No custom dropdown links added yet.</p>
+                        <p class="small text-muted mb-3">Add links below to display a dropdown or mega-menu.</p>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addDropdownItemModal">
+                            <i data-feather="plus" class="me-1"></i> Add First Dropdown Link
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top" style="z-index: 2;">
+                                <tr>
+                                    <th style="width: 55px;" class="text-center">#</th>
+                                    <th>Option Title</th>
+                                    <th>URL Path</th>
+                                    <th>Category / Column</th>
+                                    <th style="width: 80px;" class="text-center">Status</th>
+                                    <th style="width: 100px;" class="text-end pe-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var sub in dropdownItems.OrderBy(d => d.Order))
+                                {
+                                    <tr class="dropdown-item-row"
+                                        data-category="@(sub.Category?.ToLower() ?? "")"
+                                        data-title="@sub.Title.ToLower()"
+                                        data-url="@sub.Url.ToLower()">
+                                        <td class="text-center">
+                                            <span class="badge bg-light text-dark border font-monospace">@sub.Order</span>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(sub.Icon))
+                                            {
+                                                <i class="@sub.Icon me-1 text-gold"></i>
+                                            }
+                                            <strong class="text-dark">@sub.Title</strong>
+                                            @if (!string.IsNullOrEmpty(sub.Badge))
+                                            {
+                                                <span class="badge bg-warning-subtle text-warning text-xs ms-1">@sub.Badge</span>
+                                            }
+                                            @if (sub.OpenInNewTab)
+                                            {
+                                                <span class="badge bg-info-subtle text-info text-xs ms-1">New Tab</span>
+                                            }
+                                        </td>
+                                        <td class="small"><code class="text-primary">@sub.Url</code></td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(sub.Category))
+                                            {
+                                                <span class="badge bg-secondary-subtle text-secondary font-weight-normal">@sub.Category</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @if (sub.IsActive)
+                                            {
+                                                <span class="badge bg-success-subtle text-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <button type="button" class="btn btn-xs btn-outline-warning me-1 edit-dropdown-item-btn"
+                                                    data-id="@sub.Id"
+                                                    data-title="@sub.Title"
+                                                    data-url="@sub.Url"
+                                                    data-category="@sub.Category"
+                                                    data-icon="@sub.Icon"
+                                                    data-badge="@sub.Badge"
+                                                    data-order="@sub.Order"
+                                                    data-isactive="@(sub.IsActive ? "true" : "false")"
+                                                    data-newtab="@(sub.OpenInNewTab ? "true" : "false")"
+                                                    title="Edit Dropdown Link">
+                                                <i data-feather="edit-2" style="width:12px;height:12px;"></i>
+                                            </button>
+                                            <form method="post" action="/Admin/Menu/DeleteDropdownItem" class="d-inline" onsubmit="return confirm('Delete \'@sub.Title\'?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="menuId" value="@Model.Id" />
+                                                <input type="hidden" name="itemId" value="@sub.Id" />
+                                                <button type="submit" class="btn btn-xs btn-outline-danger" title="Delete">
+                                                    <i data-feather="trash-2" style="width:12px;height:12px;"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Datalist for Categories -->
+<datalist id="categorySuggestions">
+    <option value="Business Registration" />
+    <option value="GST & Tax" />
+    <option value="MCA & Compliance" />
+    <option value="Trademark & IPR" />
+    <option value="Accounting & Audit" />
+    <option value="Other Services" />
+    <option value="Direct Tax Services" />
+    <option value="GST Services" />
+    <option value="PAN / TAN / TDS / TCS" />
+    <option value="Legal Services" />
+    <option value="IPR & Legal Protection" />
+    <option value="Browse CAs" />
+    <option value="By Specialisation" />
+</datalist>
+
+<!-- Modal: Add Dropdown Link -->
+<div class="modal fade" id="addDropdownItemModal" tabindex="-1" aria-labelledby="addDropdownItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title font-weight-bold" id="addDropdownItemModalLabel">
+                    <i data-feather="plus-circle" class="me-2" style="width:18px;height:18px;"></i> Add Dropdown Link
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="/Admin/Menu/AddDropdownItem">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="menuId" value="@Model.Id" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Link Title *</label>
+                        <input type="text" name="Title" class="form-control" placeholder="e.g. Tax Calculators, About Our Firm, FAQ" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Target URL *</label>
+                        <input type="text" name="Url" class="form-control" placeholder="e.g. /calculators, /about, https://..." required />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Category / Group (Optional)</label>
+                            <input type="text" name="Category" class="form-control" list="categorySuggestions" placeholder="e.g. Business Registration, GST & Tax" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Display Order</label>
+                            <input type="number" name="Order" class="form-control" value="@(dropdownItems.Count > 0 ? dropdownItems.Max(d => d.Order) + 1 : 1)" min="1" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Icon (FontAwesome)</label>
+                            <input type="text" name="Icon" class="form-control" placeholder="e.g. fas fa-calculator, fas fa-star" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Badge (Optional)</label>
+                            <input type="text" name="Badge" class="form-control" placeholder="e.g. New, Popular, Free" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-check mb-2">
+                            <input type="checkbox" name="IsActive" id="addIsActiveCheck" class="form-check-input" value="true" checked />
+                            <input type="hidden" name="IsActive" value="false" />
+                            <label class="form-check-label font-weight-bold" for="addIsActiveCheck">Active</label>
+                        </div>
+                        <div class="col-6 form-check mb-2">
+                            <input type="checkbox" name="OpenInNewTab" id="addNewTabCheck" class="form-check-input" value="true" />
+                            <input type="hidden" name="OpenInNewTab" value="false" />
+                            <label class="form-check-label font-weight-bold" for="addNewTabCheck">Open in New Tab</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold">
+                        <i data-feather="plus" class="me-1"></i> Add Link
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit Dropdown Link -->
+<div class="modal fade" id="editDropdownItemModal" tabindex="-1" aria-labelledby="editDropdownItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title font-weight-bold" id="editDropdownItemModalLabel">
+                    <i data-feather="edit-2" class="me-2" style="width:18px;height:18px;"></i> Edit Dropdown Link
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="/Admin/Menu/UpdateDropdownItem">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="menuId" value="@Model.Id" />
+                <input type="hidden" name="Id" id="editItemId" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Link Title *</label>
+                        <input type="text" name="Title" id="editItemTitle" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Target URL *</label>
+                        <input type="text" name="Url" id="editItemUrl" class="form-control" required />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Category / Group (Optional)</label>
+                            <input type="text" name="Category" id="editItemCategory" class="form-control" list="categorySuggestions" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Display Order</label>
+                            <input type="number" name="Order" id="editItemOrder" class="form-control" min="1" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Icon (FontAwesome)</label>
+                            <input type="text" name="Icon" id="editItemIcon" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Badge (Optional)</label>
+                            <input type="text" name="Badge" id="editItemBadge" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-check mb-2">
+                            <input type="checkbox" name="IsActive" id="editItemIsActive" class="form-check-input" value="true" />
+                            <input type="hidden" name="IsActive" value="false" />
+                            <label class="form-check-label font-weight-bold" for="editItemIsActive">Active</label>
+                        </div>
+                        <div class="col-6 form-check mb-2">
+                            <input type="checkbox" name="OpenInNewTab" id="editItemNewTab" class="form-check-input" value="true" />
+                            <input type="hidden" name="OpenInNewTab" value="false" />
+                            <label class="form-check-label font-weight-bold" for="editItemNewTab">Open in New Tab</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold">
+                        <i data-feather="save" class="me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Populate Edit Dropdown Item Modal
+    document.querySelectorAll(".edit-dropdown-item-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            document.getElementById("editItemId").value = btn.getAttribute("data-id");
+            document.getElementById("editItemTitle").value = btn.getAttribute("data-title");
+            document.getElementById("editItemUrl").value = btn.getAttribute("data-url");
+            document.getElementById("editItemCategory").value = btn.getAttribute("data-category") || "";
+            document.getElementById("editItemIcon").value = btn.getAttribute("data-icon") || "";
+            document.getElementById("editItemBadge").value = btn.getAttribute("data-badge") || "";
+            document.getElementById("editItemOrder").value = btn.getAttribute("data-order") || "1";
+            document.getElementById("editItemIsActive").checked = btn.getAttribute("data-isactive") === "true";
+            document.getElementById("editItemNewTab").checked = btn.getAttribute("data-newtab") === "true";
+
+            var modalEl = document.getElementById("editDropdownItemModal");
+            var modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        });
+    });
+
+    // Real-time Category & Search Filter
+    var currentCat = "all";
+    var currentQuery = "";
+
+    function filterRows() {
+        var rows = document.querySelectorAll(".dropdown-item-row");
+        rows.forEach(function(row) {
+            var rowCat = (row.getAttribute("data-category") || "").trim();
+            var rowTitle = row.getAttribute("data-title") || "";
+            var rowUrl = row.getAttribute("data-url") || "";
+
+            var matchCat = (currentCat === "all" || rowCat === currentCat);
+            var matchSearch = (!currentQuery || rowTitle.includes(currentQuery) || rowUrl.includes(currentQuery) || rowCat.includes(currentQuery));
+
+            if (matchCat && matchSearch) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    document.querySelectorAll(".cat-filter-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            document.querySelectorAll(".cat-filter-btn").forEach(function(b) {
+                b.classList.remove("active", "btn-dark");
+                b.classList.add("btn-outline-secondary");
+            });
+            this.classList.add("active", "btn-dark");
+            this.classList.remove("btn-outline-secondary");
+            currentCat = this.getAttribute("data-cat");
+            filterRows();
+        });
+    });
+
+    var searchBox = document.getElementById("filterDropdownItemsSearch");
+    if (searchBox) {
+        searchBox.addEventListener("input", function() {
+            currentQuery = this.value.trim().toLowerCase();
+            filterRows();
+        });
+    }
+});
+</script>
+
