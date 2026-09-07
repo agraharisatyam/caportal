@@ -17,6 +17,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<TodoItem> TodoItems { get; set; } = null!;
     public DbSet<SiteSettingsRecord> SiteSettings { get; set; } = null!;
     public DbSet<CoveredService> CoveredServices { get; set; } = null!;
+    public DbSet<SubService> SubServices { get; set; } = null!;
     public DbSet<WhyChooseUsItem> WhyChooseUsItems { get; set; } = null!;
     public DbSet<HeroBannerSlide> HeroBannerSlides { get; set; } = null!;
     public DbSet<CaProfessional> CaProfessionals { get; set; } = null!;
@@ -71,6 +72,15 @@ public class ApplicationDbContext : DbContext
         {
             entity.Property(e => e.AmountValue)
                 .HasPrecision(18, 2);
+        });
+
+        // SubService
+        modelBuilder.Entity<SubService>(entity =>
+        {
+            entity.HasOne(s => s.CoveredService)
+                .WithMany(c => c.SubServices)
+                .HasForeignKey(s => s.CoveredServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

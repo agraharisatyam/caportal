@@ -9,4 +9,6 @@ public class CoveredService
     public string Description  { get; set; } = string.Empty;
     public int    DisplayOrder { get; set; } = 0;
     public string PageUrl      { get; set; } = "#professionals"; // click destination
+
+    public virtual ICollection<SubService> SubServices { get; set; } = new List<SubService>();
 }

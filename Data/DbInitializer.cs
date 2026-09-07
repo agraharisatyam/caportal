@@ -36,6 +36,7 @@ namespace caportal.Data
                 await SeedTestimonialsAsync(db);
                 await SeedPricingPlansAsync(db);
                 await SeedContentPagesAsync(db);
+                await SeedSubServicesAsync(db);
 
                 logger?.LogInformation("DbInitializer: Database schema verified and seed data populated successfully.");
             }
@@ -220,6 +221,44 @@ namespace caportal.Data
                     [SubscribedAt] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
                     [IsActive] BIT NOT NULL DEFAULT 1
                 );
+            END;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = N'SubServices')
+            BEGIN
+                CREATE TABLE [SubServices] (
+                    [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                    [CoveredServiceId] INT NOT NULL,
+                    [Title] NVARCHAR(250) NOT NULL,
+                    [Description] NVARCHAR(MAX) NOT NULL DEFAULT '',
+                    [Price] NVARCHAR(100) NOT NULL DEFAULT '',
+                    [Category] NVARCHAR(150) NOT NULL DEFAULT '',
+                    [Icon] NVARCHAR(100) NOT NULL DEFAULT '',
+                    [IsPopular] BIT NOT NULL DEFAULT 0,
+                    [IsNew] BIT NOT NULL DEFAULT 0,
+                    [DisplayOrder] INT NOT NULL DEFAULT 0,
+                    [IsActive] BIT NOT NULL DEFAULT 1,
+                    CONSTRAINT [FK_SubServices_CoveredServices] FOREIGN KEY ([CoveredServiceId]) REFERENCES [CoveredServices] ([Id]) ON DELETE CASCADE
+                );
+            END;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('SubServices') AND name = 'Category')
+            BEGIN
+                ALTER TABLE [SubServices] ADD [Category] NVARCHAR(150) NOT NULL DEFAULT '';
+            END;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('SubServices') AND name = 'Icon')
+            BEGIN
+                ALTER TABLE [SubServices] ADD [Icon] NVARCHAR(100) NOT NULL DEFAULT '';
+            END;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('SubServices') AND name = 'IsPopular')
+            BEGIN
+                ALTER TABLE [SubServices] ADD [IsPopular] BIT NOT NULL DEFAULT 0;
+            END;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('SubServices') AND name = 'IsNew')
+            BEGIN
+                ALTER TABLE [SubServices] ADD [IsNew] BIT NOT NULL DEFAULT 0;
             END;
             ";
 
@@ -486,6 +525,142 @@ namespace caportal.Data
 
             await db.ContentPages.AddRangeAsync(items);
             await db.SaveChangesAsync();
+        }
+
+        private static async Task SeedSubServicesAsync(ApplicationDbContext db)
+        {
+            // ── 1. GST & Indirect Tax ──
+            var gstService = await db.CoveredServices.FirstOrDefaultAsync(s => s.Title.Contains("GST"));
+            if (gstService != null)
+            {
+                var existingGstCount = await db.SubServices.CountAsync(s => s.CoveredServiceId == gstService.Id);
+                if (existingGstCount < 20)
+                {
+                    if (existingGstCount > 0)
+                    {
+                        var existing = await db.SubServices.Where(s => s.CoveredServiceId == gstService.Id).ToListAsync();
+                        db.SubServices.RemoveRange(existing);
+                        await db.SaveChangesAsync();
+                    }
+
+                    var gstSubServices = new List<SubService>
+                    {
+                        // Group 1: GST Services (15 items)
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 1,  Title = "GST Registration",             Description = "Register your business under GST",                 Icon = "fas fa-file-invoice",        Price = "₹1,499",           IsPopular = true,  IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 2,  Title = "GST Return Filing",             Description = "File your monthly, quarterly & annual GST returns", Icon = "fas fa-file-alt",            Price = "Starting ₹499/m",   IsPopular = true,  IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 3,  Title = "GST Amendment",                 Description = "Amend details in your GST registration",           Icon = "fas fa-edit",                Price = "₹999",             IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 4,  Title = "GST Cancellation",              Description = "Cancel your GST registration",                     Icon = "fas fa-times-circle",        Price = "₹1,499",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 5,  Title = "GST Revocation",                Description = "Revoke cancelled GST registration",                Icon = "fas fa-sync-alt",            Price = "₹2,499",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 6,  Title = "GST Notice Reply",              Description = "Reply to GST notices and queries",                 Icon = "fas fa-envelope-open-text",  Price = "Starting ₹1,999",   IsPopular = true,  IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 7,  Title = "GST Refund",                    Description = "Claim GST refund for your business",               Icon = "fas fa-rupee-sign",          Price = "Quote on Request", IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 8,  Title = "GST LUT Filing",                Description = "File LUT for exports without payment of tax",      Icon = "fas fa-stamp",               Price = "₹999",             IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 9,  Title = "GST E-Invoicing Setup",         Description = "Set up e-invoicing for your business",             Icon = "fas fa-receipt",             Price = "₹2,499",           IsNew = true,      IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 10, Title = "GST Software Setup",            Description = "Setup & integration of GST software",              Icon = "fas fa-laptop-code",         Price = "₹3,999",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 11, Title = "GST Annual Return (GSTR-9)",    Description = "File annual return GSTR-9",                        Icon = "fas fa-clipboard-check",     Price = "Starting ₹2,999",   IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 12, Title = "GST Final Return (GSTR-10)",   Description = "File final return before cancellation",             Icon = "fas fa-file-signature",     Price = "₹1,999",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 13, Title = "GST Audit Support",             Description = "GST audit & assessment support",                   Icon = "fas fa-search-dollar",       Price = "Quote on Request", IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 14, Title = "GST Foreign Registration",      Description = "Registration for foreign entities",                 Icon = "fas fa-globe-asia",          Price = "Quote on Request", IsNew = true,      IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "GST Services", DisplayOrder = 15, Title = "E-Way Bill Services",           Description = "Generate & manage e-way bills",                    Icon = "fas fa-truck",               Price = "Starting ₹799",     IsActive = true },
+
+                        // Group 2: Direct Tax Services (5 items)
+                        new() { CoveredServiceId = gstService.Id, Category = "Direct Tax Services", DisplayOrder = 16, Title = "Income Tax Return (ITR) Filing", Description = "File ITR accurately and on time",    Icon = "fas fa-file-invoice-dollar", Price = "Starting ₹799",     IsPopular = true,  IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "Direct Tax Services", DisplayOrder = 17, Title = "Income Tax Notice Reply",       Description = "Reply to income tax notices",          Icon = "fas fa-envelope-open",       Price = "Starting ₹1,999",   IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "Direct Tax Services", DisplayOrder = 18, Title = "Tax Audit",                     Description = "Tax audit for businesses & professionals",Icon = "fas fa-shield-alt",          Price = "Quote on Request", IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "Direct Tax Services", DisplayOrder = 19, Title = "Advance Tax Planning",         Description = "Plan and optimize your advance tax",   Icon = "fas fa-calculator",          Price = "₹1,499",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "Direct Tax Services", DisplayOrder = 20, Title = "Tax Consultation",             Description = "Expert consultation for tax matters",   Icon = "fas fa-user-tie",            Price = "₹999",             IsPopular = true,  IsActive = true },
+
+                        // Group 3: PAN / TAN / TDS Services (7 items)
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 21, Title = "PAN Registration",         Description = "Apply for new PAN card",               Icon = "fas fa-id-card",             Price = "₹499",             IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 22, Title = "PAN Correction",           Description = "Correct your PAN card details",         Icon = "fas fa-id-card-alt",         Price = "₹699",             IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 23, Title = "TAN Registration",         Description = "Apply for new TAN number",              Icon = "fas fa-certificate",         Price = "₹999",             IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 24, Title = "TDS Registration",         Description = "Register for TDS compliance",           Icon = "fas fa-percentage",          Price = "₹1,499",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 25, Title = "TDS Return Filing",         Description = "File TDS returns accurately",           Icon = "fas fa-file-invoice",        Price = "Starting ₹999/qtr", IsPopular = true,  IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 26, Title = "TCS Registration",         Description = "Register for TCS compliance",           Icon = "fas fa-receipt",             Price = "₹1,499",           IsActive = true },
+                        new() { CoveredServiceId = gstService.Id, Category = "PAN / TAN / TDS Services", DisplayOrder = 27, Title = "Form 15CA / 15CB",         Description = "Obtain 15CA / 15CB for remittances",    Icon = "fas fa-passport",            Price = "Starting ₹2,499",   IsNew = true,      IsActive = true }
+                    };
+
+                    await db.SubServices.AddRangeAsync(gstSubServices);
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            // ── 2. Income Tax ──
+            var itService = await db.CoveredServices.FirstOrDefaultAsync(s => s.Title.Contains("Income Tax"));
+            if (itService != null)
+            {
+                var itCount = await db.SubServices.CountAsync(s => s.CoveredServiceId == itService.Id);
+                if (itCount <= 1) // Only test row or none
+                {
+                    var itSubServices = new List<SubService>
+                    {
+                        // Group: Direct Tax Services
+                        new() { CoveredServiceId = itService.Id, Category = "Direct Tax Services", DisplayOrder = 1, Title = "ITR-1 (Sahaj) Filing", Description = "For salaried individuals & pension income", Icon = "fas fa-user-check", Price = "₹799", IsPopular = true, IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Direct Tax Services", DisplayOrder = 2, Title = "ITR-2 (Capital Gains & Multiple Properties)", Description = "For capital gains, ESOPs & foreign income", Icon = "fas fa-chart-line", Price = "₹1,999", IsPopular = true, IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Direct Tax Services", DisplayOrder = 3, Title = "ITR-3 & ITR-4 (Business & Profession)", Description = "For traders, freelancers & business owners", Icon = "fas fa-briefcase", Price = "Starting ₹1,499", IsPopular = true, IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Direct Tax Services", DisplayOrder = 4, Title = "Advance Tax Calculation & Payment", Description = "Quarterly tax estimate & timely payment support", Icon = "fas fa-calculator", Price = "₹999", IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Direct Tax Services", DisplayOrder = 5, Title = "NRI Taxation & Remittance (15CA/CB)", Description = "DTAA benefits & foreign asset compliance", Icon = "fas fa-globe", Price = "Starting ₹2,999", IsNew = true, IsActive = true },
+
+                        // Group: Tax Notices & Appeals
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Notices & Appeals", DisplayOrder = 6, Title = "Income Tax Notice Reply (143/148)", Description = "Draft legal reply to IT department inquiries", Icon = "fas fa-envelope-open-text", Price = "Starting ₹1,999", IsPopular = true, IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Notices & Appeals", DisplayOrder = 7, Title = "Defective Return Rectification (139(9))", Description = "Correct invalid filings & error notices", Icon = "fas fa-tools", Price = "₹999", IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Notices & Appeals", DisplayOrder = 8, Title = "Faceless Scrutiny Assessment (143(3))", Description = "Complete assessment handling with tax officer", Icon = "fas fa-user-shield", Price = "Quote on Request", IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Notices & Appeals", DisplayOrder = 9, Title = "CIT(Appeals) Filing & Legal Brief", Description = "Draft appeals against adverse assessment orders", Icon = "fas fa-gavel", Price = "Quote on Request", IsActive = true },
+
+                        // Group: Tax Audit & Compliance
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Audit & Compliance", DisplayOrder = 10, Title = "Tax Audit u/s 44AB", Description = "Statutory business audit & Form 3CD filing", Icon = "fas fa-search-dollar", Price = "Quote on Request", IsPopular = true, IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Audit & Compliance", DisplayOrder = 11, Title = "Lower TDS Certificate (Form 13)", Description = "Apply for nil or lower tax withholding rate", Icon = "fas fa-percentage", Price = "₹2,499", IsActive = true },
+                        new() { CoveredServiceId = itService.Id, Category = "Tax Audit & Compliance", DisplayOrder = 12, Title = "Form 10E Arrears Relief", Description = "Section 89(1) tax relief for salary arrears", Icon = "fas fa-file-contract", Price = "₹799", IsActive = true }
+                    };
+
+                    await db.SubServices.AddRangeAsync(itSubServices);
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            // ── 3. Corporate Compliance ──
+            var corpService = await db.CoveredServices.FirstOrDefaultAsync(s => s.Title.Contains("Corporate"));
+            if (corpService != null && !await db.SubServices.AnyAsync(s => s.CoveredServiceId == corpService.Id))
+            {
+                var corpSubServices = new List<SubService>
+                {
+                    new() { CoveredServiceId = corpService.Id, Category = "Company Incorporation", DisplayOrder = 1, Title = "Pvt Ltd Company Incorporation", Description = "SPICe+ registration, PAN, TAN & DIN setup", Icon = "fas fa-building", Price = "₹6,999", IsPopular = true, IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Company Incorporation", DisplayOrder = 2, Title = "Limited Liability Partnership (LLP)", Description = "Partnership agreement & FiLLiP filing", Icon = "fas fa-handshake", Price = "₹4,999", IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Company Incorporation", DisplayOrder = 3, Title = "One Person Company (OPC)", Description = "Sole founder corporate entity setup", Icon = "fas fa-user-tie", Price = "₹5,499", IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Company Incorporation", DisplayOrder = 4, Title = "Section 8 NGO / Foundation", Description = "Non-profit charitable entity incorporation", Icon = "fas fa-heart", Price = "₹9,999", IsNew = true, IsActive = true },
+
+                    new() { CoveredServiceId = corpService.Id, Category = "Annual ROC Compliance", DisplayOrder = 5, Title = "Annual Return Filing (AOC-4 & MGT-7)", Description = "Mandatory balance sheet & annual returns", Icon = "fas fa-clipboard-list", Price = "Starting ₹3,499", IsPopular = true, IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Annual ROC Compliance", DisplayOrder = 6, Title = "DIR-3 KYC / Web KYC", Description = "Annual director KYC verification", Icon = "fas fa-id-badge", Price = "₹499", IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Annual ROC Compliance", DisplayOrder = 7, Title = "LLP Annual Filing (Form 8 & 11)", Description = "Mandatory annual statement of accounts", Icon = "fas fa-file-invoice", Price = "₹2,499", IsActive = true },
+
+                    new() { CoveredServiceId = corpService.Id, Category = "Corporate Restructuring", DisplayOrder = 8, Title = "Director Addition / Resignation (DIR-12)", Description = "Board restructuring & statutory filings", Icon = "fas fa-users-cog", Price = "₹1,499", IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Corporate Restructuring", DisplayOrder = 9, Title = "Increase Authorized Capital (SH-7)", Description = "Expand equity capacity & stamp duty", Icon = "fas fa-chart-bar", Price = "₹2,499", IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Corporate Restructuring", DisplayOrder = 10, Title = "Registered Office Change (INC-22)", Description = "Inter-state or intra-state address shift", Icon = "fas fa-map-marker-alt", Price = "₹1,999", IsActive = true },
+                    new() { CoveredServiceId = corpService.Id, Category = "Corporate Restructuring", DisplayOrder = 11, Title = "Company Strike Off (STK-2)", Description = "Formal closure of defunct or dormant entities", Icon = "fas fa-door-closed", Price = "₹4,999", IsActive = true }
+                };
+
+                await db.SubServices.AddRangeAsync(corpSubServices);
+                await db.SaveChangesAsync();
+            }
+
+            // ── 4. Audit & Assurance ──
+            var auditService = await db.CoveredServices.FirstOrDefaultAsync(s => s.Title.Contains("Audit"));
+            if (auditService != null && !await db.SubServices.AnyAsync(s => s.CoveredServiceId == auditService.Id))
+            {
+                var auditSubServices = new List<SubService>
+                {
+                    new() { CoveredServiceId = auditService.Id, Category = "Statutory & Tax Audit", DisplayOrder = 1, Title = "Statutory Company Audit", Description = "Independent true & fair financial assurance", Icon = "fas fa-balance-scale", Price = "Quote on Request", IsPopular = true, IsActive = true },
+                    new() { CoveredServiceId = auditService.Id, Category = "Statutory & Tax Audit", DisplayOrder = 2, Title = "Tax Audit u/s 44AB", Description = "Income tax compliance audit & 3CD reporting", Icon = "fas fa-shield-alt", Price = "Quote on Request", IsPopular = true, IsActive = true },
+                    new() { CoveredServiceId = auditService.Id, Category = "Statutory & Tax Audit", DisplayOrder = 3, Title = "Trust & Society Audit", Description = "12A/80G NGO compliance & accounting audit", Icon = "fas fa-landmark", Price = "Quote on Request", IsActive = true },
+
+                    new() { CoveredServiceId = auditService.Id, Category = "Internal & Forensic Assurance", DisplayOrder = 4, Title = "Internal Controls Review (ICFR)", Description = "SOP evaluation & risk assessment audit", Icon = "fas fa-tasks", Price = "Quote on Request", IsActive = true },
+                    new() { CoveredServiceId = auditService.Id, Category = "Internal & Forensic Assurance", DisplayOrder = 5, Title = "Forensic & Fraud Investigation", Description = "Financial irregularities detection & report", Icon = "fas fa-fingerprint", Price = "Quote on Request", IsNew = true, IsActive = true },
+                    new() { CoveredServiceId = auditService.Id, Category = "Internal & Forensic Assurance", DisplayOrder = 6, Title = "Physical Stock & Inventory Audit", Description = "Warehouse count verification & valuation", Icon = "fas fa-boxes", Price = "Quote on Request", IsActive = true },
+                    new() { CoveredServiceId = auditService.Id, Category = "Internal & Forensic Assurance", DisplayOrder = 7, Title = "M&A Financial Due Diligence", Description = "Comprehensive investor & buyer risk audit", Icon = "fas fa-search-plus", Price = "Quote on Request", IsPopular = true, IsActive = true }
+                };
+
+                await db.SubServices.AddRangeAsync(auditSubServices);
+                await db.SaveChangesAsync();
+            }
         }
     }
 }

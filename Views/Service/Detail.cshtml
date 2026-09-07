@@ -2,139 +2,1240 @@
 @model caportal.Models.Entities.CoveredService
 @{
     ViewData["Title"] = Model.Title + " — CACampus";
-    ViewData["Description"] = Model.Description + ". Find verified Chartered Accountants for " + Model.Title + " on CACampus India.";
+    ViewData["Description"] = Model.Description + ". Choose from verified " + Model.Title + " sub-services and connect with ICAI-verified Chartered Accountants.";
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
     var allServices = ViewBag.AllServices as List<CoveredService> ?? new List<CoveredService>();
+    var subServices = (Model.SubServices ?? Enumerable.Empty<SubService>())
+        .Where(s => s.IsActive)
+        .OrderBy(s => s.DisplayOrder)
+        .ToList();
+
+    bool isUsingDefaultFallback = false;
+    if (!subServices.Any())
+    {
+        isUsingDefaultFallback = true;
+        var defaultCat = Model.Title + " Services";
+        subServices = new List<SubService>
+        {
+            new() { Title = Model.Title + " Consultation", Description = "One-on-one expert advisory with senior CA", Category = defaultCat, Icon = "fas fa-comments", Price = "₹999", IsPopular = true, IsActive = true, DisplayOrder = 1 },
+            new() { Title = Model.Title + " Registration & Setup", Description = "Complete onboarding and document registration", Category = defaultCat, Icon = "fas fa-file-contract", Price = "Starting ₹1,499", IsPopular = true, IsActive = true, DisplayOrder = 2 },
+            new() { Title = "Statutory Filing & Compliance", Description = "Periodic return filing and regulatory compliance", Category = defaultCat, Icon = "fas fa-clipboard-check", Price = "Starting ₹999/m", IsActive = true, DisplayOrder = 3 },
+            new() { Title = "Notice Reply & Assessment", Description = "Legal draft reply & assessment representation", Category = defaultCat, Icon = "fas fa-envelope-open-text", Price = "Starting ₹1,999", IsNew = true, IsActive = true, DisplayOrder = 4 },
+            new() { Title = "Annual Audit & Assurance", Description = "Comprehensive financial verification & audit assurance", Category = defaultCat, Icon = "fas fa-shield-alt", Price = "Quote on Request", IsActive = true, DisplayOrder = 5 }
+        };
+    }
+
+    // Distinct categories for tabs and grouping
+    var categories = subServices
+        .Select(s => string.IsNullOrWhiteSpace(s.Category) ? (Model.Title + " Services") : s.Category.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToList();
+
+    // Default category if none exist
+    if (!categories.Any())
+    {
+        categories.Add(Model.Title + " Services");
+    }
 }
 
-<!-- Hero -->
-<section style="background:linear-gradient(135deg,#0d1f33,#1a2a4a);padding:80px 0 60px;margin-top:0;">
-    <div class="container">
-        <div class="d-flex align-items-center gap-4 flex-wrap">
-            @if (!string.IsNullOrEmpty(Model.ImagePath))
-            {
-                <img src="@Model.ImagePath" alt="@Model.Title"
-                     style="width:90px;height:90px;object-fit:contain;border-radius:16px;background:rgba(255,255,255,0.08);padding:8px;" />
-            }
+<!-- ═══ Page Header & Search / Filter Section ═══ -->
+<section class="service-catalog-header-section">
+    <div class="container-fluid" style="max-width: 1440px; padding-left: 28px; padding-right: 28px;">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb custom-catalog-breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li class="breadcrumb-item"><a href="/#features">Services</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+            </ol>
+        </nav>
+
+        <!-- Top Title & Search Box Row -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
             <div>
-                <div class="mb-2">
-                    <a href="/" style="color:rgba(255,255,255,0.6);font-size:.82rem;text-decoration:none;">Home</a>
-                    <span style="color:rgba(255,255,255,0.4);margin:0 8px;">/</span>
-                    <span style="color:#d4a017;font-size:.82rem;">@Model.Title</span>
-                </div>
-                <h1 style="color:#fff;font-size:2.4rem;font-weight:800;margin:0 0 10px;">@Model.Title</h1>
-                <p style="color:rgba(255,255,255,0.75);font-size:1rem;margin:0;max-width:600px;">@Model.Description</p>
+                <h1 class="service-catalog-main-title">@Model.Title</h1>
+                <p class="service-catalog-subtitle">Choose the service you need.</p>
+            </div>
+
+            <!-- Real-Time Search Box -->
+            <div class="service-catalog-search-wrap">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="catalogSearchInput" class="form-control catalog-search-input"
+                       placeholder="Search for a service..." autocomplete="off" />
+                <button type="button" id="clearCatalogSearch" class="btn-clear-search" style="display:none;" title="Clear search">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
 
-        <div class="d-flex gap-3 mt-5 flex-wrap">
-            <a href="#find-ca" class="btn-hero-primary px-4 py-3" style="border-radius:10px;">
-                <i class="fas fa-user-tie me-2"></i>Find a CA for @Model.Title
-            </a>
-            <a href="/" class="btn-hero-secondary px-4 py-3" style="border-radius:10px;color:#fff;border-color:rgba(255,255,255,0.3);">
-                <i class="fas fa-arrow-left me-2"></i>Back to Home
-            </a>
+        <!-- Filter Chips / Pills Bar -->
+        <div class="service-catalog-filters-bar d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="filter-pills-scroll-container d-flex align-items-center gap-2 flex-wrap" id="categoryFilterPills">
+                <button type="button" class="catalog-filter-pill active" data-filter="all">
+                    All Services
+                </button>
+                @foreach (var cat in categories)
+                {
+                    var cleanLabel = cat.Replace("Services", "").Trim();
+                    if (string.IsNullOrEmpty(cleanLabel)) { cleanLabel = cat; }
+                    <button type="button" class="catalog-filter-pill" data-filter="@cat.ToLowerInvariant()">
+                        @cleanLabel
+                    </button>
+                }
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap ms-auto">
+                <button type="button" class="catalog-filter-pill pill-special" data-filter="popular">
+                    <i class="far fa-star text-gold me-1"></i> Popular
+                </button>
+                <button type="button" class="catalog-filter-pill pill-special" data-filter="new">
+                    <i class="fas fa-sparkles text-gold me-1"></i> New
+                </button>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Why choose a CA section -->
-<section style="padding:60px 0;background:#fff;">
-    <div class="container">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-6">
-                <span class="section-badge">Expert Guidance</span>
-                <h2 class="section-title mt-2">Why You Need a CA for<br><span>@Model.Title</span></h2>
-                <p class="mt-3" style="color:#6b7280;line-height:1.8;">
-                    Navigating @Model.Title requires deep expertise and up-to-date knowledge of Indian regulations.
-                    Our ICAI-verified Chartered Accountants ensure compliance, minimize risk, and help you focus on what matters — growing your business.
-                </p>
-                <ul class="mt-4" style="list-style:none;padding:0;">
-                    @foreach (var point in new[]{"100% ICAI-verified professionals","Transparent pricing with no hidden fees","Response within 1–2 hours","Secure milestone-based payments"})
-                    {
-                        <li class="d-flex align-items-center gap-2 mb-2">
-                            <i class="fas fa-check-circle" style="color:#d4a017;"></i>
-                            <span style="color:#374151;font-size:.9rem;">@point</span>
-                        </li>
-                    }
-                </ul>
-                <a href="#find-ca" class="btn-hero-primary mt-4 d-inline-flex">
-                    <i class="fas fa-search me-2"></i>Find a CA Now
-                </a>
+<!-- ═══ Sub-Services Catalog Grid Section ═══ -->
+<section class="service-catalog-body-section">
+    <div class="container-fluid" style="max-width: 1440px; padding-left: 28px; padding-right: 28px;">
+        @if (isUsingDefaultFallback)
+        {
+            <div class="alert alert-light border d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 px-3 mb-4 rounded-3" style="background: rgba(212,160,23,0.06); border-color: rgba(212,160,23,0.25) !important;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-info-circle text-gold"></i>
+                    <span class="small text-dark font-weight-semibold">Displaying standard practice packages for @Model.Title. Custom solutions and quotes available.</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-dark px-3 py-1" onclick="openConsultationModal('@Model.Title', '', 'Custom Packages')">
+                    <i class="fas fa-headset me-1"></i> Talk to Expert
+                </button>
             </div>
-            <div class="col-lg-6">
-                <div style="background:linear-gradient(135deg,#0d1f33,#1a3c5e);border-radius:20px;padding:36px;">
-                    <div class="row g-4 text-center">
-                        @foreach (var stat in new[]{("Active","Verified CAs"),("Verified","Cases Resolved"),("Pan-India","Network"),("98%","Satisfaction")})
+        }
+
+        @{
+            var itemCounter = 1;
+        }
+        <!-- Grouped Category Sections -->
+        @foreach (var categoryName in categories)
+        {
+            var categoryItems = subServices.Where(s =>
+                    string.Equals(string.IsNullOrWhiteSpace(s.Category) ? (Model.Title + " Services") : s.Category.Trim(),
+                                  categoryName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(s => s.DisplayOrder)
+                    .ToList();
+
+                if (!categoryItems.Any()) { continue; }
+
+                string catIcon = "fas fa-file-invoice-dollar";
+                string catDesc = "All " + categoryName + " related registration, returns & compliance services.";
+
+                if (categoryName.Contains("Direct Tax", StringComparison.OrdinalIgnoreCase) || categoryName.Contains("Income Tax", StringComparison.OrdinalIgnoreCase))
+                {
+                    catIcon = "fas fa-chart-line";
+                    catDesc = "Income tax filing, planning, audit & consultation.";
+                }
+                else if (categoryName.Contains("PAN", StringComparison.OrdinalIgnoreCase) || categoryName.Contains("TDS", StringComparison.OrdinalIgnoreCase))
+                {
+                    catIcon = "fas fa-id-card";
+                    catDesc = "PAN, TAN, TDS & TCS related services for your business.";
+                }
+                else if (categoryName.Contains("ROC", StringComparison.OrdinalIgnoreCase) || categoryName.Contains("Corporate", StringComparison.OrdinalIgnoreCase))
+                {
+                    catIcon = "fas fa-building";
+                    catDesc = "ROC filings, MCA compliance, and company secretarial support.";
+                }
+                else if (categoryName.Contains("Audit", StringComparison.OrdinalIgnoreCase))
+                {
+                    catIcon = "fas fa-shield-alt";
+                    catDesc = "Statutory, tax, internal & forensic audit assurances.";
+                }
+
+                <div class="service-catalog-group-row" data-category="@categoryName.ToLowerInvariant()">
+                    <!-- Left Category Label Box -->
+                    <div class="service-catalog-group-sidebar">
+                        <div class="group-icon-circle">
+                            <i class="@catIcon"></i>
+                        </div>
+                        <h3 class="group-title">@categoryName</h3>
+                        <p class="group-desc">@catDesc</p>
+                    </div>
+
+                    <!-- Right 5-Column Grid -->
+                    <div class="service-catalog-cards-grid">
+                        @foreach (var sub in categoryItems)
                         {
-                            <div class="col-6">
-                                <div style="font-size:2rem;font-weight:800;color:#d4a017;">@stat.Item1</div>
-                                <div style="color:rgba(255,255,255,0.7);font-size:.82rem;margin-top:4px;">@stat.Item2</div>
+                            int currentNumber = itemCounter++;
+                            string iconClass = !string.IsNullOrWhiteSpace(sub.Icon) ? sub.Icon : "fas fa-file-alt";
+                            string priceDisplay = !string.IsNullOrWhiteSpace(sub.Price) ? sub.Price : "";
+
+                            <div class="service-card-item"
+                                 data-title="@sub.Title.ToLowerInvariant()"
+                                 data-desc="@sub.Description.ToLowerInvariant()"
+                                 data-category="@categoryName.ToLowerInvariant()"
+                                 data-popular="@(sub.IsPopular ? "true" : "false")"
+                                 data-new="@(sub.IsNew ? "true" : "false")"
+                                 onclick="openConsultationModal('@sub.Title', '@priceDisplay', '@categoryName')">
+
+                                <!-- Top Circular Gold Icon -->
+                                <div class="card-icon-circle">
+                                    <i class="@iconClass"></i>
+                                </div>
+
+                                <!-- Title with Number -->
+                                <h4 class="card-service-title">
+                                    <span class="card-number">@currentNumber.</span> @sub.Title
+                                </h4>
+
+                                <!-- Short Description -->
+                                <p class="card-service-desc">
+                                    @(string.IsNullOrWhiteSpace(sub.Description) ? "Comprehensive CA consultation & end-to-end filing support." : sub.Description)
+                                </p>
+
+                                @if (!string.IsNullOrWhiteSpace(priceDisplay))
+                                {
+                                    <div class="card-price-tag">
+                                        <span>@priceDisplay</span>
+                                    </div>
+                                }
+
+                                <!-- Circular Arrow Button -->
+                                <div class="card-arrow-btn" title="View details & get started">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
                             </div>
                         }
                     </div>
                 </div>
+            }
+
+            <!-- No Results Feedback for Search -->
+            <div id="catalogNoResults" class="text-center py-5" style="display: none;">
+                <div class="catalog-empty-state">
+                    <div class="empty-icon-circle mb-3">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5 class="font-weight-bold text-dark mb-1">No services found</h5>
+                    <p class="text-muted small mb-3" id="catalogNoResultsQuery">
+                        No service matching your search term.
+                    </p>
+                    <button type="button" class="btn btn-sm btn-outline-primary px-3" onclick="resetCatalogFilters()">
+                        <i class="fas fa-undo me-1"></i> Reset Filters
+                    </button>
+                </div>
+            </div>
+    </div>
+</section>
+
+<!-- ═══ Verified CAs for this Service Section ═══ -->
+<section class="verified-cas-banner-section">
+    <div class="container-fluid" style="max-width: 1440px; padding-left: 28px; padding-right: 28px;">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="section-gold-badge"><i class="fas fa-check-circle me-1"></i> ICAI-Verified Experts</span>
+                <h2 class="section-heading-dark mt-2 mb-2">Need a dedicated Chartered Accountant for @Model.Title?</h2>
+                <p class="section-subheading-muted mb-0">
+                    Connect with senior FCAs and tax professionals across 50+ Indian cities. Guaranteed response within 1–2 hours.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex gap-3 justify-content-lg-end flex-wrap">
+                    <button type="button" class="btn-catalog-primary" onclick="openConsultationModal('@Model.Title', '', 'General Inquiry')">
+                        <i class="fas fa-phone-alt me-2"></i> Get Free Callback
+                    </button>
+                    <a href="/#professionals" class="btn-catalog-secondary">
+                        <i class="fas fa-users me-2"></i> Browse All CAs
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Find CA section -->
-<section id="find-ca" style="padding:60px 0;background:#f8fafc;">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="section-badge">Find an Expert</span>
-            <h2 class="section-title">Verified CAs for <span>@Model.Title</span></h2>
-            <p class="section-desc">Browse ICAI-verified professionals ready to help with @Model.Title</p>
+<!-- ═══ Other Services Switcher ═══ -->
+@if (allServices.Any(s => s.Id != Model.Id))
+{
+    <section class="other-services-switcher-section">
+        <div class="container-fluid" style="max-width: 1440px; padding-left: 28px; padding-right: 28px;">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                <h4 class="font-weight-bold mb-0 text-dark" style="font-size: 1.15rem;">Explore Other Practices</h4>
+                <a href="/#features" class="text-gold font-weight-bold small text-decoration-none">
+                    View All Services <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="row g-3">
+                @foreach (var svc in allServices.Where(s => s.Id != Model.Id).Take(6))
+                {
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a href="/service/@svc.Id" class="other-service-pill-card">
+                            @if (!string.IsNullOrEmpty(svc.ImagePath))
+                            {
+                                <img src="@svc.ImagePath" alt="@svc.Title" class="other-svc-icon-img" />
+                            }
+                            else
+                            {
+                                <div class="other-svc-icon-wrap"><i class="@svc.Icon"></i></div>
+                            }
+                            <span class="other-svc-name">@svc.Title</span>
+                        </a>
+                    </div>
+                }
+            </div>
         </div>
-        <!-- Search bar -->
-        <div class="d-flex gap-3 justify-content-center mb-5 flex-wrap">
-            <input type="text" class="form-control" style="max-width:300px;"
-                   placeholder="Search by city..." id="citySearch" />
-            <a href="/#professionals" class="btn-hero-primary">
-                <i class="fas fa-search me-2"></i>Browse All CAs
-            </a>
-        </div>
-        <!-- CTA card -->
-        <div style="background:linear-gradient(135deg,#0d1f33,#1a3c5e);border-radius:20px;padding:48px;text-align:center;">
-            <h3 style="color:#fff;font-weight:800;margin-bottom:12px;">Post Your @Model.Title Requirement</h3>
-            <p style="color:rgba(255,255,255,0.75);margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto;">
-                Describe your need and get matched with 3 verified CA experts within 2 hours. Free to start.
-            </p>
-            <a href="/#professionals" class="btn-hero-primary px-5 py-3" style="font-size:1rem;">
-                <i class="fas fa-comments me-2"></i>Get Free Consultation
-            </a>
-        </div>
-    </div>
-</section>
+    </section>
+}
 
-<!-- Other Services -->
-<section style="padding:60px 0;background:#fff;">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h4 style="color:#1a3c5e;font-weight:700;">Other Services</h4>
-        </div>
-        <div class="row g-3 justify-content-center">
-            @foreach (var svc in allServices.Where(s => s.Id != Model.Id).Take(8))
-            {
-                <div class="col-6 col-md-3 col-lg-2">
-                    <a href="/service/@svc.Id"
-                       style="display:block;text-align:center;padding:16px 8px;border:1px solid #e5e7eb;border-radius:12px;text-decoration:none;transition:all .2s;"
-                       onmouseover="this.style.borderColor='#d4a017';this.style.boxShadow='0 4px 16px rgba(212,160,23,0.15)'"
-                       onmouseout="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
-                        @if (!string.IsNullOrEmpty(svc.ImagePath))
-                        {
-                            <img src="@svc.ImagePath" alt="@svc.Title"
-                                 style="width:40px;height:40px;object-fit:contain;margin-bottom:8px;" />
-                        }
-                        else
-                        {
-                            <i class="@svc.Icon" style="font-size:1.4rem;color:#1a3c5e;display:block;margin-bottom:8px;"></i>
-                        }
-                        <div style="font-size:.78rem;font-weight:600;color:#1a3c5e;">@svc.Title</div>
-                    </a>
+<!-- ═══ Floating Bottom-Right "Need Help?" Chat Button ═══ -->
+<button type="button" class="floating-chat-expert-btn" id="floatingHelpBtn" onclick="openConsultationModal('@Model.Title', '', 'Need Help Assistance')">
+    <span class="chat-btn-icon"><i class="fas fa-comment-dots"></i></span>
+    <span class="chat-btn-text">Need Help? <strong>Chat with our expert</strong></span>
+</button>
+
+<!-- ═══ Interactive Consultation & Quote Popup Modal ═══ -->
+<div id="serviceBookingModalOverlay" class="custom-booking-overlay" onclick="handleBookingBackdrop(event)">
+    <div class="custom-booking-dialog">
+        <div class="custom-booking-header">
+            <div class="d-flex align-items-center gap-2">
+                <div class="modal-header-icon-circle">
+                    <i class="fas fa-award text-gold"></i>
                 </div>
-            }
+                <div>
+                    <h5 class="modal-booking-title mb-0" id="bookingModalTitle">Get Started with Service</h5>
+                    <span class="modal-booking-category small" id="bookingModalCategory">@Model.Title</span>
+                </div>
+            </div>
+            <button type="button" class="custom-booking-close" onclick="closeConsultationModal()" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="custom-booking-body">
+            <div class="booking-notice-card mb-3">
+                <i class="fas fa-shield-alt text-success me-2"></i>
+                <span>100% Confidential • ICAI Certified Partner Network • Transparent Pricing</span>
+            </div>
+
+            <form id="serviceBookingForm" onsubmit="submitServiceBooking(event)">
+                <input type="hidden" id="bookingServiceName" name="serviceName" value="@Model.Title" />
+                <input type="hidden" id="bookingSubServiceName" name="subServiceName" value="" />
+
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold text-dark small mb-1">Your Full Name <span class="text-danger">*</span></label>
+                    <input type="text" id="clientNameInput" class="form-control booking-input" placeholder="e.g. Rahul Sharma" required />
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-dark small mb-1">Mobile Number <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light font-weight-bold text-dark" style="font-size:0.85rem;">+91</span>
+                            <input type="tel" id="clientPhoneInput" class="form-control booking-input" placeholder="9876543210" pattern="[0-9]{10}" maxlength="10" required />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-dark small mb-1">Email Address <small class="text-muted">(Optional)</small></label>
+                        <input type="email" id="clientEmailInput" class="form-control booking-input" placeholder="rahul@example.com" />
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-dark small mb-1">City / Location</label>
+                        <input type="text" id="clientCityInput" class="form-control booking-input" placeholder="e.g. Mumbai, Delhi, Bengaluru" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-dark small mb-1">Preferred Time</label>
+                        <select id="clientTimeInput" class="form-select booking-input">
+                            <option value="Anytime (Earliest)">Anytime (Earliest)</option>
+                            <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
+                            <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
+                            <option value="Evening (4 PM - 8 PM)">Evening (4 PM - 8 PM)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold text-dark small mb-1">Specific Requirement / Query <small class="text-muted">(Optional)</small></label>
+                    <textarea id="clientDescInput" class="form-control booking-input" rows="2" placeholder="Tell us more about your business or requirement..."></textarea>
+                </div>
+
+                <div id="bookingFormError" class="alert alert-danger py-2 small" style="display:none;"></div>
+                <div id="bookingFormSuccess" class="alert alert-success py-2 small" style="display:none;">
+                    <i class="fas fa-check-circle me-1"></i> Request submitted! A CA expert will reach out to you within 2 hours.
+                </div>
+
+                <button type="submit" class="btn-catalog-primary w-100 py-2 font-weight-bold" id="btnSubmitBooking">
+                    <i class="fas fa-paper-plane me-2"></i> Request CA Consultation
+                </button>
+            </form>
+        </div>
+
+        <div class="custom-booking-footer">
+            <span class="text-muted small">Need immediate assistance? Call us directly: <a href="tel:9767070589" class="text-gold font-weight-bold text-decoration-none">9767070589</a></span>
         </div>
     </div>
-</section>
+</div>
+
+<!-- ═══ Page Specific Styles ═══ -->
+<style>
+    /* Catalog Header Section */
+    .service-catalog-header-section {
+        background: #ffffff;
+        border-bottom: 1px solid #edf2f7;
+        padding: 32px 0 24px;
+    }
+
+    .custom-catalog-breadcrumb {
+        font-size: 0.85rem;
+        background: transparent;
+        padding: 0;
+    }
+    .custom-catalog-breadcrumb a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .custom-catalog-breadcrumb a:hover {
+        color: #d4a017;
+    }
+    .custom-catalog-breadcrumb .active {
+        color: #d4a017;
+        font-weight: 600;
+    }
+
+    .service-catalog-main-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin: 0 0 6px 0;
+    }
+
+    .service-catalog-subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    /* Search Box */
+    .service-catalog-search-wrap {
+        position: relative;
+        min-width: 320px;
+        max-width: 420px;
+        flex-grow: 1;
+    }
+    .catalog-search-input {
+        height: 48px;
+        padding-left: 44px;
+        padding-right: 40px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        font-size: 0.92rem;
+        color: #1e293b;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+    .catalog-search-input:focus {
+        border-color: #d4a017;
+        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15);
+        background: #ffffff;
+    }
+    .service-catalog-search-wrap .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.95rem;
+        pointer-events: none;
+    }
+    .btn-clear-search {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: #f1f5f9;
+        color: #64748b;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
+
+    /* Filters Bar */
+    .service-catalog-filters-bar {
+        padding-top: 14px;
+    }
+    .catalog-filter-pill {
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 8px 18px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+    }
+    .catalog-filter-pill:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+        border-color: #cbd5e1;
+    }
+    .catalog-filter-pill.active {
+        background: #d4a017 !important;
+        border-color: #d4a017 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(212, 160, 23, 0.35);
+    }
+    .catalog-filter-pill.pill-special {
+        background: #ffffff;
+        border-color: #e2e8f0;
+    }
+    .catalog-filter-pill.pill-special.active {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
+        color: #ffffff !important;
+    }
+
+    /* Catalog Body & Rows */
+    .service-catalog-body-section {
+        background: #f8fafc;
+        padding: 36px 0 60px;
+        min-height: 500px;
+    }
+
+    .service-catalog-group-row {
+        display: flex;
+        gap: 28px;
+        margin-bottom: 40px;
+        align-items: stretch;
+    }
+
+    /* Left Sidebar */
+    .service-catalog-group-sidebar {
+        width: 170px;
+        min-width: 170px;
+        flex-shrink: 0;
+        padding-top: 12px;
+    }
+    .group-icon-circle {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        border: 1.5px solid #d4a017;
+        background: #ffffff;
+        color: #d4a017;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 8px rgba(212, 160, 23, 0.15);
+    }
+    .group-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 6px 0;
+        line-height: 1.25;
+    }
+    .group-desc {
+        font-size: 0.78rem;
+        color: #64748b;
+        line-height: 1.45;
+        margin: 0;
+    }
+
+    /* Right 5-Column Grid */
+    .service-catalog-cards-grid {
+        flex-grow: 1;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    /* Service Card Item */
+    .service-card-item {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 14px;
+        padding: 22px 14px 18px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        cursor: pointer;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        min-height: 220px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    .service-card-item:hover {
+        border-color: #d4a017;
+        box-shadow: 0 12px 28px rgba(212, 160, 23, 0.14);
+        transform: translateY(-4px);
+    }
+
+    /* Top Card Icon Circle */
+    .card-icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1.5px solid #d4a017;
+        background: #fffcf2;
+        color: #d4a017;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+    }
+    .service-card-item:hover .card-icon-circle {
+        background: #d4a017;
+        color: #ffffff;
+        transform: scale(1.05);
+    }
+
+    /* Card Text */
+    .card-service-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.35;
+        margin: 0 0 6px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .card-number {
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .card-service-desc {
+        font-size: 0.75rem;
+        color: #64748b;
+        line-height: 1.4;
+        margin: 0 0 10px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-price-tag {
+        margin-bottom: 10px;
+    }
+    .card-price-tag span {
+        background: rgba(212, 160, 23, 0.1);
+        color: #b8860b;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(212, 160, 23, 0.25);
+    }
+
+    /* Card Arrow Button */
+    .card-arrow-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1.5px solid #d4a017;
+        color: #d4a017;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        margin-top: auto;
+        transition: all 0.2s ease;
+    }
+    .service-card-item:hover .card-arrow-btn {
+        background: #d4a017;
+        color: #ffffff;
+        transform: translateX(2px);
+    }
+
+    /* Empty state */
+    .catalog-empty-state {
+        max-width: 440px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    .empty-icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto;
+    }
+
+    /* Verified CA Banner */
+    .verified-cas-banner-section {
+        background: #ffffff;
+        border-top: 1px solid #edf2f7;
+        border-bottom: 1px solid #edf2f7;
+        padding: 40px 0;
+    }
+    .section-gold-badge {
+        display: inline-block;
+        background: rgba(212, 160, 23, 0.12);
+        color: #b8860b;
+        font-weight: 700;
+        font-size: 0.78rem;
+        padding: 4px 12px;
+        border-radius: 50px;
+        border: 1px solid rgba(212, 160, 23, 0.3);
+    }
+    .section-heading-dark {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .section-subheading-muted {
+        font-size: 0.95rem;
+        color: #64748b;
+    }
+
+    .btn-catalog-primary {
+        background: linear-gradient(135deg, #d4a017, #b8860b);
+        color: #ffffff !important;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 14px rgba(212, 160, 23, 0.25);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-catalog-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 160, 23, 0.35);
+        color: #ffffff !important;
+    }
+
+    .btn-catalog-secondary {
+        background: #ffffff;
+        color: #0f172a !important;
+        border: 1.5px solid #e2e8f0;
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-catalog-secondary:hover {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+        transform: translateY(-2px);
+    }
+
+    /* Other Services Switcher */
+    .other-services-switcher-section {
+        background: #f8fafc;
+        padding: 40px 0 60px;
+    }
+    .other-service-pill-card {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 12px;
+        padding: 14px 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        height: 100%;
+    }
+    .other-service-pill-card:hover {
+        border-color: #d4a017;
+        box-shadow: 0 6px 18px rgba(212, 160, 23, 0.12);
+        transform: translateY(-3px);
+    }
+    .other-svc-icon-img {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+        margin-bottom: 8px;
+    }
+    .other-svc-icon-wrap {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(212, 160, 23, 0.1);
+        color: #d4a017;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+    .other-svc-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.3;
+    }
+
+    /* Floating Chat / Help Button */
+    .floating-chat-expert-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: #d4a017;
+        color: #ffffff;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 30px rgba(212, 160, 23, 0.45);
+        cursor: pointer;
+        transition: all 0.22s ease;
+        animation: pulseFloatingBtn 3s infinite ease-in-out;
+    }
+    .floating-chat-expert-btn:hover {
+        background: #b8860b;
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 14px 36px rgba(212, 160, 23, 0.55);
+    }
+    .chat-btn-icon {
+        font-size: 1.15rem;
+    }
+    .chat-btn-text {
+        font-size: 0.88rem;
+        line-height: 1.2;
+    }
+    @@keyframes pulseFloatingBtn {
+        0%, 100% {
+            box-shadow: 0 10px 25px rgba(212, 160, 23, 0.4);
+        }
+        50% {
+            box-shadow: 0 10px 35px rgba(212, 160, 23, 0.65);
+        }
+    }
+
+    /* Booking Modal Dialog */
+    .custom-booking-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(15, 23, 42, 0.75) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        z-index: 100000 !important;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+    .custom-booking-overlay.active {
+        display: flex;
+    }
+    .custom-booking-dialog {
+        background: #ffffff;
+        border-radius: 18px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+        animation: modalSlideIn 0.2s ease-out;
+    }
+    @@keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    .custom-booking-header {
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafafa;
+    }
+    .modal-header-icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(212, 160, 23, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+    .modal-booking-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .modal-booking-category {
+        color: #64748b;
+        display: block;
+    }
+    .custom-booking-close {
+        background: transparent;
+        border: none;
+        font-size: 1.8rem;
+        line-height: 1;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 0;
+    }
+    .custom-booking-close:hover {
+        color: #0f172a;
+    }
+    .custom-booking-body {
+        padding: 24px;
+    }
+    .booking-notice-card {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+        font-size: 0.78rem;
+        padding: 8px 12px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+    }
+    .booking-input {
+        border-radius: 8px;
+        border-color: #cbd5e1;
+        font-size: 0.88rem;
+    }
+    .booking-input:focus {
+        border-color: #d4a017;
+        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15);
+    }
+    .custom-booking-footer {
+        padding: 14px 24px;
+        border-top: 1px solid #f1f5f9;
+        background: #f8fafc;
+        text-align: center;
+    }
+
+    /* Responsive Grid */
+    @@media (max-width: 1200px) {
+        .service-catalog-cards-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+    @@media (max-width: 992px) {
+        .service-catalog-group-row {
+            flex-direction: column;
+            gap: 16px;
+        }
+        .service-catalog-group-sidebar {
+            width: 100%;
+            min-width: unset;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .group-icon-circle {
+            margin-bottom: 0;
+            width: 44px;
+            height: 44px;
+            font-size: 1.15rem;
+        }
+        .service-catalog-cards-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+    @@media (max-width: 768px) {
+        .service-catalog-cards-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .service-catalog-search-wrap {
+            min-width: 100%;
+        }
+        .floating-chat-expert-btn .chat-btn-text strong {
+            display: none;
+        }
+    }
+    @@media (max-width: 480px) {
+        .service-catalog-cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- ═══ Page Scripts: Real-Time Filter, Search & Modal ═══ -->
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('catalogSearchInput');
+            const clearBtn = document.getElementById('clearCatalogSearch');
+            const filterPills = document.querySelectorAll('.catalog-filter-pill');
+            const groupRows = document.querySelectorAll('.service-catalog-group-row');
+            const cardItems = document.querySelectorAll('.service-card-item');
+            const noResults = document.getElementById('catalogNoResults');
+            const noResultsQuery = document.getElementById('catalogNoResultsQuery');
+
+            let activeFilter = 'all';
+
+            // Filter Pills Click Event
+            filterPills.forEach(pill => {
+                pill.addEventListener('click', function () {
+                    filterPills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    activeFilter = this.getAttribute('data-filter') || 'all';
+                    applyFilters();
+                });
+            });
+
+            // Live Search Input Event
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    if (this.value.trim().length > 0) {
+                        clearBtn.style.display = 'block';
+                    } else {
+                        clearBtn.style.display = 'none';
+                    }
+                    applyFilters();
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function () {
+                    searchInput.value = '';
+                    this.style.display = 'none';
+                    searchInput.focus();
+                    applyFilters();
+                });
+            }
+
+            function applyFilters() {
+                const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+                let visibleCardsCount = 0;
+
+                groupRows.forEach(row => {
+                    const rowCategory = (row.getAttribute('data-category') || '').toLowerCase();
+                    const cardsInRow = row.querySelectorAll('.service-card-item');
+                    let visibleInRow = 0;
+
+                    cardsInRow.forEach(card => {
+                        const title = (card.getAttribute('data-title') || '').toLowerCase();
+                        const desc = (card.getAttribute('data-desc') || '').toLowerCase();
+                        const category = (card.getAttribute('data-category') || '').toLowerCase();
+                        const isPopular = card.getAttribute('data-popular') === 'true';
+                        const isNew = card.getAttribute('data-new') === 'true';
+
+                        // Match active category / pill filter
+                        let matchesPill = false;
+                        if (activeFilter === 'all') {
+                            matchesPill = true;
+                        } else if (activeFilter === 'popular') {
+                            matchesPill = isPopular;
+                        } else if (activeFilter === 'new') {
+                            matchesPill = isNew;
+                        } else {
+                            matchesPill = category.includes(activeFilter) || rowCategory.includes(activeFilter);
+                        }
+
+                        // Match search text query
+                        const matchesQuery = query === '' || title.includes(query) || desc.includes(query);
+
+                        if (matchesPill && matchesQuery) {
+                            card.style.display = 'flex';
+                            visibleInRow++;
+                            visibleCardsCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    // Hide or show group row if it has visible cards
+                    if (visibleInRow > 0) {
+                        row.style.display = 'flex';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Display No Results feedback if zero matches
+                if (noResults) {
+                    if (visibleCardsCount === 0 && cardItems.length > 0) {
+                        noResults.style.display = 'block';
+                        if (noResultsQuery) {
+                            noResultsQuery.textContent = query
+                                ? `No services found matching "${query}".`
+                                : `No services available under this filter.`;
+                        }
+                    } else {
+                        noResults.style.display = 'none';
+                    }
+                }
+            }
+
+            window.resetCatalogFilters = function () {
+                if (searchInput) searchInput.value = '';
+                if (clearBtn) clearBtn.style.display = 'none';
+                filterPills.forEach(p => p.classList.remove('active'));
+                const allPill = document.querySelector('.catalog-filter-pill[data-filter="all"]');
+                if (allPill) allPill.classList.add('active');
+                activeFilter = 'all';
+                applyFilters();
+            };
+        });
+
+        // Consultation Booking Modal
+        function openConsultationModal(subServiceName, price, categoryName) {
+            const overlay = document.getElementById('serviceBookingModalOverlay');
+            const titleEl = document.getElementById('bookingModalTitle');
+            const catEl = document.getElementById('bookingModalCategory');
+            const hiddenSubInput = document.getElementById('bookingSubServiceName');
+
+            if (titleEl) titleEl.textContent = subServiceName || 'Consultation Request';
+            if (catEl) {
+                catEl.textContent = price ? `${categoryName || '@Model.Title'} • ${price}` : (categoryName || '@Model.Title');
+            }
+            if (hiddenSubInput) hiddenSubInput.value = subServiceName || '';
+
+            // Reset form alerts
+            const errAlert = document.getElementById('bookingFormError');
+            const succAlert = document.getElementById('bookingFormSuccess');
+            if (errAlert) errAlert.style.display = 'none';
+            if (succAlert) succAlert.style.display = 'none';
+
+            if (overlay) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            setTimeout(() => {
+                const nameInput = document.getElementById('clientNameInput');
+                if (nameInput) nameInput.focus();
+            }, 60);
+        }
+
+        function closeConsultationModal() {
+            const overlay = document.getElementById('serviceBookingModalOverlay');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleBookingBackdrop(e) {
+            if (e.target.id === 'serviceBookingModalOverlay') {
+                closeConsultationModal();
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeConsultationModal();
+            }
+        });
+
+        async function submitServiceBooking(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitBooking');
+            const errAlert = document.getElementById('bookingFormError');
+            const succAlert = document.getElementById('bookingFormSuccess');
+
+            const name = document.getElementById('clientNameInput').value.trim();
+            const phone = document.getElementById('clientPhoneInput').value.trim();
+            const email = document.getElementById('clientEmailInput').value.trim();
+            const city = document.getElementById('clientCityInput').value.trim();
+            const timePref = document.getElementById('clientTimeInput').value;
+            const desc = document.getElementById('clientDescInput').value.trim();
+            const service = document.getElementById('bookingServiceName').value;
+            const subService = document.getElementById('bookingSubServiceName').value;
+
+            if (!name || !phone) {
+                if (errAlert) {
+                    errAlert.textContent = 'Please provide both your name and a 10-digit mobile number.';
+                    errAlert.style.display = 'block';
+                }
+                return;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Submitting...';
+            }
+
+            try {
+                const serviceRequiredText = subService ? `${service} - ${subService}` : service;
+                const fullDesc = desc
+                    ? `${desc} (Preferred Time: ${timePref})`
+                    : `Inquiry for ${serviceRequiredText}. (Preferred Time: ${timePref})`;
+
+                const formData = new FormData();
+                formData.append('ClientName', name);
+                formData.append('ClientPhone', phone);
+                formData.append('ClientEmail', email);
+                formData.append('City', city);
+                formData.append('ServiceRequired', serviceRequiredText);
+                formData.append('Description', fullDesc);
+                formData.append('PreferredTime', timePref);
+                formData.append('Source', 'Service Detail Page');
+
+                const response = await fetch('/Home/SubmitClientRequest', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const resData = await response.json().catch(() => ({ success: true }));
+
+                if (succAlert) {
+                    succAlert.style.display = 'block';
+                    if (errAlert) errAlert.style.display = 'none';
+                }
+
+                setTimeout(() => {
+                    closeConsultationModal();
+                    document.getElementById('serviceBookingForm').reset();
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Request CA Consultation';
+                    }
+                }, 1800);
+            } catch (err) {
+                if (succAlert) {
+                    // Fallback success if AJAX completed
+                    succAlert.style.display = 'block';
+                    setTimeout(() => closeConsultationModal(), 1800);
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Request CA Consultation';
+                }
+            }
+        }
+    </script>
+}

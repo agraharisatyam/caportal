@@ -24,7 +24,9 @@ namespace caportal.Controllers
         public async Task<IActionResult> Detail(int id)
         {
             using var db = _dbFactory.CreateDbContext();
-            var service = await db.CoveredServices.FindAsync(id);
+            var service = await db.CoveredServices
+                .Include(s => s.SubServices)
+                .FirstOrDefaultAsync(s => s.Id == id);
             if (service == null) return RedirectToAction("Index", "Home");
 
             ViewBag.Settings    = _settingsService.Get();

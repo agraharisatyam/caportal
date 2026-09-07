@@ -1,6 +1,20 @@
 @model caportal.Models.Entities.CoveredService
 @{
     ViewData["Title"] = "Edit Service — " + Model.Title;
+    var initialSubServices = (Model.SubServices ?? Enumerable.Empty<caportal.Models.Entities.SubService>())
+        .OrderBy(s => s.DisplayOrder)
+        .Select(s => new {
+            id = s.Id,
+            title = s.Title,
+            description = s.Description,
+            price = s.Price,
+            category = s.Category,
+            icon = s.Icon,
+            isPopular = s.IsPopular,
+            isNew = s.IsNew,
+            displayOrder = s.DisplayOrder,
+            isActive = s.IsActive
+        }).ToList();
 }
 
 <div class="page-header mb-4">
@@ -8,11 +22,16 @@
         <div class="flex items-start justify-between flex-wrap gap-3 mb-2">
             <div>
                 <h4 class="mb-0 font-weight-bold text-black flex items-center"><i data-feather="edit-3" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> <span>Edit Service: @Model.Title</span></h4>
-                <span class="text-muted small">Update service details, order, and graphic assets</span>
+                <span class="text-muted small">Update service details, offerings, order, and graphic assets</span>
             </div>
-            <a href="/Admin/Services" class="btn btn-outline-secondary btn-sm flex items-center gap-1">
-                <i data-feather="arrow-left" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Back to Services List
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/service/@Model.Id" target="_blank" class="btn btn-outline-warning btn-sm flex items-center gap-1" title="View live public page">
+                    <i data-feather="external-link" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> View Live Page ↗
+                </a>
+                <a href="/Admin/Services" class="btn btn-outline-secondary btn-sm flex items-center gap-1">
+                    <i data-feather="arrow-left" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Back to Services List
+                </a>
+            </div>
         </div>
         <ul class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="/ajs">Admin Home</a></li>
@@ -22,19 +41,21 @@
     </div>
 </div>
 
-<div class="grid grid-cols-12 gap-x-6 gap-y-4">
-    <div class="col-span-12 lg:col-span-8 lg:col-start-3">
-        <div class="card" style="border-top: 4px solid #d4a017;">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="mb-0 text-gold flex items-center"><i data-feather="grid" class="me-2" style="display: inline-block !important; vertical-align: middle;"></i> <span>Edit Service Details</span></h5>
-                <span class="badge bg-dark border text-muted">ID #@Model.Id</span>
-            </div>
-            <div class="card-body">
-                <form method="post" action="/Admin/Services/Edit/@Model.Id" enctype="multipart/form-data">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <input type="hidden" name="existingImagePath" value="@Model.ImagePath" />
+<form method="post" action="/Admin/Services/Edit/@Model.Id" enctype="multipart/form-data" id="serviceForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="hidden" name="existingImagePath" value="@Model.ImagePath" />
+    <input type="hidden" id="subServicesJson" name="subServicesJson" value="[]" />
 
+    <div class="grid grid-cols-12 gap-x-6 gap-y-4">
+        <!-- Service Main Info Card -->
+        <div class="col-span-12 lg:col-span-10 lg:col-start-2">
+            <div class="card mb-4" style="border-top: 4px solid #d4a017;">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 text-gold flex items-center"><i data-feather="grid" class="me-2" style="display: inline-block !important; vertical-align: middle;"></i> <span>Edit Service Details</span></h5>
+                    <span class="badge bg-dark border text-muted">ID #@Model.Id</span>
+                </div>
+                <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label font-weight-bold">Service Title <span class="text-danger">*</span></label>
                         <input type="text" name="title" class="form-control" value="@Model.Title" required />
@@ -56,7 +77,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <label class="form-label font-weight-bold">Current Graphic / Icon</label>
                         @if (!string.IsNullOrEmpty(Model.ImagePath))
                         {
@@ -74,17 +95,602 @@
                         }
                         <input type="file" name="imageFile" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp" />
                     </div>
+                </div>
+            </div>
 
-                    <hr class="my-4" style="border-top: 1px solid var(--pc-border-color, #e5e7eb);" />
-
-                    <div class="flex items-center justify-end gap-2">
-                        <a href="/Admin/Services" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-5 flex items-center gap-1">
-                            <i data-feather="save" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Update Service
-                        </button>
+            <!-- Sub-Services Card -->
+            <div class="card mb-4" style="border-top: 4px solid #1a3c5e;">
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h5 class="mb-0 font-weight-bold flex items-center sub-service-card-title">
+                            <i data-feather="layers" class="me-2 text-gold" style="display: inline-block !important; vertical-align: middle;"></i>
+                            <span>Sub-Services</span>
+                            <span class="badge bg-primary ms-2" id="subServiceCountBadge">0</span>
+                        </h5>
+                        <small class="text-muted">Specific offerings, registration types, or packages under this service</small>
                     </div>
-                </form>
+                    <button type="button" class="btn btn-primary btn-sm flex items-center gap-1" onclick="openAddSubServiceModal()">
+                        <i data-feather="plus" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Add Sub-Service
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="subServicesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:70px;" class="text-center">Order</th>
+                                    <th style="width:230px;">Sub-Service Title</th>
+                                    <th>Description</th>
+                                    <th style="width:130px;">Price / Fee</th>
+                                    <th style="width:100px;" class="text-center">Status</th>
+                                    <th style="width:110px;" class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subServicesTableBody">
+                                <!-- Populated dynamically by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="card">
+                <div class="card-body py-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="text-muted small">All changes to service details and sub-services will be saved together.</span>
+                        <div class="flex items-center gap-2">
+                            <a href="/Admin/Services" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 flex items-center gap-1">
+                                <i data-feather="save" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Update Service
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</form>
+
+<!-- Custom Popup Modal: Add / Edit Sub-Service -->
+<div id="subServiceModalOverlay" class="custom-modal-overlay" onclick="handleBackdropClick(event)">
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-header">
+            <h5 class="custom-modal-title" id="subServiceModalTitle">
+                <i data-feather="layers" class="me-2 text-gold" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"></i>
+                <span>Add Sub-Service</span>
+            </h5>
+            <button type="button" class="custom-modal-close" onclick="closeSubServiceModal()" aria-label="Close">&times;</button>
+        </div>
+        <div class="custom-modal-body">
+            <input type="hidden" id="modalSubIndex" value="-1" />
+            <input type="hidden" id="modalSubId" value="0" />
+
+            <div class="mb-3">
+                <label class="form-label font-weight-bold text-white">Sub-Service Title <span class="text-danger">*</span></label>
+                <input type="text" id="modalSubTitle" class="form-control" placeholder="e.g. Sole Proprietorship GST Registration" autocomplete="off" />
+                <div id="modalTitleError" class="text-danger text-xs mt-1" style="display:none;">Please enter a title for the sub-service.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label font-weight-bold text-white">Short Description <small class="text-muted">(Optional)</small></label>
+                <textarea id="modalSubDesc" class="form-control" rows="3" placeholder="Key deliverables, documentation support, or inclusions..."></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label font-weight-bold text-white">Category / Group <small class="text-muted">(Optional, e.g. GST Services, Direct Tax Services)</small></label>
+                <input type="text" id="modalSubCategory" class="form-control" list="categoryOptions" placeholder="e.g. GST Services" autocomplete="off" />
+                <datalist id="categoryOptions">
+                    <option value="GST Services" />
+                    <option value="Direct Tax Services" />
+                    <option value="PAN / TAN / TDS Services" />
+                    <option value="ROC & Corporate Compliance" />
+                    <option value="Audit & Assurance" />
+                </datalist>
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-4 gap-y-3 mb-3">
+                <div class="col-span-12 md:col-span-6">
+                    <label class="form-label font-weight-bold text-white">Price / Fee <small class="text-muted">(Optional)</small></label>
+                    <input type="text" id="modalSubPrice" class="form-control" placeholder="e.g. ₹1,499 or Starting ₹999" />
+                </div>
+                <div class="col-span-12 md:col-span-6">
+                    <label class="form-label font-weight-bold text-white">Display Order</label>
+                    <input type="number" id="modalSubOrder" class="form-control" value="1" min="1" max="999" />
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4 mt-2 flex-wrap">
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="modalSubActive" checked />
+                    <label class="form-check-label ms-1 text-white small" for="modalSubActive">Active</label>
+                </div>
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="modalSubPopular" />
+                    <label class="form-check-label ms-1 text-white small" for="modalSubPopular">Mark Popular</label>
+                </div>
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="modalSubNew" />
+                    <label class="form-check-label ms-1 text-white small" for="modalSubNew">Mark New</label>
+                </div>
+            </div>
+        </div>
+        <div class="custom-modal-footer">
+            <button type="button" class="btn btn-outline-secondary px-3" onclick="closeSubServiceModal()">Cancel</button>
+            <button type="button" class="btn btn-primary px-4 flex items-center gap-1" id="btnSaveSubServiceItem">
+                <i data-feather="check" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> <span id="modalSaveBtnText">Add Sub-Service</span>
+            </button>
+        </div>
+    </div>
 </div>
+
+<style>
+    .custom-modal-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(8, 15, 26, 0.75) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        z-index: 99999 !important;
+        display: none !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+        box-sizing: border-box !important;
+    }
+    .custom-modal-overlay.active {
+        display: flex !important;
+    }
+    .custom-modal-dialog {
+        background: #17212b !important;
+        border: 1px solid rgba(212, 160, 23, 0.4) !important;
+        border-top: 4px solid #d4a017 !important;
+        border-radius: 14px !important;
+        width: 100% !important;
+        max-width: 560px !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+        overflow: hidden !important;
+        animation: modalSlideDown 0.2s ease-out !important;
+    }
+    @@keyframes modalSlideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    .custom-modal-header {
+        padding: 16px 22px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(0, 0, 0, 0.15) !important;
+    }
+    .custom-modal-title {
+        margin: 0 !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        color: #d4a017 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    .custom-modal-close {
+        background: transparent !important;
+        border: none !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        font-size: 1.8rem !important;
+        line-height: 1 !important;
+        cursor: pointer !important;
+        padding: 0 4px !important;
+        transition: color 0.15s !important;
+    }
+    .custom-modal-close:hover {
+        color: #fff !important;
+    }
+    .custom-modal-body {
+        padding: 22px !important;
+        max-height: calc(85vh - 140px) !important;
+        overflow-y: auto !important;
+    }
+    .custom-modal-footer {
+        padding: 14px 22px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 10px !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(0, 0, 0, 0.15) !important;
+    }
+    .sub-service-card-title {
+        color: #111827 !important;
+        font-weight: 700 !important;
+    }
+    html[data-pc-theme="dark"] .sub-service-card-title {
+        color: #ffffff !important;
+    }
+    .sub-service-table-title {
+        color: #111827 !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        line-height: 1.4 !important;
+        display: block !important;
+    }
+    html[data-pc-theme="dark"] .sub-service-table-title {
+        color: #f8fafc !important;
+    }
+    .sub-service-table-desc {
+        color: #4b5563 !important;
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+        display: block !important;
+    }
+    html[data-pc-theme="dark"] .sub-service-table-desc {
+        color: #94a3b8 !important;
+    }
+    .sub-service-empty-title {
+        color: #111827 !important;
+    }
+    html[data-pc-theme="dark"] .sub-service-empty-title {
+        color: #ffffff !important;
+    }
+    #subServiceModalOverlay .form-control {
+        background-color: #0e1724 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+    }
+    #subServiceModalOverlay .form-control:focus {
+        border-color: #d4a017 !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 160, 23, 0.25) !important;
+    }
+    #subServiceModalOverlay .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let subServicesList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(initialSubServices));
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderSubServicesTable() {
+            const tbody = document.getElementById('subServicesTableBody');
+            const badge = document.getElementById('subServiceCountBadge');
+            const jsonInput = document.getElementById('subServicesJson');
+
+            if (badge) badge.textContent = subServicesList.length;
+            if (jsonInput) jsonInput.value = JSON.stringify(subServicesList);
+
+            if (subServicesList.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <div style="max-width:340px;margin:0 auto;">
+                                <i data-feather="layers" style="width:36px;height:36px;opacity:0.35;margin-bottom:10px;"></i>
+                                <h6 class="sub-service-empty-title font-weight-bold mb-1">No sub-services added yet</h6>
+                                <p class="text-xs text-muted mb-3">Add specific sub-services or packages to break down what is covered under this service offering.</p>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openAddSubServiceModal()">
+                                    <i data-feather="plus" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> Add First Sub-Service
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                subServicesList.sort((a, b) => {
+                    const orderA = parseInt(a.displayOrder !== undefined ? a.displayOrder : a.DisplayOrder) || 0;
+                    const orderB = parseInt(b.displayOrder !== undefined ? b.displayOrder : b.DisplayOrder) || 0;
+                    return orderA - orderB;
+                });
+
+                let html = '';
+                subServicesList.forEach((sub, idx) => {
+                    const itemTitle = (sub.title || sub.Title || '').trim();
+                    const itemDesc = (sub.description || sub.Description || '').trim();
+                    const itemPrice = (sub.price || sub.Price || '').trim();
+                    const itemCategory = (sub.category || sub.Category || '').trim();
+                    const itemOrder = parseInt(sub.displayOrder !== undefined ? sub.displayOrder : sub.DisplayOrder) || (idx + 1);
+                    const itemActive = sub.isActive !== undefined ? sub.isActive : (sub.IsActive !== false);
+                    const isPopular = sub.isPopular !== undefined ? sub.isPopular : (sub.IsPopular === true);
+                    const isNew = sub.isNew !== undefined ? sub.isNew : (sub.IsNew === true);
+                    const itemId = sub.id || sub.Id || 0;
+
+                    const statusBadge = itemActive
+                        ? '<span class="badge bg-success-subtle text-success border border-success-subtle font-weight-bold">Active</span>'
+                        : '<span class="badge bg-secondary-subtle text-muted border">Inactive</span>';
+                    const priceHtml = itemPrice
+                        ? `<span class="badge" style="background:rgba(212,160,23,0.12);color:#b8860b;border:1px solid rgba(212,160,23,0.35);font-size:0.85rem;font-weight:700;">${escapeHtml(itemPrice)}</span>`
+                        : '<span class="text-muted small">—</span>';
+                    const catBadge = itemCategory
+                        ? `<span class="badge bg-primary-subtle text-primary border me-1" style="font-size:0.75rem;">${escapeHtml(itemCategory)}</span>`
+                        : '';
+                    const popBadge = isPopular
+                        ? '<span class="badge bg-warning-subtle text-warning border border-warning-subtle me-1" style="font-size:0.72rem;">★ Popular</span>'
+                        : '';
+                    const newBadge = isNew
+                        ? '<span class="badge bg-info-subtle text-info border border-info-subtle me-1" style="font-size:0.72rem;">✨ New</span>'
+                        : '';
+
+                    html += `
+                        <tr>
+                            <td class="text-center"><span class="badge bg-light text-dark border font-weight-bold">${itemOrder}</span></td>
+                            <td>
+                                <strong class="sub-service-table-title">${escapeHtml(itemTitle || 'Untitled Sub-Service')}</strong>
+                                <div class="mt-1 d-flex gap-1 flex-wrap align-items-center">
+                                    ${catBadge}${popBadge}${newBadge}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="sub-service-table-desc">${escapeHtml(itemDesc || '—')}</span>
+                            </td>
+                            <td>${priceHtml}</td>
+                            <td class="text-center">${statusBadge}</td>
+                            <td class="text-center">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" title="Edit Sub-Service" onclick="editSubService(${idx})">
+                                        <i data-feather="edit-2" style="width:13px;height:13px;"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Remove Sub-Service" onclick="deleteSubService(${idx})">
+                                        <i data-feather="trash-2" style="width:13px;height:13px;"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+
+        function openAddSubServiceModal() {
+            document.getElementById('modalSubIndex').value = '-1';
+            document.getElementById('modalSubId').value = '0';
+            const titleInput = document.getElementById('modalSubTitle');
+            titleInput.value = '';
+            titleInput.classList.remove('is-invalid');
+            const err = document.getElementById('modalTitleError');
+            if (err) err.style.display = 'none';
+            document.getElementById('modalSubDesc').value = '';
+            document.getElementById('modalSubPrice').value = '';
+            document.getElementById('modalSubCategory').value = '';
+            document.getElementById('modalSubPopular').checked = false;
+            document.getElementById('modalSubNew').checked = false;
+            document.getElementById('modalSubOrder').value = subServicesList.length + 1;
+            document.getElementById('modalSubActive').checked = true;
+            document.getElementById('subServiceModalTitle').innerHTML = '<i data-feather="layers" class="me-2 text-gold" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"></i> <span>Add Sub-Service</span>';
+            document.getElementById('modalSaveBtnText').textContent = 'Add Sub-Service';
+
+            const overlay = document.getElementById('subServiceModalOverlay');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                titleInput.focus();
+                if (typeof feather !== 'undefined') feather.replace();
+            }, 50);
+        }
+
+        function editSubService(index) {
+            const item = subServicesList[index];
+            if (!item) return;
+
+            const itemTitle = item.title || item.Title || '';
+            const itemDesc = item.description || item.Description || '';
+            const itemPrice = item.price || item.Price || '';
+            const itemCategory = item.category || item.Category || '';
+            const itemOrder = parseInt(item.displayOrder !== undefined ? item.displayOrder : item.DisplayOrder) || (index + 1);
+            const itemActive = item.isActive !== undefined ? item.isActive : (item.IsActive !== false);
+            const isPopular = item.isPopular !== undefined ? item.isPopular : (item.IsPopular === true);
+            const isNew = item.isNew !== undefined ? item.isNew : (item.IsNew === true);
+            const itemId = item.id || item.Id || 0;
+
+            document.getElementById('modalSubIndex').value = index;
+            document.getElementById('modalSubId').value = itemId;
+            const titleInput = document.getElementById('modalSubTitle');
+            titleInput.value = itemTitle;
+            titleInput.classList.remove('is-invalid');
+            const err = document.getElementById('modalTitleError');
+            if (err) err.style.display = 'none';
+            document.getElementById('modalSubDesc').value = itemDesc;
+            document.getElementById('modalSubPrice').value = itemPrice;
+            document.getElementById('modalSubCategory').value = itemCategory;
+            document.getElementById('modalSubPopular').checked = isPopular;
+            document.getElementById('modalSubNew').checked = isNew;
+            document.getElementById('modalSubOrder').value = itemOrder;
+            document.getElementById('modalSubActive').checked = itemActive;
+            document.getElementById('subServiceModalTitle').innerHTML = '<i data-feather="edit-2" class="me-2 text-gold" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"></i> <span>Edit Sub-Service</span>';
+            document.getElementById('modalSaveBtnText').textContent = 'Update Sub-Service';
+
+            const overlay = document.getElementById('subServiceModalOverlay');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                titleInput.focus();
+                if (typeof feather !== 'undefined') feather.replace();
+            }, 50);
+        }
+
+        function closeSubServiceModal() {
+            const overlay = document.getElementById('subServiceModalOverlay');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleBackdropClick(e) {
+            if (e.target.id === 'subServiceModalOverlay') {
+                closeSubServiceModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSubServiceModal();
+            }
+        });
+
+        async function deleteSubService(index) {
+            const item = subServicesList[index];
+            if (!item) return;
+            const itemTitle = item.title || item.Title || 'this sub-service';
+            const itemId = item.id || item.Id || 0;
+            if (confirm(`Are you sure you want to remove "${itemTitle}"?`)) {
+                if (itemId > 0) {
+                    try {
+                        await fetch('/Admin/Services/QuickDeleteSubService', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: itemId })
+                        });
+                    } catch (e) {
+                        console.error('Error deleting sub-service:', e);
+                    }
+                }
+                subServicesList.splice(index, 1);
+                renderSubServicesTable();
+                showQuickToast(`"${itemTitle}" removed!`);
+            }
+        }
+
+        function showQuickToast(msg, isSuccess = true) {
+            let toast = document.getElementById('subServiceToastNotice');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'subServiceToastNotice';
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:999999;padding:14px 22px;border-radius:10px;font-weight:600;font-size:0.92rem;box-shadow:0 10px 30px rgba(0,0,0,0.3);transition:all 0.3s ease;';
+                document.body.appendChild(toast);
+            }
+            toast.style.background = isSuccess ? '#10b981' : '#ef4444';
+            toast.style.color = '#ffffff';
+            toast.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i> ${msg}`;
+            toast.style.display = 'block';
+            toast.style.opacity = '1';
+            clearTimeout(window._toastTimeout);
+            window._toastTimeout = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.display = 'none'; }, 300);
+            }, 3500);
+        }
+
+        document.getElementById('btnSaveSubServiceItem').addEventListener('click', async function () {
+            const titleInput = document.getElementById('modalSubTitle');
+            const title = titleInput.value.trim();
+            const err = document.getElementById('modalTitleError');
+            if (!title) {
+                titleInput.focus();
+                titleInput.classList.add('is-invalid');
+                if (err) err.style.display = 'block';
+                return;
+            }
+            titleInput.classList.remove('is-invalid');
+            if (err) err.style.display = 'none';
+
+            const saveBtn = document.getElementById('btnSaveSubServiceItem');
+            const originalBtnHtml = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+
+            const index = parseInt(document.getElementById('modalSubIndex').value);
+            const id = parseInt(document.getElementById('modalSubId').value) || 0;
+            const desc = document.getElementById('modalSubDesc').value.trim();
+            const price = document.getElementById('modalSubPrice').value.trim();
+            const category = document.getElementById('modalSubCategory').value.trim();
+            const isPopular = document.getElementById('modalSubPopular').checked;
+            const isNew = document.getElementById('modalSubNew').checked;
+            const order = parseInt(document.getElementById('modalSubOrder').value) || (index >= 0 ? (index + 1) : (subServicesList.length + 1));
+            const isActive = document.getElementById('modalSubActive').checked;
+
+            const coveredServiceId = @Model.Id;
+            let savedId = id;
+
+            // Immediately persist via AJAX if editing an existing service
+            if (coveredServiceId > 0) {
+                try {
+                    const resp = await fetch('/Admin/Services/QuickSaveSubService', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: id,
+                            coveredServiceId: coveredServiceId,
+                            title: title,
+                            description: desc,
+                            price: price,
+                            category: category,
+                            icon: '',
+                            isPopular: isPopular,
+                            isNew: isNew,
+                            displayOrder: order,
+                            isActive: isActive
+                        })
+                    });
+                    const resJson = await resp.json();
+                    if (resJson.success && resJson.id) {
+                        savedId = resJson.id;
+                    }
+                } catch (e) {
+                    console.error('Instant save failed:', e);
+                }
+            }
+
+            const data = {
+                id: savedId,
+                title: title,
+                description: desc,
+                price: price,
+                category: category,
+                isPopular: isPopular,
+                isNew: isNew,
+                displayOrder: order,
+                isActive: isActive
+            };
+
+            if (index >= 0 && index < subServicesList.length) {
+                subServicesList[index] = data;
+            } else {
+                subServicesList.push(data);
+            }
+
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalBtnHtml;
+
+            closeSubServiceModal();
+            renderSubServicesTable();
+            showQuickToast(`Sub-service "${title}" saved live! View on <a href="/service/${coveredServiceId}" target="_blank" style="color:#fff;text-decoration:underline;margin-left:4px;">Live Page ↗</a>`);
+        });
+
+        document.getElementById('modalSubTitle').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('btnSaveSubServiceItem').click();
+            }
+        });
+
+        document.getElementById('serviceForm').addEventListener('submit', function () {
+            document.getElementById('subServicesJson').value = JSON.stringify(subServicesList);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderSubServicesTable();
+        });
+    </script>
+}
+
