@@ -12,8 +12,8 @@ using caportal.Data;
 namespace caportal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260907180350_AddSubServices")]
-    partial class AddSubServices
+    [Migration("20260909094202_AddSubServiceImagePath")]
+    partial class AddSubServiceImagePath
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

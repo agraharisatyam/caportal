@@ -9,6 +9,7 @@ public class SubService
     public string Price { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     public string Icon { get; set; } = string.Empty;
+    public string ImagePath { get; set; } = string.Empty;
     public bool IsPopular { get; set; } = false;
     public bool IsNew { get; set; } = false;
     public int DisplayOrder { get; set; } = 0;

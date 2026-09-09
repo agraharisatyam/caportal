@@ -38,6 +38,7 @@ namespace caportal.Areas.Admin.Controllers
             {
                 using var db = _dbFactory.CreateDbContext();
                 db.Database.SetCommandTimeout(15);
+                EnsureSubServiceImagePath(db);
                 ViewBag.Services = await db.CoveredServices.OrderBy(s => s.DisplayOrder).ToListAsync();
             }
             catch (Exception ex)
@@ -45,6 +46,30 @@ namespace caportal.Areas.Admin.Controllers
                 TempData["Error"] = "Database error: " + ex.Message;
             }
             return View();
+        }
+
+        private static bool _subImgColChecked = false;
+        private static readonly object _subImgLock = new();
+        private static void EnsureSubServiceImagePath(ApplicationDbContext db)
+        {
+            if (_subImgColChecked) return;
+            lock (_subImgLock)
+            {
+                if (_subImgColChecked) return;
+                try
+                {
+                    db.Database.ExecuteSqlRaw(@"
+                        IF NOT EXISTS (
+                            SELECT 1 FROM sys.columns 
+                            WHERE object_id = OBJECT_ID(N'SubServices') AND name = N'ImagePath'
+                        )
+                        BEGIN
+                            ALTER TABLE [SubServices] ADD [ImagePath] nvarchar(max) NOT NULL DEFAULT '';
+                        END");
+                    _subImgColChecked = true;
+                }
+                catch { _subImgColChecked = true; }
+            }
         }
 
         // POST /Admin/Services/SaveSection
@@ -187,6 +212,8 @@ namespace caportal.Areas.Admin.Controllers
         public IActionResult Create()
         {
             ViewBag.Username = HttpContext.Session.GetString("AdminUsername") ?? "ajs";
+            using var db = _dbFactory.CreateDbContext();
+            EnsureSubServiceImagePath(db);
             return View("Create", new CoveredService { DisplayOrder = 1 });
         }
 
@@ -195,6 +222,7 @@ namespace caportal.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             using var db = _dbFactory.CreateDbContext();
+            EnsureSubServiceImagePath(db);
             var service = await db.CoveredServices
                 .Include(s => s.SubServices)
                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -295,6 +323,7 @@ namespace caportal.Areas.Admin.Controllers
                         current.Price = dto.Price?.Trim() ?? "";
                         current.Category = dto.Category?.Trim() ?? "";
                         current.Icon = dto.Icon?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(dto.ImagePath)) current.ImagePath = dto.ImagePath;
                         current.IsPopular = dto.IsPopular;
                         current.IsNew = dto.IsNew;
                         current.DisplayOrder = dto.DisplayOrder;
@@ -377,6 +406,41 @@ namespace caportal.Areas.Admin.Controllers
             }
         }
 
+        // POST /Admin/Services/UploadSubServiceImage
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> UploadSubServiceImage(IFormFile file, int subServiceId)
+        {
+            if (file == null || file.Length == 0)
+                return Json(new { success = false, message = "No file provided." });
+
+            var allowed = new[] { ".png", ".jpg", ".jpeg", ".svg", ".webp" };
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowed.Contains(ext))
+                return Json(new { success = false, message = $"Type '{ext}' not allowed." });
+
+            var folder = Path.Combine(_env.WebRootPath, "images", "subservices");
+            Directory.CreateDirectory(folder);
+            var fileName = $"sub-{Guid.NewGuid():N}{ext}";
+            var filePath = Path.Combine(folder, fileName);
+            await using var fs = System.IO.File.Create(filePath);
+            await file.CopyToAsync(fs);
+            var imagePath = $"/images/subservices/{fileName}";
+
+            if (subServiceId > 0)
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var sub = await db.SubServices.FindAsync(subServiceId);
+                if (sub != null)
+                {
+                    sub.ImagePath = imagePath;
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            return Json(new { success = true, imagePath });
+        }
+
         // POST /Admin/Services/QuickDeleteSubService (Immediate AJAX delete)
         [HttpPost]
         [IgnoreAntiforgeryToken]
@@ -414,6 +478,7 @@ namespace caportal.Areas.Admin.Controllers
         public string Price { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
         public bool IsPopular { get; set; }
         public bool IsNew { get; set; }
         public int DisplayOrder { get; set; } = 1;
@@ -433,6 +498,7 @@ namespace caportal.Areas.Admin.Controllers
         public string Price { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
         public bool IsPopular { get; set; } = false;
         public bool IsNew { get; set; } = false;
         public int DisplayOrder { get; set; } = 0;

@@ -214,6 +214,16 @@
                     <label class="form-check-label ms-1 text-white small" for="modalSubNew">Mark New</label>
                 </div>
             </div>
+
+            <div class="mt-3">
+                <label class="form-label font-weight-bold text-white">Sub-Service Image <small class="text-muted">(Optional)</small></label>
+                <input type="file" id="modalSubImageFile" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp" />
+                <small class="text-muted d-block mt-1">PNG, JPG, SVG or WebP. Shown as thumbnail on service page.</small>
+                <div id="modalSubImagePreview" class="mt-2" style="display:none;">
+                    <img id="modalSubImagePreviewImg" src="" alt="Preview" style="max-height:80px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);" />
+                </div>
+                <input type="hidden" id="modalSubImagePath" value="" />
+            </div>
         </div>
         <div class="custom-modal-footer">
             <button type="button" class="btn btn-outline-secondary px-3" onclick="closeSubServiceModal()">Cancel</button>
@@ -476,6 +486,9 @@
             document.getElementById('modalSubNew').checked = false;
             document.getElementById('modalSubOrder').value = subServicesList.length + 1;
             document.getElementById('modalSubActive').checked = true;
+            document.getElementById('modalSubImageFile').value = '';
+            document.getElementById('modalSubImagePath').value = '';
+            document.getElementById('modalSubImagePreview').style.display = 'none';
             document.getElementById('subServiceModalTitle').innerHTML = '<i data-feather="layers" class="me-2 text-gold" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"></i> <span>Add Sub-Service</span>';
             document.getElementById('modalSaveBtnText').textContent = 'Add Sub-Service';
 
@@ -651,12 +664,27 @@
                 }
             }
 
+            // Upload image if a file is selected
+            let imagePath = document.getElementById('modalSubImagePath').value || '';
+            const fileInput = document.getElementById('modalSubImageFile');
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                try {
+                    const fd = new FormData();
+                    fd.append('file', fileInput.files[0]);
+                    fd.append('subServiceId', savedId.toString());
+                    const res = await fetch('/Admin/Services/UploadSubServiceImage', { method: 'POST', body: fd });
+                    const json = await res.json();
+                    if (json.success) imagePath = json.imagePath;
+                } catch(e) { console.warn('Image upload failed', e); }
+            }
+
             const data = {
                 id: savedId,
                 title: title,
                 description: desc,
                 price: price,
                 category: category,
+                imagePath: imagePath,
                 isPopular: isPopular,
                 isNew: isNew,
                 displayOrder: order,
@@ -682,6 +710,21 @@
                 e.preventDefault();
                 document.getElementById('btnSaveSubServiceItem').click();
             }
+        });
+
+        // ── Sub-service image preview ──────────────────
+        document.getElementById('modalSubImageFile').addEventListener('change', function() {
+            var file = this.files[0];
+            if (!file) return;
+            var preview = document.getElementById('modalSubImagePreview');
+            var img = document.getElementById('modalSubImagePreviewImg');
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            document.getElementById('modalSubImagePath').value = '';
         });
 
         document.getElementById('serviceForm').addEventListener('submit', function () {

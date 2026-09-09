@@ -176,9 +176,16 @@
                                  data-new="@(sub.IsNew ? "true" : "false")"
                                  onclick="openConsultationModal('@sub.Title', '@priceDisplay', '@categoryName')">
 
-                                <!-- Top Circular Gold Icon -->
+                                <!-- Top Circular Gold Icon / Image -->
                                 <div class="card-icon-circle">
-                                    <i class="@iconClass"></i>
+                                    @if (!string.IsNullOrWhiteSpace(sub.ImagePath))
+                                    {
+                                        <img src="@sub.ImagePath" alt="@sub.Title" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+                                    }
+                                    else
+                                    {
+                                        <i class="@iconClass"></i>
+                                    }
                                 </div>
 
                                 <!-- Title with Number -->
@@ -560,55 +567,83 @@
         gap: 16px;
     }
 
-    /* Service Card Item */
+    /* Service Card Item — same as homepage .service-card */
     .service-card-item {
         background: #ffffff;
-        border: 1px solid #edf2f7;
+        border: 1px solid #e5e7eb;
         border-radius: 14px;
-        padding: 22px 14px 18px;
+        padding: 24px 20px;
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
         cursor: pointer;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.3s;
         position: relative;
-        min-height: 220px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        height: 100%;
+        box-shadow: none;
     }
     .service-card-item:hover {
         border-color: #d4a017;
-        box-shadow: 0 12px 28px rgba(212, 160, 23, 0.14);
-        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(212, 160, 23, 0.15);
+        transform: translateY(-6px);
     }
 
     /* Top Card Icon Circle */
     .card-icon-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: 1.5px solid #d4a017;
-        background: #fffcf2;
-        color: #d4a017;
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(26,60,94,0.06), rgba(37,87,167,0.12));
+        border: 1px solid rgba(26,60,94,0.12);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
-        margin-bottom: 12px;
-        transition: all 0.2s ease;
+        font-size: 1.5rem;
+        color: #1a3c5e;
+        margin: 0 auto 18px;
+        transition: all 0.35s ease;
+        overflow: hidden;
     }
-    .service-card-item:hover .card-icon-circle {
-        background: #d4a017;
+    /* When image is uploaded — exactly same as homepage .services-grid-section .service-icon:has(img) */
+    .card-icon-circle:has(img),
+    .service-card-item:has(img) .card-icon-circle {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        margin: 0 auto 14px !important;
+        overflow: visible !important;
+        display: block !important;
+    }
+    .card-icon-circle img {
+        display: block !important;
+        width: 100% !important;
+        height: 140px !important;
+        object-fit: contain !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+        transition: transform 0.3s ease !important;
+    }
+    .service-card-item:hover .card-icon-circle img {
+        transform: scale(1.05) !important;
+    }
+    .service-card-item:hover .card-icon-circle:not(:has(img)) {
+        background: linear-gradient(135deg, #1a3c5e, #2557a7);
         color: #ffffff;
-        transform: scale(1.05);
+        border-color: transparent;
+        transform: scale(1.08);
     }
 
-    /* Card Text */
+    /* Card Text — same as homepage .service-title / .service-desc */
     .card-service-title {
         font-size: 0.88rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #1a3c5e;
         line-height: 1.35;
         margin: 0 0 6px 0;
         display: -webkit-box;
@@ -616,19 +651,29 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+    /* Larger title when image is present — same as homepage .service-card:has(img) .service-title */
+    .service-card-item:has(img) .card-service-title {
+        font-size: 1.05rem;
+        margin-top: 10px;
+        margin-bottom: 8px;
+    }
     .card-number {
         font-weight: 800;
-        color: #0f172a;
+        color: #1a3c5e;
     }
     .card-service-desc {
-        font-size: 0.75rem;
-        color: #64748b;
-        line-height: 1.4;
+        font-size: 0.78rem;
+        color: #6b7280;
+        line-height: 1.5;
         margin: 0 0 10px 0;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+    .service-card-item:has(img) .card-service-desc {
+        font-size: 0.84rem;
+        line-height: 1.45;
     }
 
     .card-price-tag {

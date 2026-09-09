@@ -50,6 +50,13 @@ app.UseRouting();
 app.UseSession();          // must be BEFORE MapControllerRoute
 app.UseAuthorization();
 
+// ── Dynamic Theme CSS (/site-dynamic.css) ────────────────────────────────
+app.MapGet("/site-dynamic.css", (SiteSettingsService svc) =>
+{
+    var css = svc.GenerateCss();
+    return Results.Content(css, "text/css");
+});
+
 // ── SEO: sitemap and robots served dynamically ────────────────────────────
 
 app.MapStaticAssets();
