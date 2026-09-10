@@ -247,6 +247,59 @@
                         </div>
                     }
                 </div>
+                <!-- END wcu-grid -->
+
+                @if (!string.IsNullOrEmpty(settings.WhyChooseUsStatsTitle) || !string.IsNullOrEmpty(settings.WhyChooseUsStat1Val))
+                {
+                    <div class="wcu-stats-banner mt-5 pt-4 border-top border-secondary border-opacity-25">
+                        @if (!string.IsNullOrEmpty(settings.WhyChooseUsStatsTitle))
+                        {
+                            <div class="text-center mb-4">
+                                <h4 class="wcu-stats-title" style="color: #d4a017; font-weight: 700; font-size: 1.15rem; letter-spacing: 1px; text-transform: uppercase;">
+                                    <i class="fas fa-chart-line me-2"></i>@settings.WhyChooseUsStatsTitle
+                                </h4>
+                            </div>
+                        }
+                        <div class="row g-3 text-center justify-content-center">
+                            @if (!string.IsNullOrEmpty(settings.WhyChooseUsStat1Val))
+                            {
+                                <div class="col-6 col-md-3">
+                                    <div class="wcu-stat-card p-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px;">
+                                        <div class="h3 font-weight-bold mb-1" style="color: #d4a017;">@settings.WhyChooseUsStat1Val</div>
+                                        <div class="small" style="color: rgba(255,255,255,0.85);">@settings.WhyChooseUsStat1Lbl</div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(settings.WhyChooseUsStat2Val))
+                            {
+                                <div class="col-6 col-md-3">
+                                    <div class="wcu-stat-card p-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px;">
+                                        <div class="h3 font-weight-bold mb-1" style="color: #d4a017;">@settings.WhyChooseUsStat2Val</div>
+                                        <div class="small" style="color: rgba(255,255,255,0.85);">@settings.WhyChooseUsStat2Lbl</div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(settings.WhyChooseUsStat3Val))
+                            {
+                                <div class="col-6 col-md-3">
+                                    <div class="wcu-stat-card p-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px;">
+                                        <div class="h3 font-weight-bold mb-1" style="color: #d4a017;">@settings.WhyChooseUsStat3Val</div>
+                                        <div class="small" style="color: rgba(255,255,255,0.85);">@settings.WhyChooseUsStat3Lbl</div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(settings.WhyChooseUsStat4Val))
+                            {
+                                <div class="col-6 col-md-3">
+                                    <div class="wcu-stat-card p-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px;">
+                                        <div class="h3 font-weight-bold mb-1" style="color: #d4a017;">@settings.WhyChooseUsStat4Val</div>
+                                        <div class="small" style="color: rgba(255,255,255,0.85);">@settings.WhyChooseUsStat4Lbl</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </section>
 
@@ -386,9 +439,18 @@
                 font-size: 1.15rem !important;
                 margin-bottom: 10px !important;
             }
-            .wcu-custom-icon {
-                width: 26px !important;
-                height: 26px !important;
+            .wcu-card:has(img) .wcu-card-icon-wrap,
+            .wcu-card-icon-wrap:has(img) {
+                width: 100% !important;
+                margin: 0 auto 6px !important;
+            }
+            .wcu-custom-icon,
+            .wcu-card-icon-wrap img {
+                height: 64px !important;
+                max-height: 64px !important;
+                width: 100% !important;
+                object-fit: contain !important;
+                margin: 0 auto 4px !important;
             }
             .wcu-card-title {
                 font-size: 0.78rem !important;
@@ -447,10 +509,28 @@
             background: var(--secondary, #d4a017);
             color: #111111;
         }
-        .wcu-custom-icon {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
+        .wcu-card:has(img) .wcu-card-icon-wrap,
+        .wcu-card-icon-wrap:has(img) {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            height: auto !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            margin: 0 auto 14px !important;
+            display: block !important;
+        }
+        .wcu-custom-icon,
+        .wcu-card-icon-wrap img {
+            display: block !important;
+            width: 100% !important;
+            height: 140px !important;
+            object-fit: contain !important;
+            border-radius: 10px !important;
+            background: transparent !important;
+            transition: transform 0.3s ease !important;
+            margin: 0 auto !important;
         }
         .wcu-card-title {
             font-size: 0.95rem;

@@ -4212,23 +4212,41 @@ section {
     padding: 6px !important;
 }
 
-.wcu-custom-icon {
-    width: 44px !important;
-    height: 44px !important;
-    object-fit: contain !important;
+/* Why Choose Us Image Icons — Restore full size matching Services Section */
+.wcu-card:has(img) .wcu-card-icon-wrap,
+.wcu-card-icon-wrap:has(img) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0 auto 14px !important;
+    overflow: visible !important;
     display: block !important;
-    margin: 0 auto !important;
+}
+
+.wcu-custom-icon,
+.wcu-card-icon-wrap img {
+    display: block !important;
+    width: 100% !important;
+    height: 140px !important;
+    object-fit: contain !important;
+    border-radius: 10px !important;
+    background: transparent !important;
     transition: transform 0.3s ease !important;
+    margin: 0 auto !important;
 }
 
 .wcu-card:hover .wcu-card-icon-wrap {
-    background: linear-gradient(135deg, #d4a017, #f0c040) !important;
-    color: #0b0f19 !important;
+    background: transparent !important;
     border-color: transparent !important;
-    transform: scale(1.1) !important;
+    transform: none !important;
 }
 
-.wcu-card:hover .wcu-custom-icon {
+.wcu-card:hover .wcu-custom-icon,
+.wcu-card:hover .wcu-card-icon-wrap img {
     transform: scale(1.05) !important;
 }
 
@@ -5329,9 +5347,19 @@ body > div[style*="height: 65px"] {
         padding: 4px !important;
     }
 
-    .wcu-custom-icon {
-        width: 24px !important;
-        height: 24px !important;
+    .wcu-card:has(img) .wcu-card-icon-wrap,
+    .wcu-card-icon-wrap:has(img) {
+        width: 100% !important;
+        margin: 0 auto 6px !important;
+    }
+
+    .wcu-custom-icon,
+    .wcu-card-icon-wrap img {
+        height: 64px !important;
+        max-height: 64px !important;
+        width: 100% !important;
+        object-fit: contain !important;
+        margin: 0 auto 4px !important;
     }
 
     .wcu-card-title {
