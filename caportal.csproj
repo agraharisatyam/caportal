@@ -6,10 +6,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Exclude satellite resource DLLs (language folders) from publish output -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <!-- Fast publish settings: disable slow ReadyToRun compilation overhead -->
+    <!-- Fast publish settings: disable slow ReadyToRun compilation overhead and refs folder -->
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>true</TieredCompilation>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <PreserveCompilationReferences>false</PreserveCompilationReferences>
+    <PreserveCompilationContext>false</PreserveCompilationContext>
   </PropertyGroup>
+
+  <!-- Remove 'refs' folder from Publish Output to speed up FTP publish -->
+  <Target Name="RemoveRefsFolderFromPublish" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('refs'))" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <!-- Exclude 30MB+ raw theme source kit from publish build output to speed up publish by 10x -->
