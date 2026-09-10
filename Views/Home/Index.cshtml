@@ -190,11 +190,12 @@
                                 <div class="service-icon">
                                     @if (!string.IsNullOrEmpty(svc.ImagePath))
                                     {
-                                        <img src="@svc.ImagePath" alt="@svc.Title" />
+                                        <img src="@svc.ImagePath" alt="@svc.Title" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                                        <i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)" style="display:none;" aria-hidden="true"></i>
                                     }
                                     else
                                     {
-                                        <i class="@svc.Icon" aria-hidden="true"></i>
+                                        <i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)" aria-hidden="true"></i>
                                     }
                                 </div>
                                 <div class="service-title">@svc.Title</div>
@@ -233,11 +234,12 @@
                             <div class="wcu-card-icon-wrap">
                                 @if (!string.IsNullOrEmpty(item.ImagePath))
                                 {
-                                    <img src="@item.ImagePath" alt="@item.Title" class="wcu-custom-icon" />
+                                    <img src="@item.ImagePath" alt="@item.Title" class="wcu-custom-icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                                    <i class="@(string.IsNullOrEmpty(item.Icon) ? "fas fa-check-circle" : item.Icon)" style="display:none;" aria-hidden="true"></i>
                                 }
                                 else
                                 {
-                                    <i class="@item.Icon" aria-hidden="true"></i>
+                                    <i class="@(string.IsNullOrEmpty(item.Icon) ? "fas fa-check-circle" : item.Icon)" aria-hidden="true"></i>
                                 }
                             </div>
                             <h5 class="wcu-card-title">@item.Title</h5>

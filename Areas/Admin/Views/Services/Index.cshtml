@@ -103,11 +103,13 @@
                                     @if (!string.IsNullOrEmpty(svc.ImagePath))
                                     {
                                         <img src="@svc.ImagePath" alt="@svc.Title"
-                                             style="width:44px;height:44px;object-fit:contain;border-radius:8px;border:1px solid rgba(212,175,55,0.2);padding:2px;background:rgba(255,255,255,0.02);" />
+                                             style="width:44px;height:44px;object-fit:contain;border-radius:8px;border:1px solid rgba(212,175,55,0.2);padding:2px;background:rgba(255,255,255,0.02);"
+                                             onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+                                        <div class="svc-tbl-icon" style="display:none;"><i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)"></i></div>
                                     }
                                     else
                                     {
-                                        <div class="svc-tbl-icon"><i class="@svc.Icon"></i></div>
+                                        <div class="svc-tbl-icon"><i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)"></i></div>
                                     }
                                 </td>
                                 <td><span class="font-weight-bold text-white">@svc.Title</span></td>

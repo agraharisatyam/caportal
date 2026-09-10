@@ -180,7 +180,8 @@
                                 <div class="card-icon-circle">
                                     @if (!string.IsNullOrWhiteSpace(sub.ImagePath))
                                     {
-                                        <img src="@sub.ImagePath" alt="@sub.Title" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+                                        <img src="@sub.ImagePath" alt="@sub.Title" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-block';" />
+                                        <i class="@iconClass" style="display:none;" aria-hidden="true"></i>
                                     }
                                     else
                                     {
@@ -276,11 +277,12 @@
                         <a href="/service/@svc.Id" class="other-service-pill-card">
                             @if (!string.IsNullOrEmpty(svc.ImagePath))
                             {
-                                <img src="@svc.ImagePath" alt="@svc.Title" class="other-svc-icon-img" />
+                                <img src="@svc.ImagePath" alt="@svc.Title" class="other-svc-icon-img" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+                                <div class="other-svc-icon-wrap" style="display:none;"><i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)"></i></div>
                             }
                             else
                             {
-                                <div class="other-svc-icon-wrap"><i class="@svc.Icon"></i></div>
+                                <div class="other-svc-icon-wrap"><i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)"></i></div>
                             }
                             <span class="other-svc-name">@svc.Title</span>
                         </a>

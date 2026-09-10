@@ -372,3 +372,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# User uploaded dynamic media files
+wwwroot/images/services/svc-*
+wwwroot/images/subservices/sub-*
+wwwroot/images/whychooseus/wcu-*
