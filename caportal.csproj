@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -6,7 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Exclude satellite resource DLLs (language folders) from publish output -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- Fast publish settings: disable slow ReadyToRun compilation overhead -->
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude 30MB+ raw theme source kit from publish build output to speed up publish by 10x -->
+    <Content Remove="DattaAble-1.0.0\**" />
+    <None Include="DattaAble-1.0.0\**" Pack="false" PublishState="Excluded" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
