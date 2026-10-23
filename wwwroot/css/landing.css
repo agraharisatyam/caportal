@@ -4074,7 +4074,8 @@ section {
 /* Service Card Image Icons — Restore full size */
 .services-grid-section .service-card:has(img):hover .service-icon,
 .services-grid-section .service-card:has(img) .service-icon:has(img),
-.services-grid-section .service-icon:has(img) {
+.services-grid-section .service-icon:has(img),
+.services-grid-section .service-icon.has-img {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -4085,7 +4086,8 @@ section {
     margin: 0 auto 14px !important;
 }
 
-.services-grid-section .service-icon img {
+.services-grid-section .service-icon img,
+.services-grid-section .service-icon.has-img img {
     display: block !important;
     width: 100% !important;
     height: 140px !important;
@@ -4095,7 +4097,8 @@ section {
     transition: transform 0.3s ease !important;
 }
 
-.services-grid-section .service-card:hover .service-icon img {
+.services-grid-section .service-card:hover .service-icon img,
+.services-grid-section .service-card:hover .service-icon.has-img img {
     transform: scale(1.05) !important;
 }
 

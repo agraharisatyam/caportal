@@ -14,11 +14,16 @@ namespace caportal.Controllers
     {
         private readonly SiteSettingsService _settingsService;
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+        private readonly caportal.Services.Email.IEmailService _emailService;
 
-        public HomeController(SiteSettingsService settingsService, IDbContextFactory<ApplicationDbContext> dbFactory)
+        public HomeController(
+            SiteSettingsService settingsService, 
+            IDbContextFactory<ApplicationDbContext> dbFactory,
+            caportal.Services.Email.IEmailService emailService)
         {
             _settingsService = settingsService;
             _dbFactory = dbFactory;
+            _emailService = emailService;
         }
 
         // GET /site-dynamic.css — returns CSS generated from current settings
@@ -277,7 +282,24 @@ namespace caportal.Controllers
             return View(vm);
         }
 
-        public IActionResult Privacy() => View();
+        [HttpGet("/privacy")]
+        [HttpGet("/privacy-policy")]
+        public Task<IActionResult> PrivacyPolicy() => Page("privacy-policy");
+
+        [HttpGet("/terms")]
+        [HttpGet("/terms-and-conditions")]
+        public Task<IActionResult> TermsAndConditions() => Page("terms-and-conditions");
+
+        [HttpGet("/refund-policy")]
+        [HttpGet("/cancellation-and-refund-policy")]
+        public Task<IActionResult> RefundPolicy() => Page("cancellation-and-refund-policy");
+
+        [HttpGet("/about")]
+        [HttpGet("/about-us")]
+        public Task<IActionResult> AboutUs() => Page("about-us");
+
+        [HttpGet("/contact-us")]
+        public IActionResult ContactUsRedirect() => RedirectToAction("Contact");
 
         [HttpGet("/page/{slug}")]
         [HttpGet("/pages/{slug}")]
@@ -379,8 +401,14 @@ namespace caportal.Controllers
 
         // ── Consultation booking submission ────────────────────────────────
         [HttpPost("/expert/book")]
-        public async Task<IActionResult> BookExpert([FromForm] string name, [FromForm] string phone, [FromForm] string? email, [FromForm] string? service, [FromForm] string? description, [FromForm] int expertId)
+        public async Task<IActionResult> BookExpert([FromForm] string name, [FromForm] string phone, [FromForm] string? email, [FromForm] string? service, [FromForm] string? description, [FromForm] int expertId, [FromForm] string? website = null)
         {
+            // Bot honeypot detection
+            if (!string.IsNullOrEmpty(website))
+            {
+                return Json(new { success = true, message = "Consultation requested successfully!" });
+            }
+
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone))
             {
                 return Json(new { success = false, message = "Please provide your full name and mobile number." });
@@ -404,6 +432,26 @@ namespace caportal.Controllers
                 };
                 db.ClientRequests.Add(req);
                 await db.SaveChangesAsync();
+
+                // Send email notifications in background
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        email.Trim(),
+                        "Consultation Request Confirmed - CA Chartered Campus",
+                        $"<h3>Dear {name.Trim()},</h3><p>We have received your consultation request for <strong>{req.ServiceRequired}</strong> with <strong>{req.AssignedCA}</strong>.</p><p>Our dedicated desk will coordinate your appointment within 2 business hours.</p><p>Best regards,<br>CA Chartered Campus Team</p>",
+                        name.Trim());
+                }
+
+                var settings = _settingsService.Get();
+                if (!string.IsNullOrWhiteSpace(settings.SiteEmail))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        settings.SiteEmail,
+                        $"[New CA Booking] {name.Trim()} - {req.AssignedCA}",
+                        $"<h3>New Consultation Booking</h3><p><strong>Client:</strong> {name.Trim()}<br><strong>Phone:</strong> {phone.Trim()}<br><strong>Email:</strong> {email ?? "N/A"}<br><strong>Expert:</strong> {req.AssignedCA}<br><strong>Service:</strong> {req.ServiceRequired}<br><strong>Notes:</strong> {description ?? "N/A"}</p>");
+                }
+
                 return Json(new { success = true, message = "Consultation requested successfully! Our senior consultation desk will connect with you promptly." });
             }
             catch (Exception ex)
@@ -435,6 +483,12 @@ namespace caportal.Controllers
                         IsActive = true
                     });
                     await db.SaveChangesAsync();
+
+                    // Send welcome email
+                    _ = _emailService.SendEmailAsync(
+                        normalized,
+                        "Welcome to CA Chartered Campus Insights",
+                        "<h3>Welcome to CA Chartered Campus!</h3><p>Thank you for subscribing. You'll now receive timely updates on GST advisories, direct tax amendments, MCA notifications, and business regulatory updates.</p>");
                 }
                 return Json(new { success = true, message = "Thank you for subscribing to our tax and compliance newsletter!" });
             }
@@ -457,8 +511,14 @@ namespace caportal.Controllers
 
         // POST /contact/submit
         [HttpPost("/contact/submit")]
-        public async Task<IActionResult> SubmitContact([FromForm] string name, [FromForm] string email, [FromForm] string phone, [FromForm] string city, [FromForm] string clientType, [FromForm] string service, [FromForm] string preferredTime, [FromForm] string message)
+        public async Task<IActionResult> SubmitContact([FromForm] string name, [FromForm] string email, [FromForm] string phone, [FromForm] string city, [FromForm] string clientType, [FromForm] string service, [FromForm] string preferredTime, [FromForm] string message, [FromForm] string? website = null)
         {
+            // Bot honeypot detection
+            if (!string.IsNullOrEmpty(website))
+            {
+                return Json(new { success = true, message = "Thank you! Your enquiry has been registered." });
+            }
+
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone))
             {
                 return Json(new { success = false, message = "Please provide your name and phone number." });
@@ -483,6 +543,25 @@ namespace caportal.Controllers
                 };
                 db.ClientRequests.Add(req);
                 await db.SaveChangesAsync();
+
+                // Send email confirmations in background
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        email.Trim(),
+                        "Thank you for contacting CA Chartered Campus",
+                        $"<h3>Dear {name.Trim()},</h3><p>We have received your enquiry regarding <strong>{req.ServiceRequired}</strong>.</p><p>One of our senior Chartered Accountants will review your requirements and get in touch within 2 hours.</p><p>Warm regards,<br>CA Chartered Campus Advisory Desk</p>",
+                        name.Trim());
+                }
+
+                var settings = _settingsService.Get();
+                if (!string.IsNullOrWhiteSpace(settings.SiteEmail))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        settings.SiteEmail,
+                        $"[New Web Enquiry] {name.Trim()} - {req.ServiceRequired}",
+                        $"<h3>New Client Enquiry</h3><p><strong>Name:</strong> {name.Trim()}<br><strong>Phone:</strong> {phone.Trim()}<br><strong>Email:</strong> {email ?? "N/A"}<br><strong>City:</strong> {city ?? "N/A"}<br><strong>Type:</strong> {clientType ?? "N/A"}<br><strong>Service:</strong> {req.ServiceRequired}<br><strong>Time:</strong> {preferredTime ?? "N/A"}<br><strong>Message:</strong><br>{message ?? "N/A"}</p>");
+                }
             }
             catch (Exception ex)
             {
@@ -492,23 +571,177 @@ namespace caportal.Controllers
             return Json(new { success = true, message = "Thank you! Your enquiry has been registered and our senior CA consultation desk will connect with you within 2 hours." });
         }
 
-        // GET /sitemap.xml
+        // POST /Home/SubmitClientRequest (Used by Service/Detail modal)
+        [HttpPost("/Home/SubmitClientRequest")]
+        public async Task<IActionResult> SubmitClientRequest(
+            [FromForm] string? ClientName,
+            [FromForm] string? ClientPhone,
+            [FromForm] string? ClientEmail,
+            [FromForm] string? City,
+            [FromForm] string? ServiceRequired,
+            [FromForm] string? Description,
+            [FromForm] string? PreferredTime,
+            [FromForm] string? Source,
+            [FromForm] string? website = null)
+        {
+            if (!string.IsNullOrEmpty(website))
+            {
+                return Json(new { success = true, message = "Consultation requested successfully!" });
+            }
+
+            if (string.IsNullOrWhiteSpace(ClientName) || string.IsNullOrWhiteSpace(ClientPhone))
+            {
+                return Json(new { success = false, message = "Name and phone number are required." });
+            }
+
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var req = new ClientRequest
+                {
+                    ClientName = ClientName.Trim(),
+                    ClientPhone = ClientPhone.Trim(),
+                    ClientEmail = ClientEmail?.Trim() ?? string.Empty,
+                    City = City?.Trim() ?? string.Empty,
+                    ClientType = "Individual",
+                    ServiceRequired = ServiceRequired?.Trim() ?? "CA Consultation",
+                    Description = Description?.Trim() ?? string.Empty,
+                    PreferredTime = PreferredTime?.Trim() ?? string.Empty,
+                    Source = Source?.Trim() ?? "Service Detail Page",
+                    Status = "Pending",
+                    RequestedOn = DateTime.UtcNow
+                };
+
+                db.ClientRequests.Add(req);
+                await db.SaveChangesAsync();
+
+                if (!string.IsNullOrWhiteSpace(ClientEmail))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        ClientEmail.Trim(),
+                        "Consultation Request Received - CA Chartered Campus",
+                        $"<h3>Dear {ClientName.Trim()},</h3><p>We received your request for <strong>{req.ServiceRequired}</strong>.</p><p>Our advisory desk will coordinate with you shortly.</p>",
+                        ClientName.Trim());
+                }
+
+                var settings = _settingsService.Get();
+                if (!string.IsNullOrWhiteSpace(settings.SiteEmail))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        settings.SiteEmail,
+                        $"[Service Lead] {ClientName.Trim()} - {req.ServiceRequired}",
+                        $"<p><strong>Name:</strong> {ClientName.Trim()}<br><strong>Phone:</strong> {ClientPhone.Trim()}<br><strong>Email:</strong> {ClientEmail ?? "N/A"}<br><strong>Service:</strong> {req.ServiceRequired}<br><strong>Details:</strong> {Description}</p>");
+                }
+
+                return Json(new { success = true, message = "Thank you! Your request has been registered." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
+        }
+
+        // POST /Home/PostConsult (Used by sidebar form in ServiceDetail)
+        [HttpPost("/Home/PostConsult")]
+        public async Task<IActionResult> PostConsult(
+            [FromForm] string? Name,
+            [FromForm] string? Phone,
+            [FromForm] string? ServiceSlug,
+            [FromForm] string? Message,
+            [FromForm] string? website = null)
+        {
+            if (!string.IsNullOrEmpty(website))
+            {
+                return Json(new { success = true, message = "Callback requested!" });
+            }
+
+            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Phone))
+            {
+                return Json(new { success = false, message = "Name and phone are required." });
+            }
+
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var req = new ClientRequest
+                {
+                    ClientName = Name.Trim(),
+                    ClientPhone = Phone.Trim(),
+                    ServiceRequired = !string.IsNullOrWhiteSpace(ServiceSlug) ? ServiceSlug.Trim() : "Callback Request",
+                    Description = Message?.Trim() ?? string.Empty,
+                    Source = "Service Sidebar Callback",
+                    Status = "Pending",
+                    RequestedOn = DateTime.UtcNow
+                };
+
+                db.ClientRequests.Add(req);
+                await db.SaveChangesAsync();
+
+                var settings = _settingsService.Get();
+                if (!string.IsNullOrWhiteSpace(settings.SiteEmail))
+                {
+                    _ = _emailService.SendEmailAsync(
+                        settings.SiteEmail,
+                        $"[Callback Request] {Name.Trim()} - {req.ServiceRequired}",
+                        $"<p><strong>Name:</strong> {Name.Trim()}<br><strong>Phone:</strong> {Phone.Trim()}<br><strong>Message:</strong> {Message}</p>");
+                }
+
+                return Json(new { success = true, message = "Callback requested successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
+        }
+
+        // GET /sitemap.xml (Comprehensive Dynamic XML Sitemap)
         [HttpGet("/sitemap.xml")]
-        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
-        public ContentResult Sitemap()
+        [ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any)]
+        public async Task<ContentResult> Sitemap()
         {
             var host = $"{Request.Scheme}://{Request.Host}";
-            var xml = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
-<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
-  <url><loc>{host}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>{host}/#professionals</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>{host}/#features</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>{host}/#how-it-works</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>{host}/#pricing</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>{host}/#faq</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>{host}/#contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-</urlset>";
-            return Content(xml, "application/xml");
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+
+            // Static key routes
+            sb.AppendLine($"  <url><loc>{host}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>");
+            sb.AppendLine($"  <url><loc>{host}/find-expert</loc><changefreq>daily</changefreq><priority>0.9</priority></url>");
+            sb.AppendLine($"  <url><loc>{host}/blog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>");
+            sb.AppendLine($"  <url><loc>{host}/contact</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>");
+
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+
+                // Dynamic Blog Posts
+                var blogs = await db.BlogPosts.Where(b => b.IsPublished).Select(b => new { b.Slug, b.PublishedDate }).ToListAsync();
+                foreach (var blog in blogs)
+                {
+                    sb.AppendLine($"  <url><loc>{host}/blog/{blog.Slug}</loc><lastmod>{blog.PublishedDate:yyyy-MM-dd}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>");
+                }
+
+                // Dynamic Covered Services
+                var services = await db.CoveredServices.Select(s => s.Id).ToListAsync();
+                foreach (var sid in services)
+                {
+                    sb.AppendLine($"  <url><loc>{host}/service/{sid}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>");
+                }
+
+                // Dynamic Content Pages (Legal & Info)
+                var pages = await db.ContentPages.Where(p => p.IsPublished).Select(p => new { p.Slug, p.LastUpdated }).ToListAsync();
+                foreach (var page in pages)
+                {
+                    sb.AppendLine($"  <url><loc>{host}/page/{page.Slug}</loc><lastmod>{page.LastUpdated:yyyy-MM-dd}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>");
+                }
+            }
+            catch
+            {
+                // Fallback static links if DB fails
+            }
+
+            sb.AppendLine("</urlset>");
+            return Content(sb.ToString(), "application/xml");
         }
 
         // GET /robots.txt
@@ -525,6 +758,14 @@ Disallow: /ajs
 Sitemap: {host}/sitemap.xml
 ";
             return Content(txt, "text/plain");
+        }
+
+        [Route("/not-found")]
+        [Route("/Home/NotFoundPage/{statusCode?}")]
+        public IActionResult NotFoundPage(int? statusCode = null)
+        {
+            Response.StatusCode = statusCode ?? 404;
+            return View("NotFound");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -44,6 +44,12 @@ namespace caportal.Areas.Admin.Controllers
     public class ProfileController : Controller
     {
         private static BusinessProfileViewModel _profile = new();
+        private readonly caportal.Services.Security.AdminAuthService _authService;
+
+        public ProfileController(caportal.Services.Security.AdminAuthService authService)
+        {
+            _authService = authService;
+        }
 
         // GET /Admin/Profile or /Admin/BusinessProfile
         [HttpGet]
@@ -97,6 +103,31 @@ namespace caportal.Areas.Admin.Controllers
             _profile.IsActive = !_profile.IsActive;
             TempData["Success"] = _profile.IsActive ? "Business Profile activated!" : "Business Profile deactivated.";
             return RedirectToAction("Index");
+        }
+
+        // POST /Admin/Profile/ChangePassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Profile/ChangePassword")]
+        public IActionResult ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            var username = HttpContext.Session.GetString("AdminUsername") ?? "admin";
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword != confirmPassword)
+            {
+                TempData["PasswordError"] = "New password and confirmation do not match.";
+                return RedirectToAction("Index", new { tab = "security" });
+            }
+
+            if (_authService.ChangePassword(username, currentPassword, newPassword, out var error))
+            {
+                TempData["PasswordSuccess"] = "Password updated successfully!";
+            }
+            else
+            {
+                TempData["PasswordError"] = error ?? "Failed to change password.";
+            }
+
+            return RedirectToAction("Index", new { tab = "security" });
         }
     }
 }

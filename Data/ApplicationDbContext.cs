@@ -30,6 +30,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<PricingPlanEntity> PricingPlans { get; set; } = null!;
     public DbSet<ContentPage> ContentPages { get; set; } = null!;
     public DbSet<NewsletterSubscriber> NewsletterSubscribers { get; set; } = null!;
+    public DbSet<AdminUser> AdminUsers { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

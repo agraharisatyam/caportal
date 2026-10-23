@@ -192,6 +192,8 @@
 
                     <form id="mainContactForm" class="contact-form-body" novalidate>
                         @Html.AntiForgeryToken()
+                        <!-- Bot Anti-spam Honeypot -->
+                        <input type="text" name="website" style="display:none !important;" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
                         <!-- Client Profile Type Pills -->
                         <div class="form-group mb-4">

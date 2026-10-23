@@ -37,6 +37,7 @@ namespace caportal.Data
                 await SeedPricingPlansAsync(db);
                 await SeedContentPagesAsync(db);
                 await SeedSubServicesAsync(db);
+                await SeedAdminUsersAsync(db, app.Configuration);
 
                 logger?.LogInformation("DbInitializer: Database schema verified and seed data populated successfully.");
             }
@@ -259,6 +260,19 @@ namespace caportal.Data
             IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('SubServices') AND name = 'IsNew')
             BEGIN
                 ALTER TABLE [SubServices] ADD [IsNew] BIT NOT NULL DEFAULT 0;
+            END;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = N'AdminUsers')
+            BEGIN
+                CREATE TABLE [AdminUsers] (
+                    [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                    [Username] NVARCHAR(100) NOT NULL,
+                    [PasswordHash] NVARCHAR(500) NOT NULL,
+                    [Role] NVARCHAR(50) NOT NULL DEFAULT 'Admin',
+                    [IsActive] BIT NOT NULL DEFAULT 1,
+                    [CreatedAt] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+                    [LastLoginAt] DATETIME2 NULL
+                );
             END;
             ";
 
@@ -517,10 +531,100 @@ namespace caportal.Data
 
             var items = new List<ContentPage>
             {
-                new() { Title="About Us", Slug="about-us", MetaDescription="Learn about CACampus — India's premier verified CA network.", IsPublished=true, LastUpdated=DateTime.UtcNow, HtmlContent="<h2>About CACampus</h2><p>CACampus combines modern technology and certified expertise to deliver reliable CA, legal, and compliance solutions across India.</p><p>Our empaneled chartered accountants help over 50,000+ businesses with tax planning, ROC filings, forensic audits, and GST compliance.</p>" },
-                new() { Title="Terms & Conditions", Slug="terms-and-conditions", MetaDescription="Terms and conditions governing the use of CACampus platform.", IsPublished=true, LastUpdated=DateTime.UtcNow, HtmlContent="<h2>Terms & Conditions</h2><p>Welcome to CACampus. By using our platform, you agree to engage verified professionals under transparent milestone billing and confidentiality protocols.</p>" },
-                new() { Title="Privacy Policy", Slug="privacy-policy", MetaDescription="CACampus privacy policy and data security commitments.", IsPublished=true, LastUpdated=DateTime.UtcNow, HtmlContent="<h2>Privacy Policy</h2><p>We respect client privacy and adhere to the highest industry standards for encrypting financial documents and sensitive business records.</p>" },
-                new() { Title="Contact Us", Slug="contact-us", MetaDescription="Contact CACampus support and client advisory desk.", IsPublished=true, LastUpdated=DateTime.UtcNow, HtmlContent="<h2>Contact Us</h2><p>Have questions? Reach our dedicated consultation desk anytime via phone or email for rapid assistance.</p>" }
+                new() {
+                    Title="About Us",
+                    Slug="about-us",
+                    MetaDescription="Learn about CACampus — India's premier verified CA network providing GST, Tax, Audit and Startup legal solutions.",
+                    IsPublished=true,
+                    LastUpdated=DateTime.UtcNow,
+                    HtmlContent=@"<h2>About CA Chartered Campus</h2>
+<p class='lead'>CA Chartered Campus is India's leading digital platform connecting high-growth businesses, SMEs, startups, and individuals with certified, verified Chartered Accountants and legal experts.</p>
+<h3>Our Mission</h3>
+<p>Our mission is to simplify financial compliance, tax filing, corporate governance, and statutory audits through transparent pricing, SLA-backed turnaround times, and verified domain expertise.</p>
+<h3>Why Choose Us</h3>
+<ul>
+    <li><strong>100% ICAI Verified CAs:</strong> Every practitioner on our platform is thoroughly verified against ICAI registration numbers and disciplinary records.</li>
+    <li><strong>End-to-End Encryption:</strong> Your sensitive financial statements, PAN, GST, and tax documents are protected with banking-grade security protocols.</li>
+    <li><strong>Pan-India Network:</strong> Access senior FCAs and corporate compliance specialists across Mumbai, Delhi, Bangalore, Hyderabad, Chennai, Kolkata, and Pune.</li>
+</ul>"
+                },
+                new() {
+                    Title="Terms & Conditions",
+                    Slug="terms-and-conditions",
+                    MetaDescription="Terms and Conditions of use for CA Chartered Campus platform and professional services.",
+                    IsPublished=true,
+                    LastUpdated=DateTime.UtcNow,
+                    HtmlContent=@"<h2>Terms and Conditions of Service</h2>
+<p><em>Last updated: September 2026</em></p>
+<p>Welcome to CA Chartered Campus. By accessing or using our website, platform, and consultation services, you agree to comply with and be bound by the following Terms and Conditions.</p>
+<h3>1. Scope of Services</h3>
+<p>CA Chartered Campus provides a technology platform connecting clients with independent Chartered Accountants, legal advisors, and tax professionals. Services include GST filing, ITR compliance, ROC regularizations, audits, and business advisory.</p>
+<h3>2. User Responsibilities & Data Accuracy</h3>
+<p>Clients are solely responsible for providing truthful, accurate, and complete financial data and documentation necessary for statutory filings. Our empaneled professionals rely on client-supplied data to execute filings.</p>
+<h3>3. Professional Code of Conduct</h3>
+<p>All empaneled Chartered Accountants adhere to the Code of Ethics established by the Institute of Chartered Accountants of India (ICAI). Platform services comply with applicable laws of the Republic of India.</p>
+<h3>4. Limitation of Liability</h3>
+<p>While our platform exercises thorough due diligence in verifying professionals, CA Chartered Campus shall not be liable for delayed filings resulting from incomplete client documents or government portal technical downtimes.</p>"
+                },
+                new() {
+                    Title="Privacy Policy",
+                    Slug="privacy-policy",
+                    MetaDescription="Privacy Policy and Information Security standards for CA Chartered Campus clients.",
+                    IsPublished=true,
+                    LastUpdated=DateTime.UtcNow,
+                    HtmlContent=@"<h2>Privacy & Data Protection Policy</h2>
+<p><em>Effective Date: September 2026</em></p>
+<p>At CA Chartered Campus, protecting your confidential business data and personal financial records is our utmost priority.</p>
+<h3>1. Information We Collect</h3>
+<p>We collect information you voluntarily provide when creating an account, booking a CA consultation, or requesting services. This includes company name, contact numbers, email address, PAN, GSTIN, and financial statements.</p>
+<h3>2. Use of Information</h3>
+<p>We utilize your data strictly to facilitate CA consultation, fulfill statutory tax and ROC filings, generate invoices, and communicate compliance milestone updates.</p>
+<h3>3. Data Confidentiality & Non-Disclosure</h3>
+<p>We never sell, trade, or rent client data to third parties. All empaneled Chartered Accountants sign strict Non-Disclosure Agreements (NDAs) before accessing client files.</p>
+<h3>4. Data Security & Storage</h3>
+<p>All transmitted information is encrypted using TLS 1.3 protocol. Uploaded financial records are stored securely with role-based access restrictions.</p>
+<h3>5. Grievance Officer</h3>
+<p>Under the Information Technology Act 2000 and rules made thereunder, for grievances please contact our compliance desk at <strong>support@cacharteredcampus.com</strong>.</p>"
+                },
+                new() {
+                    Title="Cancellation & Refund Policy",
+                    Slug="cancellation-and-refund-policy",
+                    MetaDescription="Cancellation and Refund Policy for CA consultations and compliance packages on CA Chartered Campus.",
+                    IsPublished=true,
+                    LastUpdated=DateTime.UtcNow,
+                    HtmlContent=@"<h2>Cancellation & Refund Policy</h2>
+<p><em>Last updated: September 2026</em></p>
+<p>We strive to deliver exceptional compliance and consultation services. This policy outlines conditions under which cancellations and refunds are granted.</p>
+<h3>1. Consultation Bookings</h3>
+<p>You may reschedule or cancel your CA consultation booking up to <strong>2 hours prior</strong> to the scheduled slot for a full refund or free rescheduling credit.</p>
+<h3>2. Compliance & Filing Packages</h3>
+<ul>
+    <li><strong>Before Work Commences:</strong> Full refund minus nominal payment gateway processing charges (typically 2-3%).</li>
+    <li><strong>After Document Review / Drafting has Started:</strong> Partial refund proportionate to the work remaining. Government challan or statutory portal fees already paid on the client's behalf are non-refundable.</li>
+    <li><strong>After Filing Submission:</strong> Once a return or application (e.g. GST, ITR, MCA ROC form) is submitted to government portals, the service is deemed completed and non-refundable.</li>
+</ul>
+<h3>3. Refund Processing Timelines</h3>
+<p>Approved refunds are credited back to the original payment source within <strong>5-7 business days</strong>.</p>"
+                },
+                new() {
+                    Title="Contact Us",
+                    Slug="contact-us",
+                    MetaDescription="Contact CA Chartered Campus support and client advisory desk.",
+                    IsPublished=true,
+                    LastUpdated=DateTime.UtcNow,
+                    HtmlContent=@"<h2>Contact CA Chartered Campus</h2>
+<p class='lead'>Need assistance with your tax filing, business registration, or compliance query? Our team is here to assist you.</p>
+<div class='row mt-4'>
+    <div class='col-md-6 mb-3'>
+        <h5>Corporate Office</h5>
+        <p>CA Chartered Campus Advisory Desk<br>Sector 21, Business Square<br>Mumbai, Maharashtra, India</p>
+    </div>
+    <div class='col-md-6 mb-3'>
+        <h5>Direct Helpdesk</h5>
+        <p>Email: <strong>support@cacharteredcampus.com</strong><br>Phone: <strong>+91 (022) 6100-2400</strong><br>Hours: Monday – Saturday (9:00 AM – 7:00 PM IST)</p>
+    </div>
+</div>"
+                }
             };
 
             await db.ContentPages.AddRangeAsync(items);
@@ -661,6 +765,26 @@ namespace caportal.Data
                 await db.SubServices.AddRangeAsync(auditSubServices);
                 await db.SaveChangesAsync();
             }
+        }
+
+        private static async Task SeedAdminUsersAsync(ApplicationDbContext db, Microsoft.Extensions.Configuration.IConfiguration config)
+        {
+            if (await db.AdminUsers.AnyAsync()) return;
+
+            var defaultUsername = config["AdminCredentials:DefaultUsername"] ?? "admin";
+            var defaultPassword = config["AdminCredentials:DefaultPassword"] ?? "Admin@CACampus2026";
+
+            var admin = new AdminUser
+            {
+                Username = defaultUsername,
+                PasswordHash = caportal.Services.Security.PasswordHasher.HashPassword(defaultPassword),
+                Role = "SuperAdmin",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await db.AdminUsers.AddAsync(admin);
+            await db.SaveChangesAsync();
         }
     }
 }

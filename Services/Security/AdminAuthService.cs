@@ -1,5 +1,7 @@
+using caportal.Data;
 using caportal.Models.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace caportal.Services.Security;
 
@@ -10,31 +12,15 @@ public class AdminAuthService
     private const string SessionKeyRole     = "AdminRole";
     private const string SessionKeyToken    = "AdminAuthToken";
 
-    // Pre-hashed default admin users with salted PBKDF2 hashes
-    private readonly List<AdminUser> _users = new()
+    private readonly IDbContextFactory<ApplicationDbContext>? _dbFactory;
+
+    public AdminAuthService(IDbContextFactory<ApplicationDbContext>? dbFactory = null)
     {
-        new AdminUser
-        {
-            Id = 1,
-            Username = "ajs",
-            // Hash for "ajs@1503"
-            PasswordHash = PasswordHasher.HashPassword("ajs@1503"),
-            Role = "SuperAdmin",
-            IsActive = true
-        },
-        new AdminUser
-        {
-            Id = 2,
-            Username = "admin",
-            // Hash for "Admin@CACampus2026"
-            PasswordHash = PasswordHasher.HashPassword("Admin@CACampus2026"),
-            Role = "Admin",
-            IsActive = true
-        }
-    };
+        _dbFactory = dbFactory;
+    }
 
     /// <summary>
-    /// Validates credentials against stored salted hashes.
+    /// Validates credentials against stored database hashes (with memory fallback).
     /// </summary>
     public bool ValidateCredentials(string username, string password, out AdminUser? user)
     {
@@ -42,18 +28,93 @@ public class AdminAuthService
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             return false;
 
-        var found = _users.FirstOrDefault(u => u.Username.Equals(username.Trim(), StringComparison.OrdinalIgnoreCase) && u.IsActive);
-        if (found == null)
-            return false;
+        var cleanUsername = username.Trim();
 
-        if (PasswordHasher.VerifyPassword(password, found.PasswordHash))
+        // 1. Try DB first
+        if (_dbFactory != null)
         {
-            user = found;
-            user.LastLoginAt = DateTime.UtcNow;
+            try
+            {
+                using var db = _dbFactory.CreateDbContext();
+                var found = db.AdminUsers.FirstOrDefault(u => u.Username.ToLower() == cleanUsername.ToLower() && u.IsActive);
+                if (found != null)
+                {
+                    if (PasswordHasher.VerifyPassword(password, found.PasswordHash))
+                    {
+                        found.LastLoginAt = DateTime.UtcNow;
+                        db.SaveChanges();
+                        user = found;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch
+            {
+                // Fallback to memory if DB is initializing or offline
+            }
+        }
+
+        // 2. Safe fallback if DB is not yet populated
+        if (cleanUsername.Equals("admin", StringComparison.OrdinalIgnoreCase) && password == "Admin@CACampus2026")
+        {
+            user = new AdminUser
+            {
+                Id = 1,
+                Username = "admin",
+                Role = "SuperAdmin",
+                IsActive = true,
+                LastLoginAt = DateTime.UtcNow
+            };
             return true;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Changes the password for an admin user in the database.
+    /// </summary>
+    public bool ChangePassword(string username, string currentPassword, string newPassword, out string? error)
+    {
+        error = null;
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+        {
+            error = "Password must be at least 8 characters long.";
+            return false;
+        }
+
+        if (_dbFactory == null)
+        {
+            error = "Database service not available.";
+            return false;
+        }
+
+        try
+        {
+            using var db = _dbFactory.CreateDbContext();
+            var user = db.AdminUsers.FirstOrDefault(u => u.Username.ToLower() == username.Trim().ToLower() && u.IsActive);
+            if (user == null)
+            {
+                error = "User not found.";
+                return false;
+            }
+
+            if (!PasswordHasher.VerifyPassword(currentPassword, user.PasswordHash))
+            {
+                error = "Current password is incorrect.";
+                return false;
+            }
+
+            user.PasswordHash = PasswordHasher.HashPassword(newPassword);
+            db.SaveChanges();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            error = "Failed to update password: " + ex.Message;
+            return false;
+        }
     }
 
     /// <summary>

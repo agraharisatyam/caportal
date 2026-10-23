@@ -329,8 +329,8 @@
             <div class="hb-card-body">
                 <div class="carousel-preview-wrap" id="previewCarousel">
                     @{
-                        var activeSlides = Model.Where(s => s.IsActive).OrderBy(s => s.DisplayOrder).ToList();
-                        if (!activeSlides.Any()) activeSlides = Model.ToList();
+                        var activeSlides = (Model ?? Enumerable.Empty<HeroBannerSlide>()).Where(s => s.IsActive).OrderBy(s => s.DisplayOrder).ToList();
+                        if (!activeSlides.Any() && Model != null) activeSlides = Model.ToList();
                     }
 
                     @for (int i = 0; i < activeSlides.Count; i++)

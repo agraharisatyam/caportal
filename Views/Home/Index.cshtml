@@ -1,4 +1,5 @@
 @model caportal.Models.ViewModels.HomeViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnv
 @{
     ViewData["Title"] = "Find Verified Chartered Accountants in India";
     ViewData["Description"] = "CACampus connects businesses with verified Chartered Accountants across India. Find CAs for GST filing, Income Tax, Audit, Corporate Compliance, FEMA & Startup Finance.";
@@ -184,13 +185,19 @@
                 <div class="row g-2 g-md-3">
                     @foreach (var svc in Model.Services)
                     {
+                        var imgPath = svc.ImagePath;
+                        if (!string.IsNullOrWhiteSpace(imgPath) && !imgPath.StartsWith("/") && !imgPath.StartsWith("http"))
+                        {
+                            imgPath = "/" + imgPath;
+                        }
+                        var hasImg = !string.IsNullOrWhiteSpace(imgPath);
                         <div class="col-6 col-md-4 col-lg-3">
                             <a href="/service/@svc.Id"
-                               class="service-card reveal text-decoration-none d-block">
-                                <div class="service-icon">
-                                    @if (!string.IsNullOrEmpty(svc.ImagePath))
+                               class="service-card reveal text-decoration-none d-block @(hasImg ? "has-img" : "")">
+                                <div class="service-icon @(hasImg ? "has-img" : "")">
+                                    @if (hasImg)
                                     {
-                                        <img src="@svc.ImagePath" alt="@svc.Title" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                                        <img src="@imgPath" alt="@svc.Title" onerror="var c=this.closest('.service-icon'); if(c) c.classList.remove('has-img'); var card=this.closest('.service-card'); if(card) card.classList.remove('has-img'); var ic=c ? c.querySelector('i') : null; if(ic) ic.style.display='inline-block'; this.remove();" />
                                         <i class="@(string.IsNullOrEmpty(svc.Icon) ? "fas fa-briefcase" : svc.Icon)" style="display:none;" aria-hidden="true"></i>
                                     }
                                     else
@@ -230,11 +237,17 @@
                 <div class="wcu-grid">
                     @foreach (var item in Model.WhyChooseUsItems)
                     {
-                        <div class="wcu-card text-center">
-                            <div class="wcu-card-icon-wrap">
-                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                        var wcuImgPath = item.ImagePath;
+                        if (!string.IsNullOrWhiteSpace(wcuImgPath) && !wcuImgPath.StartsWith("/") && !wcuImgPath.StartsWith("http"))
+                        {
+                            wcuImgPath = "/" + wcuImgPath;
+                        }
+                        var hasWcuImg = !string.IsNullOrWhiteSpace(wcuImgPath);
+                        <div class="wcu-card text-center @(hasWcuImg ? "has-img" : "")">
+                            <div class="wcu-card-icon-wrap @(hasWcuImg ? "has-img" : "")">
+                                @if (hasWcuImg)
                                 {
-                                    <img src="@item.ImagePath" alt="@item.Title" class="wcu-custom-icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                                    <img src="@wcuImgPath" alt="@item.Title" class="wcu-custom-icon" onerror="var c=this.closest('.wcu-card-icon-wrap'); if(c) c.classList.remove('has-img'); var card=this.closest('.wcu-card'); if(card) card.classList.remove('has-img'); var ic=c ? c.querySelector('i') : null; if(ic) ic.style.display='inline-block'; this.remove();" />
                                     <i class="@(string.IsNullOrEmpty(item.Icon) ? "fas fa-check-circle" : item.Icon)" style="display:none;" aria-hidden="true"></i>
                                 }
                                 else

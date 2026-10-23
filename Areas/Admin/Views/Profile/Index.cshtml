@@ -280,12 +280,58 @@
     <a href="/Admin/Profile?tab=activity" class="prof-tab-link @(activeTab == "activity" ? "active" : "")">
         <i data-feather="clock" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Activity Log
     </a>
+    <a href="/Admin/Profile?tab=security" class="prof-tab-link @(activeTab == "security" ? "active" : "")">
+        <i data-feather="shield" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Security &amp; Password
+    </a>
 </div>
 
 <!-- Main Content Grid -->
 <div class="grid grid-cols-12 gap-x-6 gap-y-4">
-    <!-- Left Column: Basic Info & Social Links -->
+    <!-- Left Column: Basic Info & Social Links OR Security -->
     <div class="col-span-12 lg:col-span-8">
+        @if (activeTab == "security")
+        {
+            @if (TempData["PasswordSuccess"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i data-feather="check-circle" class="me-2" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>@TempData["PasswordSuccess"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["PasswordError"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i data-feather="alert-triangle" class="me-2" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i>@TempData["PasswordError"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="prof-card">
+                <h2 class="prof-card-title flex items-center gap-2"><i data-feather="key" class="text-primary" style="width:18px;height:18px;"></i> Change Admin Password</h2>
+                <p class="text-muted small mb-4">Ensure your account uses a secure password with at least 8 characters, combining uppercase, lowercase, numbers, and special symbols.</p>
+
+                <form method="post" action="/Admin/Profile/ChangePassword">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="prof-form-label">Current Password <span class="req">*</span></label>
+                        <input type="password" name="currentPassword" class="prof-input" required placeholder="Enter your current password" autocomplete="current-password" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="prof-form-label">New Password <span class="req">*</span></label>
+                        <input type="password" name="newPassword" class="prof-input" required minlength="8" placeholder="Minimum 8 characters" autocomplete="new-password" />
+                    </div>
+                    <div class="mb-4">
+                        <label class="prof-form-label">Confirm New Password <span class="req">*</span></label>
+                        <input type="password" name="confirmPassword" class="prof-input" required minlength="8" placeholder="Re-type new password" autocomplete="new-password" />
+                    </div>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2" style="background:#2563eb; border-radius:8px;">
+                        <i data-feather="save" class="me-1"></i> Update Password
+                    </button>
+                </form>
+            </div>
+        }
+        else
+        {
         <form method="post" action="/Admin/Profile/Save">
             @Html.AntiForgeryToken()
 
@@ -459,6 +505,7 @@
                 </div>
             </div>
         </form>
+        }
     </div>
 
     <!-- Right Column: Preview, Status & Completion -->

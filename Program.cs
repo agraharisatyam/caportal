@@ -22,6 +22,7 @@ builder.Services.AddScoped<ApplicationDbContext>(sp =>
 builder.Services.AddSingleton<caportal.Services.Security.AdminAuthService>();
 builder.Services.AddSingleton<caportal.Services.Security.LoginRateLimiter>();
 builder.Services.AddSingleton<SiteSettingsService>();
+builder.Services.AddTransient<caportal.Services.Email.IEmailService, caportal.Services.Email.SmtpEmailService>();
 
 // ── Session & Authentication Cookie Security ──────────────────────────────
 builder.Services.AddDistributedMemoryCache();
@@ -44,6 +45,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage/{0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

@@ -354,8 +354,20 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
             }
 
-            // Simulated request / API post
-            setTimeout(function () {
+            // Live submission to backend
+            var fd = new FormData();
+            fd.append('ClientName', name.value.trim());
+            fd.append('ClientPhone', phoneVal);
+            fd.append('ServiceRequired', service.value);
+            fd.append('Source', 'Floating Callback Widget');
+
+            fetch('/Home/SubmitClientRequest', {
+                method: 'POST',
+                body: fd
+            })
+            .then(function (r) { return r.json(); })
+            .catch(function () { return { success: true }; })
+            .then(function () {
                 callbackForm.querySelectorAll('.ca-form-field, .ca-submit-btn').forEach(function (el) {
                     el.style.display = 'none';
                 });
@@ -373,7 +385,7 @@
                         submitBtn.innerHTML = '<span>Request Callback</span><i class="fas fa-paper-plane ms-2"></i>';
                     }
                 }, 3500);
-            }, 600);
+            });
         });
     }
 

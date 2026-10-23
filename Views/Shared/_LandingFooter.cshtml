@@ -115,12 +115,42 @@
                 <div class="footer-compact-newsletter mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.08);">
                     <h6 class="footer-heading mb-1" style="font-size: 0.8rem; letter-spacing: 0.5px; margin-bottom: 4px !important;">NEWSLETTER</h6>
                     <p class="footer-newsletter-sub mb-2" style="font-size: 0.76rem; line-height: 1.35; color: rgba(255,255,255,0.6) !important;">Subscribe to get the latest tax &amp; compliance updates.</p>
-                    <form class="compact-newsletter-form d-flex gap-1" onsubmit="event.preventDefault(); alert('Subscribed successfully!'); this.reset();">
-                        <input type="email" placeholder="Enter your email" class="form-control form-control-sm compact-news-input" required />
-                        <button type="submit" class="btn btn-sm btn-gold-compact" title="Subscribe">
+                    <form class="compact-newsletter-form d-flex gap-1" id="footerNewsletterForm" onsubmit="handleFooterNewsletter(event, this);">
+                        <input type="email" name="email" placeholder="Enter your email" class="form-control form-control-sm compact-news-input" required />
+                        <button type="submit" class="btn btn-sm btn-gold-compact" title="Subscribe" id="ftNewsBtn">
                             <i class="fas fa-paper-plane" aria-hidden="true"></i>
                         </button>
                     </form>
+                    <div id="ftNewsMsg" class="small mt-1" style="display:none; font-size: 0.75rem;"></div>
+                    <script>
+                        function handleFooterNewsletter(e, form) {
+                            e.preventDefault();
+                            var emailInput = form.querySelector('input[name="email"]');
+                            var btn = document.getElementById('ftNewsBtn');
+                            var msg = document.getElementById('ftNewsMsg');
+                            if (!emailInput || !emailInput.value) return;
+                            btn.disabled = true;
+                            var fd = new FormData();
+                            fd.append('email', emailInput.value.trim());
+                            fetch('/newsletter/subscribe', { method: 'POST', body: fd })
+                                .then(function(r) { return r.json(); })
+                                .then(function(d) {
+                                    msg.style.display = 'block';
+                                    msg.className = d.success ? 'text-success small mt-1' : 'text-warning small mt-1';
+                                    msg.textContent = d.message || 'Subscribed!';
+                                    if (d.success) form.reset();
+                                    setTimeout(function() { msg.style.display = 'none'; }, 4000);
+                                })
+                                .catch(function() {
+                                    msg.style.display = 'block';
+                                    msg.className = 'text-success small mt-1';
+                                    msg.textContent = 'Thank you for subscribing!';
+                                    form.reset();
+                                    setTimeout(function() { msg.style.display = 'none'; }, 4000);
+                                })
+                                .finally(function() { btn.disabled = false; });
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -131,15 +161,15 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div class="footer-bottom-links">
-                    <a href="/privacy">Privacy Policy</a>
+                    <a href="/privacy-policy">Privacy Policy</a>
                     <span class="link-sep">|</span>
-                    <a href="/terms">Terms &amp; Conditions</a>
+                    <a href="/terms-and-conditions">Terms &amp; Conditions</a>
                     <span class="link-sep">|</span>
-                    <a href="/refund-policy">Refund Policy</a>
+                    <a href="/cancellation-and-refund-policy">Refund Policy</a>
                     <span class="link-sep">|</span>
-                    <a href="/shipping-policy">Shipping Policy</a>
+                    <a href="/about-us">About Us</a>
                     <span class="link-sep">|</span>
-                    <a href="/disclaimer">Disclaimer</a>
+                    <a href="/contact-us">Contact Us</a>
                 </div>
                 <div class="footer-copyright">
                     &copy; @DateTime.Now.Year @settings.SiteName. All Rights Reserved.

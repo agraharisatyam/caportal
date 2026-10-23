@@ -1,4 +1,5 @@
 @using caportal.Models.Entities
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnv
 @model caportal.Models.Entities.CoveredService
 @{
     ViewData["Title"] = Model.Title + " — CACampus";
@@ -168,26 +169,44 @@
                             string iconClass = !string.IsNullOrWhiteSpace(sub.Icon) ? sub.Icon : "fas fa-file-alt";
                             string priceDisplay = !string.IsNullOrWhiteSpace(sub.Price) ? sub.Price : "";
 
-                            <div class="service-card-item"
-                                 data-title="@sub.Title.ToLowerInvariant()"
-                                 data-desc="@sub.Description.ToLowerInvariant()"
-                                 data-category="@categoryName.ToLowerInvariant()"
-                                 data-popular="@(sub.IsPopular ? "true" : "false")"
-                                 data-new="@(sub.IsNew ? "true" : "false")"
-                                 onclick="openConsultationModal('@sub.Title', '@priceDisplay', '@categoryName')">
+                            var subImgPath = sub.ImagePath;
+                            if (!string.IsNullOrWhiteSpace(subImgPath) && !subImgPath.StartsWith("/") && !subImgPath.StartsWith("http"))
+                            {
+                                subImgPath = "/" + subImgPath;
+                            }
+                            var hasSubImg = !string.IsNullOrWhiteSpace(subImgPath);
 
-                                <!-- Top Circular Gold Icon / Image -->
-                                <div class="card-icon-circle">
-                                    @if (!string.IsNullOrWhiteSpace(sub.ImagePath))
-                                    {
-                                        <img src="@sub.ImagePath" alt="@sub.Title" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-block';" />
-                                        <i class="@iconClass" style="display:none;" aria-hidden="true"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="@iconClass"></i>
-                                    }
-                                </div>
+                            // Fallback to parent service image if subservice image is not set
+                            if (!hasSubImg && !string.IsNullOrWhiteSpace(Model.ImagePath))
+                            {
+                                var parentImg = Model.ImagePath;
+                                if (!parentImg.StartsWith("/") && !parentImg.StartsWith("http"))
+                                {
+                                    parentImg = "/" + parentImg;
+                                }
+                                subImgPath = parentImg;
+                                hasSubImg = true;
+                            }
+                            <div class="service-card-item @(hasSubImg ? "has-img" : "")"
+                                     data-title="@sub.Title.ToLowerInvariant()"
+                                     data-desc="@sub.Description.ToLowerInvariant()"
+                                     data-category="@categoryName.ToLowerInvariant()"
+                                     data-popular="@(sub.IsPopular ? "true" : "false")"
+                                     data-new="@(sub.IsNew ? "true" : "false")"
+                                     onclick="openConsultationModal('@sub.Title', '@priceDisplay', '@categoryName')">
+
+                                    <!-- Top Circular Gold Icon / Image -->
+                                    <div class="card-icon-circle @(hasSubImg ? "has-img" : "")">
+                                        @if (hasSubImg)
+                                        {
+                                            <img src="@subImgPath" alt="@sub.Title" onerror="var c=this.closest('.card-icon-circle'); if(c) c.classList.remove('has-img'); var card=this.closest('.service-card-item'); if(card) card.classList.remove('has-img'); var ic=c ? c.querySelector('i') : null; if(ic) ic.style.display='inline-block'; this.remove();" />
+                                            <i class="@iconClass" style="display:none;" aria-hidden="true"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="@iconClass"></i>
+                                        }
+                                    </div>
 
                                 <!-- Title with Number -->
                                 <h4 class="card-service-title">
@@ -610,7 +629,9 @@
     }
     /* When image is uploaded — exactly same as homepage .services-grid-section .service-icon:has(img) */
     .card-icon-circle:has(img),
-    .service-card-item:has(img) .card-icon-circle {
+    .card-icon-circle.has-img,
+    .service-card-item:has(img) .card-icon-circle,
+    .service-card-item.has-img .card-icon-circle {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
@@ -622,7 +643,8 @@
         overflow: visible !important;
         display: block !important;
     }
-    .card-icon-circle img {
+    .card-icon-circle img,
+    .card-icon-circle.has-img img {
         display: block !important;
         width: 100% !important;
         height: 140px !important;
@@ -631,10 +653,11 @@
         background: transparent !important;
         transition: transform 0.3s ease !important;
     }
-    .service-card-item:hover .card-icon-circle img {
+    .service-card-item:hover .card-icon-circle img,
+    .service-card-item:hover .card-icon-circle.has-img img {
         transform: scale(1.05) !important;
     }
-    .service-card-item:hover .card-icon-circle:not(:has(img)) {
+    .service-card-item:hover .card-icon-circle:not(.has-img):not(:has(img)) {
         background: linear-gradient(135deg, #1a3c5e, #2557a7);
         color: #ffffff;
         border-color: transparent;
@@ -654,7 +677,8 @@
         overflow: hidden;
     }
     /* Larger title when image is present — same as homepage .service-card:has(img) .service-title */
-    .service-card-item:has(img) .card-service-title {
+    .service-card-item:has(img) .card-service-title,
+    .service-card-item.has-img .card-service-title {
         font-size: 1.05rem;
         margin-top: 10px;
         margin-bottom: 8px;

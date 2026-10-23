@@ -8,9 +8,9 @@
 <!-- Page Header -->
 <div class="page-header mb-4">
     <div class="page-block">
-        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-2">
             <div>
-                <h4 class="mb-0 font-weight-bold text-black flex items-center">
+                <h4 class="mb-0 font-weight-bold text-black d-flex align-items-center">
                     <i data-feather="users" class="me-2 text-black" style="display: inline-block !important; vertical-align: middle;"></i> 
                     <span>CA Professionals Roster</span>
                 </h4>
@@ -43,35 +43,35 @@
 }
 
 <!-- Summary Cards -->
-<div class="grid grid-cols-12 gap-x-6 mb-4">
-    <div class="col-span-12 md:col-span-3">
-        <div class="card text-center">
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card text-center h-100 shadow-sm border-0">
             <div class="card-body py-3">
                 <h4 class="font-bold text-primary mb-0">@ViewBag.TotalCAs</h4>
                 <p class="text-muted text-sm mb-0">Total Registered CAs</p>
             </div>
         </div>
     </div>
-    <div class="col-span-12 md:col-span-3">
-        <div class="card text-center">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card text-center h-100 shadow-sm border-0">
             <div class="card-body py-3">
-                <h4 class="font-bold text-success-600 mb-0">@ViewBag.ActiveCAs</h4>
+                <h4 class="font-bold text-success mb-0">@ViewBag.ActiveCAs</h4>
                 <p class="text-muted text-sm mb-0">Active & Listed</p>
             </div>
         </div>
     </div>
-    <div class="col-span-12 md:col-span-3">
-        <div class="card text-center">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card text-center h-100 shadow-sm border-0">
             <div class="card-body py-3">
-                <h4 class="font-bold text-warning-600 mb-0">@ViewBag.PendingCAs</h4>
+                <h4 class="font-bold text-warning mb-0">@ViewBag.PendingCAs</h4>
                 <p class="text-muted text-sm mb-0">Pending Approval</p>
             </div>
         </div>
     </div>
-    <div class="col-span-12 md:col-span-3">
-        <div class="card text-center">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card text-center h-100 shadow-sm border-0">
             <div class="card-body py-3">
-                <h4 class="font-bold text-danger-600 mb-0">@ViewBag.SuspendedCAs</h4>
+                <h4 class="font-bold text-danger mb-0">@ViewBag.SuspendedCAs</h4>
                 <p class="text-muted text-sm mb-0">Suspended / Inactive</p>
             </div>
         </div>
@@ -79,21 +79,21 @@
 </div>
 
 <!-- CA Table -->
-<div class="grid grid-cols-12 gap-x-6">
-    <div class="col-span-12">
-        <div class="card">
-            <div class="card-header flex items-center justify-between flex-wrap gap-2">
-                <h5 class="mb-0 text-white">Empaneled CA Professionals</h5>
-                <div class="flex gap-2">
+<div class="row g-3">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
+                <h5 class="mb-0 text-white font-weight-bold">Empaneled CA Professionals</h5>
+                <div class="d-flex flex-wrap gap-2">
                     <button class="btn btn-sm btn-outline-secondary" onclick="filterStatus('all')">All (@ViewBag.TotalCAs)</button>
                     <button class="btn btn-sm btn-success" onclick="filterStatus('Active')">Active</button>
                     <button class="btn btn-sm btn-warning" onclick="filterStatus('Pending')">Pending</button>
                     <button class="btn btn-sm btn-danger" onclick="filterStatus('Suspended')">Suspended</button>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-3">
                 <div class="table-responsive">
-                    <table id="caListTable" class="table table-hover align-middle" style="width:100%">
+                    <table id="caListTable" class="table table-hover align-middle mb-0" style="width:100%">
                         <thead class="table-light">
                             <tr>
                                 <th style="width:40px;">#</th>
@@ -116,31 +116,33 @@
                                 <tr data-status="@ca.Status">
                                     <td><small class="text-muted">#@ca.Id</small></td>
                                     <td>
-                                        <div class="flex items-center gap-2">
+                                        <div class="d-flex align-items-center gap-2">
                                             @if (!string.IsNullOrEmpty(ca.ImagePath))
                                             {
-                                                <img src="@ca.ImagePath" alt="@ca.Name" class="w-9 h-9 rounded-circle object-cover border flex-shrink-0" onerror="this.src='/images/ca/ca-priya-mehta.svg';" />
+                                                <img src="@ca.ImagePath" alt="@ca.Name" style="width:40px;height:40px;min-width:40px;min-height:40px;object-fit:cover;border-radius:50%;border:1px solid rgba(212,160,23,0.3);" class="flex-shrink-0" onerror="this.src='/images/ca/ca-priya-mehta.svg';" />
                                             }
                                             else
                                             {
-                                                <div class="w-9 h-9 rounded-circle bg-primary-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center font-weight-bold flex-shrink-0" style="width:40px;height:40px;min-width:40px;min-height:40px;font-size:0.85rem;">
                                                     @ca.Initials
                                                 </div>
                                             }
                                             <div>
-                                                <span class="font-weight-bold text-white d-block">@ca.Name</span>
-                                                @if (ca.IsFeatured)
-                                                {
-                                                    <span class="badge bg-warning text-dark text-xs"><i data-feather="star" style="width:10px;height:10px;display:inline-block;vertical-align:middle;"></i> Featured</span>
-                                                }
-                                                @if (ca.IsVerified)
-                                                {
-                                                    <span class="badge bg-success text-xs"><i data-feather="check" style="width:10px;height:10px;display:inline-block;vertical-align:middle;"></i> Verified</span>
-                                                }
+                                                <span class="font-weight-bold text-white d-block" style="white-space:nowrap;">@ca.Name</span>
+                                                <div class="d-flex align-items-center gap-1 mt-1">
+                                                    @if (ca.IsFeatured)
+                                                    {
+                                                        <span class="badge bg-warning text-dark text-xs"><i data-feather="star" style="width:10px;height:10px;display:inline-block;vertical-align:middle;"></i> Featured</span>
+                                                    }
+                                                    @if (ca.IsVerified)
+                                                    {
+                                                        <span class="badge bg-success text-xs"><i data-feather="check" style="width:10px;height:10px;display:inline-block;vertical-align:middle;"></i> Verified</span>
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="badge bg-primary-100 text-primary-700">@ca.Designation</span></td>
+                                    <td><span class="badge bg-primary text-white">@ca.Designation</span></td>
                                     <td class="text-sm font-monospace text-muted">@ca.MembershipNo</td>
                                     <td>
                                         @foreach (var tag in ca.Specialisations.Take(2))
@@ -179,18 +181,18 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        <div class="flex items-center justify-center gap-1">
-                                            <a href="/expert/@expertSlug" target="_blank" class="btn btn-xs btn-outline-primary" title="View Public Profile">
-                                                <i data-feather="eye" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i>
+                                        <div class="d-flex align-items-center justify-content-center gap-1">
+                                            <a href="/expert/@expertSlug" target="_blank" class="btn btn-sm btn-outline-primary p-1 px-2" title="View Public Profile">
+                                                <i data-feather="eye" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i>
                                             </a>
-                                            <a href="/Admin/Dashboard/CaEdit/@ca.Id" class="btn btn-xs btn-outline-warning" title="Edit Profile">
-                                                <i data-feather="edit-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i>
+                                            <a href="/Admin/Dashboard/CaEdit/@ca.Id" class="btn btn-sm btn-outline-warning p-1 px-2" title="Edit Profile">
+                                                <i data-feather="edit-2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i>
                                             </a>
                                             <form method="post" action="/Admin/Dashboard/CaDelete" onsubmit="return confirm('Are you sure you want to remove @ca.Name?');" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="id" value="@ca.Id" />
-                                                <button type="submit" class="btn btn-xs btn-outline-danger" title="Delete Profile">
-                                                    <i data-feather="trash-2" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></i>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger p-1 px-2" title="Delete Profile">
+                                                    <i data-feather="trash-2" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i>
                                                 </button>
                                             </form>
                                         </div>
